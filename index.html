@@ -13,18 +13,26 @@
         .header h2 { margin: 0; font-size: 22px; }
         .back-btn { background: none; border: none; color: var(--accent); font-size: 16px; cursor: pointer; padding: 0; }
         
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .menu-item { background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px; }
-        .menu-item:active { background: var(--bg3); }
-        .menu-icon { font-size: 28px; margin-bottom: 8px; }
-        .menu-title { font-size: 14px; font-weight: 500; }
+        /* Главный экран */
+        .main-action { background: var(--accent); border-radius: 16px; padding: 30px 20px; text-align: center; cursor: pointer; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3); }
+        .main-action-title { font-size: 22px; font-weight: bold; color: white; margin-bottom: 8px; }
+        .main-action-desc { font-size: 14px; color: rgba(255,255,255,0.8); }
+        
+        .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .quick-item { background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; }
+        .q-icon { font-size: 28px; margin-bottom: 8px; }
+        .q-title { font-size: 16px; font-weight: 500; }
 
+        /* Объекты */
         .object-list { display: flex; flex-direction: column; gap: 15px; }
         .object-card { background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 15px; cursor: pointer; }
         .obj-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
         .obj-details { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-        .badge { background: var(--accent); color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+        .badge { color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
         .budget { color: var(--fg-dim); }
+        
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .menu-item { background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; }
     </style>
 </head>
 <body>
