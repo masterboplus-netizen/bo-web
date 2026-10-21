@@ -37,10 +37,10 @@
 </head>
 <body>
     <div id="app-content">Загрузка...</div>
-    <script src="app2.js"></script>
+    <script src="app2.js?v=5"></script>
 <script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js?v=1", { updateViaCache: "none" }).catch(function(){});
+  navigator.serviceWorker.register("sw.js?v=5", { updateViaCache: "none" }).catch(function(){});
 }
 </script>
 </body>
