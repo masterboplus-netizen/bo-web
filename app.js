@@ -1,5 +1,12 @@
 // Логика для Бо 8.1 Web App
-const API_URL = 'https://9b7b76e6-2a55-4066-aec3-8b9aabd72cfa-00-3tkkz4oxoetcb.pike.replit.dev';
+// Автоматически определяем API_URL
+let API_URL = '';
+if (window.location.hostname.includes('replit')) {
+    API_URL = window.location.origin; // Если открыто в Replit
+} else {
+    // Если открыто на GitHub, берем последний известный
+    API_URL = localStorage.getItem('bo_api_url') || 'https://9b7b76e6-2a55-4066-aec3-8b9aabd72cfa-00-3tkkz4oxoetcb.pike.replit.dev';
+}
 
 // Умный главный экран
 function renderMainMenu() {
