@@ -1,11 +1,6 @@
 // Логика для Бо 8.1 Web App
-
-const mockData = {
-    objects: [
-        { id: 1, name: 'Квартира на Ленина', status: 'В работе', budget: '1 500 000' },
-        { id: 2, name: 'Офис в центре', status: 'Замеры', budget: '3 200 000' }
-    ]
-};
+// ВАЖНО: Твой URL Replit. Замени его, если он изменится.
+const API_URL = 'https://9b7b76e6-2a55-4066-aec3-8b9aabd72cfa-00-3tkkz4oxoetcb.pike.replit.dev';
 
 // Главное меню (как в боте)
 function renderMainMenu() {
@@ -36,37 +31,59 @@ function renderMainMenu() {
     document.getElementById('app-content').innerHTML = html;
 }
 
-// Экран списка объектов
-function openObjects() {
-    let html = `
-        <div class="header">
-            <button class="back-btn" onclick="renderMainMenu()">← Назад</button>
-            <h2>Объекты</h2>
-        </div>
-        <div class="object-list">
-    `;
-    mockData.objects.forEach(obj => {
-        html += `
-            <div class="object-card" onclick="openObject(${obj.id})">
-                <div class="obj-title">${obj.name}</div>
-                <div class="obj-details">
-                    <span class="badge">${obj.status}</span>
-                    <span class="budget">${obj.budget} ₽</span>
-                </div>
+// Экран списка объектов (с загрузкой из API)
+async function openObjects() {
+    document.getElementById('app-content').innerHTML = '<div class="loading">Загрузка объектов...</div>';
+    
+    try {
+        const response = await fetch(API_URL + '/api/objects');
+        if (!response.ok) throw new Error('Ошибка сети');
+        const objects = await response.json();
+
+        let html = `
+            <div class="header">
+                <button class="back-btn" onclick="renderMainMenu()">← Назад</button>
+                <h2>Объекты</h2>
             </div>
+            <div class="object-list">
         `;
-    });
-    html += '</div>';
-    document.getElementById('app-content').innerHTML = html;
+        
+        objects.forEach(obj => {
+            // Определяем цвет статуса
+            let statusColor = obj.status === 'active' ? 'var(--accent)' : (obj.status === 'completed' ? 'var(--green)' : 'var(--fg-dim)');
+            let statusText = obj.status === 'active' ? 'В работе' : (obj.status === 'completed' ? 'Завершен' : obj.status);
+
+            html += `
+                <div class="object-card" onclick="openObject(${obj.id})">
+                    <div class="obj-title">${obj.name}</div>
+                    <div class="obj-details">
+                        <span class="badge" style="background: ${statusColor}">${statusText}</span>
+                        <span class="budget">${obj.balance} ₽</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        document.getElementById('app-content').innerHTML = html;
+
+    } catch (error) {
+        document.getElementById('app-content').innerHTML = `
+            <div class="header">
+                <button class="back-btn" onclick="renderMainMenu()">← Назад</button>
+                <h2>Ошибка</h2>
+            </div>
+            <div class="error">Не удалось загрузить объекты: ${error.message}</div>
+        `;
+    }
 }
 
-// Экран внутри объекта
+// Экран внутри объекта (пока заглушка)
 function openObject(id) {
-    const obj = mockData.objects.find(o => o.id === id);
     let html = `
         <div class="header">
             <button class="back-btn" onclick="openObjects()">← Назад</button>
-            <h2>${obj.name}</h2>
+            <h2>Объект #${id}</h2>
         </div>
         <div class="menu-grid">
             <div class="menu-item">🏠 Комнаты</div>
