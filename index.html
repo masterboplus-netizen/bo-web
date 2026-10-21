@@ -33,10 +33,49 @@
         
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .menu-item { background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; }
-    </style>
+    
+    /* Нижняя навигация */
+    #bottom-nav {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--bg2); border-top: 1px solid var(--border);
+        display: none; /* Скрыта по умолчанию */
+        justify-content: space-around; padding: 10px 0;
+        z-index: 100;
+    }
+    #bottom-nav.visible { display: flex; }
+    .nav-item {
+        display: flex; flex-direction: column; align-items: center;
+        color: var(--fg-dim); font-size: 10px; cursor: pointer;
+        text-decoration: none; gap: 4px;
+    }
+    .nav-item .nav-icon { font-size: 20px; }
+    .nav-item.active { color: var(--accent); font-weight: bold; }
+    body { padding-bottom: 60px; } /* Чтобы контент не прятался за панелью */
+
+</style>
 </head>
 <body>
     <div id="app-content">Загрузка...</div>
+    
+    <nav id="bottom-nav">
+        <div class="nav-item" onclick="renderMainMenu()" id="nav-main">
+            <span class="nav-icon">🏠</span>
+            <span>Главная</span>
+        </div>
+        <div class="nav-item" onclick="openObjects()" id="nav-objects">
+            <span class="nav-icon">🏗</span>
+            <span>Объекты</span>
+        </div>
+        <div class="nav-item" onclick="showStub('📋 Задачи')" id="nav-tasks">
+            <span class="nav-icon">📋</span>
+            <span>Задачи</span>
+        </div>
+        <div class="nav-item" onclick="showStub('💰 Финансы')" id="nav-finance">
+            <span class="nav-icon">💰</span>
+            <span>Финансы</span>
+        </div>
+    </nav>
+
     <script src="app2.js?v=5"></script>
 <script>
 if ("serviceWorker" in navigator) {

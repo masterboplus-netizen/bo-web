@@ -35,6 +35,7 @@ function renderMainMenu() {
         </div>
     `;
     document.getElementById('app-content').innerHTML = html;
+    showNav(true);
 }
 
 function openObjects() {
@@ -63,6 +64,7 @@ function openObjects() {
     });
     html += `</div>`;
     document.getElementById('app-content').innerHTML = html;
+    showNav(true);
 }
 
 function openObject(obj) {
@@ -81,6 +83,7 @@ function openObject(obj) {
         </div>
     `;
     document.getElementById('app-content').innerHTML = html;
+    showNav(true);
 }
 
 document.addEventListener('DOMContentLoaded', () => { renderMainMenu(); });
@@ -114,4 +117,19 @@ function openRooms(objectId) {
         .catch(e => {
             document.getElementById('rooms-list').innerHTML = `<p style="color:var(--red);">Ошибка API: ${e.message}</p>`;
         });
+}
+
+function setNavActive(tabId) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    if (tabId) {
+        document.getElementById('nav-' + tabId)?.classList.add('active');
+    }
+}
+
+function showNav(visible) {
+    const nav = document.getElementById('bottom-nav');
+    if (nav) {
+        if (visible) nav.classList.add('visible');
+        else nav.classList.remove('visible');
+    }
 }
