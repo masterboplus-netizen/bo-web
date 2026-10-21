@@ -38,5 +38,10 @@
 <body>
     <div id="app-content">Загрузка...</div>
     <script src="app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js?v=1", { updateViaCache: "none" }).catch(function(){});
+}
+</script>
 </body>
 </html>
