@@ -41,7 +41,10 @@ function openObjects() {
     let html = `
         <div class="header">
             <button class="back-btn" onclick="renderMainMenu()">← Назад</button>
-            <h2>Объекты</h2>
+            <h2>🏗 Объекты</h2>
+        </div>
+        <div class="menu-grid" style="margin-bottom: 20px;">
+            <div class="menu-item" onclick="showStub('📦 Архив объектов')">📦 Архив объектов</div>
         </div>
         <div class="object-list">
     `;
@@ -58,7 +61,7 @@ function openObjects() {
             </div>
         `;
     });
-    html += '</div>';
+    html += `</div>`;
     document.getElementById('app-content').innerHTML = html;
 }
 
