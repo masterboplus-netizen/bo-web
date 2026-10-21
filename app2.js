@@ -59,7 +59,7 @@ function openObject(obj) {
             <div>Баланс: ${obj.balance} ₽</div>
         </div>
         <div class="menu-grid">
-            <div class="menu-item" onclick="alert('В разработке')">🏠 Комнаты</div>
+            <div class="menu-item" onclick="openRooms(CURRENT_OBJECT.id)">🏠 Комнаты</div>
             <div class="menu-item" onclick="alert('В разработке')">⚡ Электрика</div>
         </div>
     `;
@@ -67,3 +67,34 @@ function openObject(obj) {
 }
 
 document.addEventListener('DOMContentLoaded', () => { renderMainMenu(); });
+
+function openRooms(objectId) {
+    document.getElementById('app-content').innerHTML = `
+        <div class="header">
+            <button class="back-btn" onclick="openObject(CURRENT_OBJECT)">← Назад</button>
+            <h2>Комнаты</h2>
+        </div>
+        <div id="rooms-list">Загрузка...</div>
+    `;
+    fetch(`https://bo-api.onrender.com/api/objects/${objectId}/rooms`)
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('rooms-list');
+            if (data.status === 'ok' && data.rooms.length > 0) {
+                el.innerHTML = data.rooms.map(r => `
+                    <div class="object-card" style="margin-bottom: 10px;">
+                        <div class="obj-title">${r.name}</div>
+                        <div class="obj-details">
+                            <span class="badge" style="background: var(--accent);">${r.room_type || 'Комната'}</span>
+                            <span class="budget">S: ${r.area_sqm || 0} м²</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                el.innerHTML = '<p style="color:var(--fg-dim);">Комнат пока нет или ошибка загрузки.</p>';
+            }
+        })
+        .catch(e => {
+            document.getElementById('rooms-list').innerHTML = `<p style="color:var(--red);">Ошибка API: ${e.message}</p>`;
+        });
+}
