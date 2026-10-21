@@ -10,14 +10,28 @@ const MOCK_OBJECTS = [
 
 function renderMainMenu() {
     let html = `
-        <div class="header"><h2>Бо 8.1</h2></div>
-        <div class="main-action" onclick="openObjects()">
-            <div class="main-action-title">Перейти к объектам</div>
-            <div class="main-action-desc">Список всех ваших проектов</div>
+        <div class="header">
+            <h2>Бо 8.1</h2>
         </div>
-        <div class="quick-grid">
-            <div class="quick-item" onclick="alert('В разработке')"><div class="q-icon">📋</div><div class="q-title">Задачи</div></div>
-            <div class="quick-item" onclick="alert('В разработке')"><div class="q-icon">💰</div><div class="q-title">Финансы</div></div>
+        
+        <div style="margin-bottom: 20px;">
+            <div class="menu-item" onclick="openObjects()" style="background: var(--accent); color: white; border: none; padding: 25px 20px; font-size: 18px; font-weight: bold;">
+                🏗 Объекты
+                <div style="font-size: 12px; font-weight: normal; opacity: 0.8; margin-top: 5px;">Список всех ваших проектов</div>
+            </div>
+        </div>
+
+        <div class="menu-grid">
+            <div class="menu-item" onclick="showStub('📋 Задачи')">📋 Задачи</div>
+            <div class="menu-item" onclick="showStub('💰 Финансы')">💰 Финансы</div>
+            <div class="menu-item" onclick="showStub('📊 Сметы')">📊 Сметы</div>
+            <div class="menu-item" onclick="showStub('📈 Отчёты')">📈 Отчёты</div>
+            <div class="menu-item" onclick="showStub('📊 KPI')">📊 KPI</div>
+            <div class="menu-item" onclick="showStub('💸 Личные')">💸 Личные</div>
+            <div class="menu-item" onclick="showStub('👥 CRM')">👥 CRM</div>
+            <div class="menu-item" onclick="showStub('🌐 Дашборд')">🌐 Дашборд</div>
+            <div class="menu-item" onclick="showStub('➕ Добавить')">➕ Добавить</div>
+            <div class="menu-item" onclick="showStub('⚙️ Помощь')">⚙️ Помощь</div>
         </div>
     `;
     document.getElementById('app-content').innerHTML = html;
