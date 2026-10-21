@@ -7,26 +7,24 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007aff">
     <style>
-        :root {
-            --bg: #0d1117; --bg2: #161b22; --bg3: #21262d;
-            --fg: #c9d1d9; --fg-dim: #8b949e; --accent: #007aff;
-        }
+        :root { --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --fg: #c9d1d9; --fg-dim: #8b949e; --accent: #007aff; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 20px; }
         .header { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; }
         .header h2 { margin: 0; font-size: 22px; }
         .back-btn { background: none; border: none; color: var(--accent); font-size: 16px; cursor: pointer; padding: 0; }
         
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .menu-item { background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px; }
+        .menu-item:active { background: var(--bg3); }
+        .menu-icon { font-size: 28px; margin-bottom: 8px; }
+        .menu-title { font-size: 14px; font-weight: 500; }
+
         .object-list { display: flex; flex-direction: column; gap: 15px; }
-        .object-card { background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 15px; cursor: pointer; transition: 0.2s; }
-        .object-card:active { background: var(--bg3); }
+        .object-card { background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 15px; cursor: pointer; }
         .obj-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
         .obj-details { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
         .badge { background: var(--accent); color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
         .budget { color: var(--fg-dim); }
-
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .menu-item { background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 20px; text-align: center; font-size: 16px; cursor: pointer; }
-        .menu-item:active { background: var(--bg3); }
     </style>
 </head>
 <body>
