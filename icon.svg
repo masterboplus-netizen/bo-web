@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <clipPath id="iconClip">
+      <rect width="512" height="512" rx="90" />
+    </clipPath>
+  </defs>
+  <g clip-path="url(#iconClip)">
+    <rect width="512" height="512" fill="#1C1C1C" />
+    <g stroke="#2A2A2A" stroke-width="20" opacity="0.5">
+      <line x1="-100" y1="100" x2="200" y2="600" />
+      <line x1="0" y1="0" x2="300" y2="500" />
+      <line x1="100" y1="-100" x2="400" y2="400" />
+      <line x1="200" y1="-200" x2="500" y2="300" />
+    </g>
+    <g transform="translate(230, 390) skewX(-15)">
+      <text x="0" y="0" font-family="'Arial Black', Impact, sans-serif" font-size="400" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="-25">Bo</text>
+    </g>
+    <path d="M 70 430 L 442 400 L 442 450 L 70 480 Z" fill="#F97316" />
+    <circle cx="450" cy="425" r="22" fill="#F97316" />
+  </g>
+</svg>
