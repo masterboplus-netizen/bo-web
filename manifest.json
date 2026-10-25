@@ -1,6 +1,6 @@
 {
-  "name": "Бо 8.1 — Стройка",
-  "short_name": "Бо",
+  "name": "Мастер Бо",
+  "short_name": "Мастер Бо",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
