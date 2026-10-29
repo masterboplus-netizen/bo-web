@@ -22,6 +22,10 @@ function getHeader() {
 }
 
 function renderMainMenu() {
+    const nav = document.getElementById('bottom-nav');
+    const addBtn = document.getElementById('add-btn-floating');
+    if (nav) nav.style.display = 'flex';
+    if (addBtn) addBtn.style.display = 'flex';
     const addBtn = document.getElementById('add-btn-floating');
     if (addBtn) addBtn.style.display = 'flex';
     const addBtn = document.getElementById('add-btn-floating');
@@ -90,10 +94,13 @@ function openObject(obj) {
 
 
 
+
 function openAddMenu() {
+    // Прячем нижнее меню и кнопку "+", чтобы они не мешали
+    const nav = document.getElementById('bottom-nav');
     const addBtn = document.getElementById('add-btn-floating');
-    // Не скрываем кнопку полностью, просто прячем её под контент
-    if (addBtn) addBtn.style.zIndex = '1';
+    if (nav) nav.style.display = 'none';
+    if (addBtn) addBtn.style.display = 'none';
 
     const menuItems = [
         { icon: '📔', text: 'Запись в дневник', action: () => openDiary() },
@@ -106,10 +113,10 @@ function openAddMenu() {
     ];
 
     let html = `
-        <div class="header" style="margin-bottom: 20px; position: relative; z-index: 100;">
+        <div class="header" style="margin-bottom: 20px;">
             <h2 style="margin: 0; font-size: 22px;">Добавить</h2>
         </div>
-        <div id="add-menu-container" style="display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 100; padding-bottom: 80px;">
+        <div id="add-menu-container" style="display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px;">
     `;
 
     menuItems.forEach((item, index) => {
@@ -123,7 +130,7 @@ function openAddMenu() {
 
     html += `
         </div>
-        <div id="add-menu-cancel" style="width: 100%; padding: 15px; text-align: center; color: var(--fg-dim); font-size: 16px; cursor: pointer; margin-top: 10px; position: relative; z-index: 100;">Отмена</div>
+        <div id="add-menu-cancel" style="width: 100%; padding: 15px; text-align: center; color: var(--fg-dim); font-size: 16px; cursor: pointer; margin-top: 10px;">Отмена</div>
     `;
 
     document.getElementById('app-content').innerHTML = html;
@@ -141,6 +148,9 @@ function openAddMenu() {
         closeAddMenu();
     });
 }
+
+
+
 
 
 
