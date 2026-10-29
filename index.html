@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#007aff">
     <style>
         :root { --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --fg: #c9d1d9; --fg-dim: #8b949e; --accent: #007aff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 20px; padding-bottom: 140px; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 20px; padding-bottom: 150px; }
 
         .header { display: flex; align-items: center; margin-bottom: 25px; gap: 15px; }
         .header h2 { margin: 0; font-size: 22px; }
@@ -26,15 +26,19 @@
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--bg2); border-top: 1px solid var(--bg3);
             z-index: 100; display: flex; flex-direction: column;
-            height: 75px; /* Высота свернутого меню */
+            height: 70px; /* Высота одного ряда */
             transition: height 0.3s ease;
             overflow: hidden;
         }
-        #bottom-nav.expanded { height: 150px; } /* Высота раскрытого */
+        #bottom-nav.expanded { height: 140px; } /* Высота двух рядов */
+
+        /* Невидимая зона для свайпа вниз */
+        #swipe-zone {
+            position: absolute; top: 0; left: 0; right: 0; height: 30px; z-index: 105;
+        }
 
         .nav-row {
-            display: flex; width: 100%; height: 75px; /* Высота одного ряда */
-            flex-shrink: 0;
+            display: flex; width: 100%; height: 70px; flex-shrink: 0;
         }
 
         .nav-item {
@@ -45,16 +49,15 @@
         .nav-item .nav-icon { width: 24px; height: 24px; margin-bottom: 2px; }
         .nav-item.active { color: var(--accent); font-weight: bold; }
 
-        /* Кнопка добавить */
+        /* Кнопка добавить (независимая) */
         .nav-add-btn {
             position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%);
             background: var(--accent); color: white;
             width: 56px; height: 56px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 10px rgba(0, 122, 255, 0.4);
-            z-index: 101; cursor: pointer; transition: bottom 0.3s ease;
+            z-index: 101; cursor: pointer;
         }
-        #bottom-nav.expanded ~ .nav-add-btn { bottom: 110px; } /* Кнопка поднимается */
         .nav-add-btn svg { width: 32px; height: 32px; }
     </style>
 </head>
@@ -79,7 +82,14 @@
 
     <div id="app-content">Загрузка...</div>
 
+    <!-- Кнопка добавить (висит всегда на одном месте) -->
+    <div class="nav-add-btn" onclick="openAddObject()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </div>
+
     <nav id="bottom-nav">
+        <div id="swipe-zone"></div> <!-- Зона для свайпа вниз -->
+
         <div class="nav-row">
             <div class="nav-item" onclick="showStub('💸 Личные')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg><span>Личные</span></div>
             <div class="nav-item" onclick="openObjects()"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V7l8-4 8 4v14"></path><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path></svg><span>Объекты</span></div>
@@ -97,36 +107,35 @@
         </div>
     </nav>
 
-    <div class="nav-add-btn" onclick="openAddObject()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const nav = document.getElementById('bottom-nav');
             let touchStartY = 0;
-            let touchEndY = 0;
 
+            // Слушаем свайп на всем меню
             nav.addEventListener('touchstart', (e) => {
                 touchStartY = e.changedTouches[0].screenY;
             }, { passive: true });
 
             nav.addEventListener('touchend', (e) => {
-                touchEndY = e.changedTouches[0].screenY;
+                let touchEndY = e.changedTouches[0].screenY;
                 const swipeDistance = touchStartY - touchEndY;
 
+                // Если свайп вверх (открыть)
                 if (swipeDistance > 30) {
                     nav.classList.add('expanded');
-                } else if (swipeDistance < -30) {
+                } 
+                // Если свайп вниз (закрыть)
+                else if (swipeDistance < -30) {
                     nav.classList.remove('expanded');
                 }
             }, { passive: true });
         });
     </script>
-    <script src="app2.js?v=420"></script>
+    <script src="app2.js?v=421"></script>
     <script>
         if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("sw.js?v=106").catch(function(){});
+          navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
         }
     </script>
 </body>
