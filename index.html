@@ -118,21 +118,18 @@
                 touchEndY = e.changedTouches[0].screenY;
                 const swipeDistance = touchStartY - touchEndY;
 
-                // Если свайп вверх (расстояние больше 30)
                 if (swipeDistance > 30) {
                     nav.classList.add('expanded');
-                } 
-                // Если свайп вниз (расстояние меньше -30)
-                else if (swipeDistance < -30) {
+                } else if (swipeDistance < -30) {
                     nav.classList.remove('expanded');
                 }
             }, { passive: true });
         });
     </script>
-    <script src="app2.js?v=415"></script>
+    <script src="app2.js?v=416"></script>
     <script>
         if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("sw.js?v=101").catch(function(){});
+          navigator.serviceWorker.register("sw.js?v=102").catch(function(){});
         }
     </script>
 </body>
