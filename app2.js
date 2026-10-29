@@ -22,6 +22,8 @@ function getHeader() {
 }
 
 function renderMainMenu() {
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'flex';
     CURRENT_OBJECT = null;
     let html = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
         <h3 style="color: var(--fg);">Добро пожаловать в Master Bo 7.1!</h3>
@@ -82,7 +84,12 @@ function openObject(obj) {
 
 
 
+
 function openAddMenu() {
+    // Прячем саму кнопку "+", чтобы она не мешала кликам
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'none';
+
     let btnStyle = "width: 100%; text-align: left; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: var(--fg); font-size: 16px; font-weight: bold;";
     
     let html = `
@@ -112,10 +119,18 @@ function openAddMenu() {
                 <span style="font-size: 24px;">🛠</span> Инструмент
             </button>
         </div>
-        <button onclick="renderMainMenu()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 16px; cursor: pointer; margin-top: 20px;">Отмена</button>
+        <button onclick="closeAddMenu()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 16px; cursor: pointer; margin-top: 20px;">Отмена</button>
     `;
     document.getElementById('app-content').innerHTML = html;
 }
+
+function closeAddMenu() {
+    // Возвращаем кнопку "+" на место
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'flex';
+    renderMainMenu();
+}
+
 
 
 function openAddObject() {
