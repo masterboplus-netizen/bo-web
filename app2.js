@@ -8,9 +8,22 @@ const MOCK_OBJECTS = [
 
 let CURRENT_OBJECT = null;
 
+function getHeader() {
+    return `
+    <div class="header" style="justify-content: space-between; margin-bottom: 20px; display: flex; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="icon-192.png" style="width: 36px; height: 36px; border-radius: 8px;">
+            <h2 style="margin: 0; font-size: 22px;">Master Bo 7.1</h2>
+        </div>
+        <button class="back-btn" onclick="openSettings()" style="font-size: 24px; padding: 5px; color: var(--fg); cursor: pointer; background: none; border: none;">
+            ⚙️
+        </button>
+    </div>`;
+}
+
 function renderMainMenu() {
     CURRENT_OBJECT = null;
-    let html = `
+    let html = getHeader() + `
         <div style="margin-bottom: 20px;">
             <div class="menu-item" onclick="openObjects()" style="background: var(--accent); color: white; border: none; padding: 25px 20px; font-size: 18px; font-weight: bold;">
                 🏗 Объекты
@@ -35,7 +48,7 @@ function renderMainMenu() {
 function openObjects() {
     let saved = localStorage.getItem('bo_objects');
     let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
-    let html = `<div class="object-list">`;
+    let html = getHeader() + `<div class="object-list">`;
     objects.forEach(obj => {
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
@@ -56,8 +69,9 @@ function openObjects() {
 
 function openObject(obj) {
     CURRENT_OBJECT = obj;
-    let html = `
+    let html = getHeader() + `
         <div style="margin-bottom: 20px; color: var(--fg-dim); background: var(--bg2); padding: 15px; border-radius: 12px;">
+            <div style="font-size: 20px; font-weight: bold; color: var(--fg); margin-bottom: 10px;">${obj.name}</div>
             <div>Статус: <span style="color: ${obj.status === 'active' ? 'var(--accent)' : '#fff'}">${obj.status === 'active' ? 'В работе' : 'Завершен'}</span></div>
             <div>Баланс: ${obj.balance} ₽</div>
         </div>
@@ -73,7 +87,7 @@ function openObject(obj) {
 }
 
 function openAddObject() {
-    let html = `
+    let html = getHeader() + `
         <div style="background: var(--bg2); padding: 20px; border-radius: 12px;">
             <label style="display:block; margin-bottom: 10px;">Название объекта</label>
             <input type="text" id="new-obj-name" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="Например: Квартира на Ленина">
@@ -98,7 +112,7 @@ function saveObject() {
 }
 
 function showStub(title) {
-    let html = `
+    let html = getHeader() + `
         <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
             <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
             <h3>${title}</h3>
@@ -109,7 +123,7 @@ function showStub(title) {
 }
 
 function openSettings() {
-    document.getElementById('app-content').innerHTML = `
+    let html = getHeader() + `
         <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
                 <span>Темная тема</span>
@@ -119,15 +133,12 @@ function openSettings() {
                 <span>Версия приложения</span>
                 <span style="color: var(--fg-dim);">7.1</span>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span>Пользователь</span>
-                <span style="color: var(--fg-dim);">Master</span>
-            </div>
         </div>
         <button class="menu-item" onclick="localStorage.clear(); alert('Данные очищены'); renderMainMenu();" style="width: 100%; border: none; background: #ff3b30; color: white; padding: 15px; border-radius: 8px; font-weight: bold;">
             Очистить данные
         </button>
     `;
+    document.getElementById('app-content').innerHTML = html;
     setNavActive('main');
 }
 
