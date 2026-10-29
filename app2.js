@@ -23,11 +23,10 @@ function getHeader() {
 
 function renderMainMenu() {
     CURRENT_OBJECT = null;
-    let html = `
-        
-        </div>
-        
-    `;
+    let html = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
+        <h3 style="color: var(--fg);">Добро пожаловать в Master Bo 7.1!</h3>
+        <p>Выберите раздел в меню внизу.</p>
+    </div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('main');
 }
