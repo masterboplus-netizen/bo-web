@@ -85,44 +85,63 @@ function openObject(obj) {
 
 
 
+
 function openAddMenu() {
-    // Прячем саму кнопку "+", чтобы она не мешала кликам
     const addBtn = document.getElementById('add-btn-floating');
     if (addBtn) addBtn.style.display = 'none';
 
-    let btnStyle = "width: 100%; text-align: left; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: var(--fg); font-size: 16px; font-weight: bold;";
-    
+    // Массив наших кнопок: [Иконка, Название, Действие]
+    const menuItems = [
+        { icon: '📔', text: 'Запись в дневник', action: () => openDiary() },
+        { icon: '📋', text: 'Новая задача', action: () => showStub('📋 Новая задача', 'add') },
+        { icon: '💸', text: 'Расход денег', action: () => showStub('💸 Расход денег', 'add') },
+        { icon: '💰', text: 'Поступление денег', action: () => showStub('💰 Поступление денег', 'add') },
+        { icon: '📄', text: 'Документ', action: () => showStub('📄 Документ', 'add') },
+        { icon: '🏠', text: 'Новый объект', action: () => openAddObject() },
+        { icon: '🛠', text: 'Инструмент', action: () => showStub('🛠 Инструмент', 'add') }
+    ];
+
     let html = `
         <div class="header" style="margin-bottom: 20px;">
             <h2 style="margin: 0; font-size: 22px;">Добавить</h2>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <button onclick="openDiary()" style="${btnStyle}">
-                <span style="font-size: 24px;">📔</span> Запись в дневник
-            </button>
-            <button onclick="showStub('📋 Новая задача', 'add')" style="${btnStyle}">
-                <span style="font-size: 24px;">📋</span> Новая задача
-            </button>
-            <button onclick="showStub('💸 Расход денег', 'add')" style="${btnStyle}">
-                <span style="font-size: 24px;">💸</span> Расход денег
-            </button>
-            <button onclick="showStub('💰 Поступление денег', 'add')" style="${btnStyle}">
-                <span style="font-size: 24px;">💰</span> Поступление денег
-            </button>
-            <button onclick="showStub('📄 Документ', 'add')" style="${btnStyle}">
-                <span style="font-size: 24px;">📄</span> Документ
-            </button>
-            <button onclick="openAddObject()" style="${btnStyle}">
-                <span style="font-size: 24px;">🏠</span> Новый объект
-            </button>
-            <button onclick="showStub('🛠 Инструмент', 'add')" style="${btnStyle}">
-                <span style="font-size: 24px;">🛠</span> Инструмент
-            </button>
-        </div>
-        <button onclick="closeAddMenu()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 16px; cursor: pointer; margin-top: 20px;">Отмена</button>
+        <div id="add-menu-container" style="display: flex; flex-direction: column; gap: 10px;">
     `;
+    
+    // Генерируем HTML без onclick
+    menuItems.forEach((item, index) => {
+        html += `
+            <div class="add-menu-item" data-index="${index}" style="width: 100%; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: var(--fg); font-size: 16px; font-weight: bold; user-select: none;">
+                <span style="font-size: 24px; pointer-events: none;">${item.icon}</span> 
+                <span style="pointer-events: none;">${item.text}</span>
+            </div>
+        `;
+    });
+
+    html += `
+        </div>
+        <div id="add-menu-cancel" style="width: 100%; padding: 15px; text-align: center; color: var(--fg-dim); font-size: 16px; cursor: pointer; margin-top: 20px; user-select: none;">Отмена</div>
+    `;
+    
     document.getElementById('app-content').innerHTML = html;
+
+    // Привязываем обработчики через addEventListener
+    document.querySelectorAll('.add-menu-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+            const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+            menuItems[idx].action();
+        });
+    });
+
+    document.getElementById('add-menu-cancel').addEventListener('click', closeAddMenu);
 }
+
+function closeAddMenu() {
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'flex';
+    renderMainMenu();
+}
+
 
 function closeAddMenu() {
     // Возвращаем кнопку "+" на место
