@@ -105,7 +105,7 @@ function saveObject() {
     openObjects();
 }
 
-function showStub(title) {
+function showStub(title, tabId) {
     let html = `
         <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
             <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
@@ -114,6 +114,7 @@ function showStub(title) {
         </div>
     `;
     document.getElementById('app-content').innerHTML = html;
+    if (tabId) setNavActive(tabId);
 }
 
 function openSettings() {
