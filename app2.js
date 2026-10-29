@@ -136,21 +136,18 @@ function openAddMenu() {
     document.getElementById('add-menu-cancel').addEventListener('click', closeAddMenu);
 }
 
+
+
+
+
+
+
+
 function closeAddMenu() {
     const addBtn = document.getElementById('add-btn-floating');
     if (addBtn) addBtn.style.display = 'flex';
     renderMainMenu();
 }
-
-
-function closeAddMenu() {
-    // Возвращаем кнопку "+" на место
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
-    renderMainMenu();
-}
-
-
 
 function openAddObject() {
     let html = `
