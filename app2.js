@@ -26,14 +26,7 @@ function renderMainMenu() {
     let html = `
         
         </div>
-        <div class="menu-grid">
-            
-            
-            <div class="menu-item" onclick="showStub('📊 Сметы')">📊 Сметы</div>
-            <div class="menu-item" onclick="showStub('📈 Отчёты')">📈 Отчёты</div>
-            <div class="menu-item" onclick="showStub('📊 KPI')">📊 KPI</div>
-            <div class="menu-item" onclick="showStub('👥 CRM')">👥 CRM</div>
-        </div>
+        
     `;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('main');
@@ -69,12 +62,7 @@ function openObject(obj) {
             <div>Статус: <span style="color: ${obj.status === 'active' ? 'var(--accent)' : '#fff'}">${obj.status === 'active' ? 'В работе' : 'Завершен'}</span></div>
             <div>Баланс: ${obj.balance} ₽</div>
         </div>
-        <div class="menu-grid">
-            <div class="menu-item" onclick="showStub('🏠 Комнаты: ${obj.name}')">🏠 Комнаты</div>
-            <div class="menu-item" onclick="showStub('⚡ Электрика')">⚡ Электрика</div>
-            <div class="menu-item" onclick="showStub('📋 Задачи объекта')">📋 Задачи</div>
-            <div class="menu-item" onclick="showStub('💰 Финансы объекта')">💰 Финансы</div>
-        </div>
+        
     `;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('objects');
