@@ -105,6 +105,85 @@ function saveObject() {
     openObjects();
 }
 
+
+function openDiary() {
+    let records = JSON.parse(localStorage.getItem('bo_diary') || '[]');
+    let html = `
+        <div class="header" style="justify-content: space-between; margin-bottom: 20px; display: flex; align-items: center;">
+            <h2 style="margin: 0; font-size: 22px;">📔 Дневник работ</h2>
+            <button onclick="openAddDiaryRecord()" style="background: var(--accent); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">+ Запись</button>
+        </div>
+        <div class="object-list">
+    `;
+    if (records.length === 0) {
+        html += `<div style="text-align:center; color:var(--fg-dim); margin-top:50px;">Записей пока нет.</div>`;
+    } else {
+        records.forEach(r => {
+            html += `
+                <div class="object-card" style="cursor: default;">
+                    <div class="obj-title" style="font-size: 16px; margin-bottom: 5px;">${escapeHtml(r.note)}</div>
+                    <div class="obj-details" style="font-size: 12px;">
+                        <span class="badge" style="background: var(--bg3); color: var(--fg);">${r.date}</span>
+                        <span class="budget">⏱ ${r.hours} ч.</span>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    html += `</div>`;
+    document.getElementById('app-content').innerHTML = html;
+    setNavActive('diary');
+}
+
+function openAddDiaryRecord() {
+    let html = `
+        <div style="background: var(--bg2); padding: 20px; border-radius: 12px;">
+            <h3 style="margin-top:0;">Новая запись</h3>
+            <label style="display:block; margin-bottom: 5px; color: var(--fg-dim);">Что сделано?</label>
+            <textarea id="diary-note" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 15px; height: 80px; resize: none;" placeholder="Например: Покрасил стены в зале..."></textarea>
+            <label style="display:block; margin-bottom: 5px; color: var(--fg-dim);">Часы (например: 2.5)</label>
+            <input type="number" id="diary-hours" step="0.5" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="0">
+            <button onclick="saveDiaryRecord()" style="width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">Сохранить</button>
+            <button onclick="openDiary()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 14px; cursor: pointer; margin-top: 10px;">Отмена</button>
+        </div>
+    `;
+    document.getElementById('app-content').innerHTML = html;
+}
+
+function saveDiaryRecord() {
+    let note = document.getElementById('diary-note').value;
+    let hours = document.getElementById('diary-hours').value;
+    if (!note) { alert('Напишите, что было сделано!'); return; }
+    let records = JSON.parse(localStorage.getItem('bo_diary') || '[]');
+    let d = new Date();
+    let dateStr = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
+    records.unshift({ id: Date.now(), date: dateStr, note: note, hours: hours || 0 });
+    localStorage.setItem('bo_diary', JSON.stringify(records));
+    openDiary();
+}
+
+function openFinance() {
+    let html = `
+        <div class="header" style="margin-bottom: 20px;">
+            <h2 style="margin: 0; font-size: 22px;">💰 Финансы</h2>
+        </div>
+        <div class="object-list">
+            <div class="object-card" onclick="showStub('📊 Сметы', 'estimates')" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div class="obj-title">📊 Сметы</div>
+                    <div style="font-size: 12px; color: var(--fg-dim); margin-top: 5px;">Управление сметами и расценками</div>
+                </div>
+                <div style="color: var(--fg-dim);">➔</div>
+            </div>
+            <div class="object-card" style="opacity: 0.5; cursor: default;">
+                <div class="obj-title">📈 Доходы и расходы</div>
+                <div style="font-size: 12px; color: var(--fg-dim); margin-top: 5px;">Раздел в разработке</div>
+            </div>
+        </div>
+    `;
+    document.getElementById('app-content').innerHTML = html;
+    setNavActive('finance');
+}
 function showStub(title, tabId) {
     let html = `
         <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
