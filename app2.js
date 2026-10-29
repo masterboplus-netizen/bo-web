@@ -23,7 +23,7 @@ function getHeader() {
 
 function renderMainMenu() {
     CURRENT_OBJECT = null;
-    let html = getHeader() + `
+    let html = `
         <div style="margin-bottom: 20px;">
             <div class="menu-item" onclick="openObjects()" style="background: var(--accent); color: white; border: none; padding: 25px 20px; font-size: 18px; font-weight: bold;">
                 🏗 Объекты
@@ -48,7 +48,7 @@ function renderMainMenu() {
 function openObjects() {
     let saved = localStorage.getItem('bo_objects');
     let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
-    let html = getHeader() + `<div class="object-list">`;
+    let html = `<div class="object-list">`;
     objects.forEach(obj => {
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
@@ -69,7 +69,7 @@ function openObjects() {
 
 function openObject(obj) {
     CURRENT_OBJECT = obj;
-    let html = getHeader() + `
+    let html = `
         <div style="margin-bottom: 20px; color: var(--fg-dim); background: var(--bg2); padding: 15px; border-radius: 12px;">
             <div style="font-size: 20px; font-weight: bold; color: var(--fg); margin-bottom: 10px;">${obj.name}</div>
             <div>Статус: <span style="color: ${obj.status === 'active' ? 'var(--accent)' : '#fff'}">${obj.status === 'active' ? 'В работе' : 'Завершен'}</span></div>
@@ -87,7 +87,7 @@ function openObject(obj) {
 }
 
 function openAddObject() {
-    let html = getHeader() + `
+    let html = `
         <div style="background: var(--bg2); padding: 20px; border-radius: 12px;">
             <label style="display:block; margin-bottom: 10px;">Название объекта</label>
             <input type="text" id="new-obj-name" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="Например: Квартира на Ленина">
@@ -112,7 +112,7 @@ function saveObject() {
 }
 
 function showStub(title) {
-    let html = getHeader() + `
+    let html = `
         <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
             <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
             <h3>${title}</h3>
@@ -123,7 +123,7 @@ function showStub(title) {
 }
 
 function openSettings() {
-    let html = getHeader() + `
+    let html = `
         <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
                 <span>Темная тема</span>
