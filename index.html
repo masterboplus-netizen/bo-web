@@ -110,6 +110,65 @@
         .nav-add-btn svg { width: 32px; height: 32px; }
         
         body { padding-bottom: 90px; }
+
+        #bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--bg2); border-top: 1px solid var(--bg3);
+            display: flex; flex-direction: column;
+            transform: translateY(0);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 130px; /* Высота для двух рядов + ручка */
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* Скрытое состояние (сдвинуто вниз) */
+        #bottom-nav.collapsed {
+            transform: translateY(50px); /* Сдвигаем вниз, оставляя только верхний ряд и ручку */
+        }
+
+        /* Ручка для свайпа */
+        .nav-handle {
+            height: 30px; width: 100%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; background: var(--bg2);
+        }
+        .nav-handle::before {
+            content: ''; width: 40px; height: 4px; background: var(--bg3); border-radius: 2px;
+        }
+
+        .nav-items-container {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            width: 100%; padding-bottom: 10px;
+        }
+        
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--fg-dim); font-size: 10px; cursor: pointer;
+            text-decoration: none; gap: 4px;
+            height: 50px;
+        }
+        .nav-item .nav-icon { width: 24px; height: 24px; margin-bottom: 2px; }
+        .nav-item.active { color: var(--accent); font-weight: bold; }
+        
+        /* Кнопка добавить */
+        .nav-add-btn {
+            position: fixed; bottom: 45px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: white;
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.4);
+            z-index: 102; cursor: pointer;
+            transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Кнопка Добавить поднимается вместе с меню */
+        #bottom-nav:not(.collapsed) ~ .nav-add-btn {
+            bottom: 95px; 
+        }
+        
+        .nav-add-btn svg { width: 32px; height: 32px; }
+        
+        body { padding-bottom: 140px; }
 </style>
 </head>
 <body>
@@ -134,8 +193,9 @@
     <div id="app-content">Загрузка...</div>
 
     
-    <nav id="bottom-nav">
-        <div class="nav-handle" onclick="document.getElementById('bottom-nav').classList.toggle('expanded')"></div>
+    
+    <nav id="bottom-nav" class="collapsed">
+        <div class="nav-handle" id="nav-handle"></div>
         
         <div class="nav-items-container">
             <div class="nav-item" onclick="renderMainMenu()" id="nav-main"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Главная</span></div>
@@ -155,13 +215,36 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </div>
 
+
     
 
-    <script src="app2.js?v=305"></script>
+    <script src="app2.js?v=306"></script>
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js?v=99", { updateViaCache: "none" }).catch(function(){});
 }
 </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const nav = document.getElementById('bottom-nav');
+            const handle = document.getElementById('nav-handle');
+            
+            let touchStartY = 0;
+
+            // Тап по ручке
+            handle.addEventListener('click', () => {
+                nav.classList.toggle('collapsed');
+            });
+
+            // Свайп
+            nav.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; });
+            nav.addEventListener('touchend', e => {
+                let touchEndY = e.changedTouches[0].clientY;
+                if (touchStartY - touchEndY > 30) { nav.classList.remove('collapsed'); } // Свайп вверх
+                else if (touchEndY - touchStartY > 30) { nav.classList.add('collapsed'); } // Свайп вниз
+            });
+        });
+    </script>
 </body>
 </html>
