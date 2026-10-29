@@ -169,6 +169,60 @@
         .nav-add-btn svg { width: 32px; height: 32px; }
         
         body { padding-bottom: 140px; }
+
+        #bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--bg2); border-top: 1px solid var(--bg3);
+            display: flex; flex-direction: column;
+            height: 70px; /* Высота одного ряда + ручка */
+            transition: height 0.3s ease;
+            z-index: 100;
+            overflow: hidden;
+        }
+        
+        #bottom-nav.expanded { height: 140px; } /* Высота двух рядов */
+
+        /* Ручка */
+        .nav-handle {
+            height: 20px; width: 100%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; background: var(--bg2); flex-shrink: 0;
+        }
+        .nav-handle::before {
+            content: ''; width: 40px; height: 4px; background: var(--bg3); border-radius: 2px;
+        }
+
+        .nav-items-container {
+            display: flex; flex-wrap: wrap; width: 100%;
+        }
+        
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--fg-dim); font-size: 10px; cursor: pointer;
+            text-decoration: none; gap: 4px;
+            width: 20%; height: 50px;
+        }
+        .nav-item .nav-icon { width: 24px; height: 24px; margin-bottom: 2px; }
+        .nav-item.active { color: var(--accent); font-weight: bold; }
+        
+        /* Кнопка добавить */
+        .nav-add-btn {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: white;
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.4);
+            z-index: 101; cursor: pointer;
+            transition: bottom 0.3s ease;
+        }
+        
+        /* Поднимаем кнопку Добавить при раскрытии */
+        #bottom-nav.expanded ~ .nav-add-btn {
+            bottom: 110px;
+        }
+        
+        .nav-add-btn svg { width: 32px; height: 32px; }
+        
+        body { padding-bottom: 100px; }
 </style>
 </head>
 <body>
@@ -218,33 +272,13 @@
 
     
 
-    <script src="app2.js?v=306"></script>
+    <script src="app2.js?v=307"></script>
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js?v=99", { updateViaCache: "none" }).catch(function(){});
 }
 </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const nav = document.getElementById('bottom-nav');
-            const handle = document.getElementById('nav-handle');
-            
-            let touchStartY = 0;
-
-            // Тап по ручке
-            handle.addEventListener('click', () => {
-                nav.classList.toggle('collapsed');
-            });
-
-            // Свайп
-            nav.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; });
-            nav.addEventListener('touchend', e => {
-                let touchEndY = e.changedTouches[0].clientY;
-                if (touchStartY - touchEndY > 30) { nav.classList.remove('collapsed'); } // Свайп вверх
-                else if (touchEndY - touchStartY > 30) { nav.classList.add('collapsed'); } // Свайп вниз
-            });
-        });
-    </script>
+    
 </body>
 </html>
