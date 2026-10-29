@@ -81,46 +81,42 @@ function openObject(obj) {
 }
 
 
+
 function openAddMenu() {
+    let btnStyle = "width: 100%; text-align: left; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: var(--fg); font-size: 16px; font-weight: bold;";
+    
     let html = `
         <div class="header" style="margin-bottom: 20px;">
             <h2 style="margin: 0; font-size: 22px;">Добавить</h2>
         </div>
-        <div class="object-list">
-            <div class="object-card" onclick="openDiary()" style="display: flex; align-items: center; gap: 15px; padding: 12px;">
-                <div style="font-size: 24px;">📔</div>
-                <div class="obj-title" style="margin: 0;">Запись в дневник</div>
-            </div>
-            <div class="object-card" onclick="showStub('📋 Новая задача')" style="display: flex; align-items: center; gap: 15px; padding: 12px;">
-                <div style="font-size: 24px;">📋</div>
-                <div class="obj-title" style="margin: 0;">Новая задача</div>
-            </div>
-            <div class="object-card" onclick="showStub('💸 Расход денег')" style="display: flex; align-items: center; gap: 15px; padding: 12px;">
-                <div style="font-size: 24px;">💸</div>
-                <div class="obj-title" style="margin: 0;">Расход денег</div>
-            </div>
-            <div class="object-card" onclick="showStub('💰 Поступление денег')" style="display: flex; align-items: center; gap: 15px; padding: 12px;">
-                <div style="font-size: 24px;">💰</div>
-                <div class="obj-title" style="margin: 0;">Поступление денег</div>
-            </div>
-            <div class="object-card" onclick="showStub('📄 Документ')" style="display: flex; align-items: center; gap: 15px; padding: 12px;">
-                <div style="font-size: 24px;">📄</div>
-                <div class="obj-title" style="margin: 0;">Документ</div>
-            </div>
-            <div class="object-card" onclick="openAddObject()" style="display: flex; align-items: center; gap: 15px; padding: 12px;">
-                <div style="font-size: 24px;">🏠</div>
-                <div class="obj-title" style="margin: 0;">Новый объект</div>
-            </div>
-            <div class="object-card" onclick="showStub('🛠 Инструмент')" style="display: flex; align-items: center; gap: 15px; padding: 12px;">
-                <div style="font-size: 24px;">🛠</div>
-                <div class="obj-title" style="margin: 0;">Инструмент</div>
-            </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button onclick="openDiary()" style="${btnStyle}">
+                <span style="font-size: 24px;">📔</span> Запись в дневник
+            </button>
+            <button onclick="showStub('📋 Новая задача', 'add')" style="${btnStyle}">
+                <span style="font-size: 24px;">📋</span> Новая задача
+            </button>
+            <button onclick="showStub('💸 Расход денег', 'add')" style="${btnStyle}">
+                <span style="font-size: 24px;">💸</span> Расход денег
+            </button>
+            <button onclick="showStub('💰 Поступление денег', 'add')" style="${btnStyle}">
+                <span style="font-size: 24px;">💰</span> Поступление денег
+            </button>
+            <button onclick="showStub('📄 Документ', 'add')" style="${btnStyle}">
+                <span style="font-size: 24px;">📄</span> Документ
+            </button>
+            <button onclick="openAddObject()" style="${btnStyle}">
+                <span style="font-size: 24px;">🏠</span> Новый объект
+            </button>
+            <button onclick="showStub('🛠 Инструмент', 'add')" style="${btnStyle}">
+                <span style="font-size: 24px;">🛠</span> Инструмент
+            </button>
         </div>
         <button onclick="renderMainMenu()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 16px; cursor: pointer; margin-top: 20px;">Отмена</button>
     `;
     document.getElementById('app-content').innerHTML = html;
-    // setNavActive не вызываем, так как это модальное действие
 }
+
 
 function openAddObject() {
     let html = `
