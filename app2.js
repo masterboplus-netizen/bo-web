@@ -24,15 +24,11 @@ function getHeader() {
 function renderMainMenu() {
     CURRENT_OBJECT = null;
     let html = `
-        <div style="margin-bottom: 20px;">
-            <div class="menu-item" onclick="openObjects()" style="background: var(--accent); color: white; border: none; padding: 25px 20px; font-size: 18px; font-weight: bold;">
-                🏗 Объекты
-                <div style="font-size: 12px; font-weight: normal; opacity: 0.8; margin-top: 5px;">Список всех ваших проектов</div>
-            </div>
+        
         </div>
         <div class="menu-grid">
-            <div class="menu-item" onclick="showStub('📋 Задачи')">📋 Задачи</div>
-            <div class="menu-item" onclick="showStub('💰 Финансы')">💰 Финансы</div>
+            
+            
             <div class="menu-item" onclick="showStub('📊 Сметы')">📊 Сметы</div>
             <div class="menu-item" onclick="showStub('📈 Отчёты')">📈 Отчёты</div>
             <div class="menu-item" onclick="showStub('📊 KPI')">📊 KPI</div>
