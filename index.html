@@ -49,16 +49,7 @@
         
         .nav-add-btn svg { width: 32px; height: 32px; }
     
-        .edit-mode .nav-item {
-            animation: shake 0.5s infinite;
-            cursor: grab;
-            position: relative;
-        }
-        .edit-mode .nav-item::after {
-            content: '↕️'; position: absolute; top: 2px; right: 2px; font-size: 12px;
-        }
-        @keyframes shake {
-            0% { transform: rotate(0deg); }
+        
             25% { transform: rotate(2deg); }
             75% { transform: rotate(-2deg); }
             100% { transform: rotate(0deg); }
@@ -69,16 +60,7 @@
         .nav-item .nav-icon { width: 24px; height: 24px; }
         body { padding-bottom: 25px; /* Отступ, чтобы контент не прятался */ }
     
-        .edit-mode .nav-item {
-            animation: shake 0.5s infinite;
-            cursor: grab;
-            position: relative;
-        }
-        .edit-mode .nav-item::after {
-            content: '↕️'; position: absolute; top: 2px; right: 2px; font-size: 12px;
-        }
-        @keyframes shake {
-            0% { transform: rotate(0deg); }
+        
             25% { transform: rotate(2deg); }
             75% { transform: rotate(-2deg); }
             100% { transform: rotate(0deg); }
@@ -110,7 +92,7 @@
 
     
 
-    <script src="app2.js?v=410"></script>
+    <script src="app2.js?v=411"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=99").catch(function(){});
@@ -248,7 +230,7 @@
         });
     </script>
 
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
 
     <div id="edit-done-btn" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #30d158; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" onclick="exitEditMode()">Готово</div>
     </body>
