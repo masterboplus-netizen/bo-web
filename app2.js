@@ -39,8 +39,8 @@ function openObjects() {
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
         html += `
-            <div class="object-card" onclick='openObject(${JSON.stringify(obj)})'>
-                <div class="obj-title">${obj.name}</div>
+            <div class="object-card" onclick="openObjectById(${obj.id})">
+                <div class="obj-title">${escapeHtml(obj.name)}</div>
                 <div class="obj-details">
                     <span class="badge" style="background: ${statusColor}">${statusText}</span>
                     <span class="budget">${obj.balance} ₽</span>
@@ -51,6 +51,19 @@ function openObjects() {
     html += `</div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('objects');
+}
+
+function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+}
+
+function openObjectById(id) {
+    let saved = localStorage.getItem('bo_objects');
+    let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
+    let obj = objects.find(o => o.id == id);
+    if (obj) openObject(obj);
 }
 
 function openObject(obj) {
@@ -115,7 +128,7 @@ function openSettings() {
                 <span style="color: var(--fg-dim);">7.1</span>
             </div>
         </div>
-        <button class="menu-item" onclick="localStorage.clear(); alert('Данные очищены'); renderMainMenu();" style="width: 100%; border: none; background: #ff3b30; color: white; padding: 15px; border-radius: 8px; font-weight: bold;">
+        <button class="menu-item" onclick="localStorage.removeItem('bo_objects'); alert('Данные очищены'); renderMainMenu();" style="width: 100%; border: none; background: #ff3b30; color: white; padding: 15px; border-radius: 8px; font-weight: bold;">
             Очистить данные
         </button>
     `;

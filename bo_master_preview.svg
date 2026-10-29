@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Фон: Глубокий графит -->
+  <rect width="512" height="512" rx="100" fill="#1A1C20" />
+  
+  <!-- Металлическая рамка (жесткая, индустриальная) -->
+  <rect x="30" y="30" width="452" height="452" rx="80" fill="none" stroke="#3D424D" stroke-width="12" />
+  
+  <!-- Внутренняя тонкая рамка -->
+  <rect x="50" y="50" width="412" height="412" rx="60" fill="none" stroke="#2A2E36" stroke-width="4" />
+
+  <!-- Надпись "БО" (Массивная, техническая) -->
+  <text x="256" y="305" font-family="'Arial Black', Impact, sans-serif" font-size="220" font-weight="900" fill="#FFC107" text-anchor="middle" letter-spacing="-5">БО</text>
+
+  <!-- Элемент каркаса (желтые линии, как связи жесткости) -->
+  <g stroke="#FFC107" stroke-width="8" stroke-linecap="square">
+    <!-- Левая диагональ -->
+    <line x1="100" y1="380" x2="170" y2="340" />
+    <!-- Правая диагональ -->
+    <line x1="412" y1="380" x2="342" y2="340" />
+    <!-- Горизонтальная основа -->
+    <line x1="120" y1="400" x2="392" y2="400" />
+  </g>
+  
+  <!-- Маленькие заклепки (детализация жетона) -->
+  <circle cx="80" cy="80" r="6" fill="#5A616E" />
+  <circle cx="432" cy="80" r="6" fill="#5A616E" />
+  <circle cx="80" cy="432" r="6" fill="#5A616E" />
+  <circle cx="432" cy="432" r="6" fill="#5A616E" />
+</svg>

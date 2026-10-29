@@ -92,7 +92,7 @@
 
         <div class="nav-row">
             <div class="nav-item" onclick="showStub('💸 Личные')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg><span>Личные</span></div>
-            <div class="nav-item" onclick="openObjects()"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V7l8-4 8 4v14"></path><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path></svg><span>Объекты</span></div>
+            <div class="nav-item" id="nav-objects" onclick="openObjects()"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V7l8-4 8 4v14"></path><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path></svg><span>Объекты</span></div>
             <div style="flex: 1;"></div>
             <div class="nav-item" onclick="showStub('💰 Финансы')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg><span>Финансы</span></div>
             <div class="nav-item" onclick="showStub('📋 Задачи')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg><span>Задачи</span></div>
@@ -117,33 +117,36 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const nav = document.getElementById('bottom-nav');
-        let startY = 0;
+        let touchStartY = 0;
+        let touchStartX = 0;
+        let isSwiping = false;
 
-        // passive: false ОБЯЗАТЕЛЕН, чтобы можно было отменить скролл страницы
-        nav.addEventListener('touchstart', (e) => {
-            startY = e.touches[0].clientY;
-        }, { passive: false });
-
-        nav.addEventListener('touchmove', (e) => {
-            // Если палец движется вертикально — блокируем прокрутку страницы
-            if (Math.abs(startY - e.touches[0].clientY) > 5) {
-                e.preventDefault(); 
+        document.addEventListener('touchstart', (e) => {
+            const y = e.touches[0].clientY;
+            const inNavZone = y > window.innerHeight - 180;
+            if (inNavZone || nav.classList.contains('expanded')) {
+                touchStartY = y;
+                touchStartX = e.touches[0].clientX;
+                isSwiping = true;
+            } else {
+                isSwiping = false;
             }
-        }, { passive: false });
+        }, { passive: true });
 
-        nav.addEventListener('touchend', (e) => {
-            const endY = e.changedTouches[0].clientY;
-            const diff = startY - endY; // >0 это свайп ВВЕРХ, <0 это свайп ВНИЗ
-
-            // Свайп вверх (открыть) — если меню закрыто
-            if (diff > 30 && !nav.classList.contains('expanded')) {
+        document.addEventListener('touchend', (e) => {
+            if (!isSwiping) return;
+            isSwiping = false;
+            const touchEndY = e.changedTouches[0].clientY;
+            const touchEndX = e.changedTouches[0].clientX;
+            const dy = touchStartY - touchEndY;
+            const dx = Math.abs(touchStartX - touchEndX);
+            if (dx > Math.abs(dy)) return;
+            if (dy > 25 && !nav.classList.contains('expanded')) {
                 nav.classList.add('expanded');
-            }
-            // Свайп вниз (закрыть) — если меню открыто
-            else if (diff < -30 && nav.classList.contains('expanded')) {
+            } else if (dy < -25 && nav.classList.contains('expanded')) {
                 nav.classList.remove('expanded');
             }
-        }, { passive: true }); // на touchend пассивность не важна
+        }, { passive: true });
     });
 </script>
 
