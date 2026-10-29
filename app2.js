@@ -24,6 +24,8 @@ function getHeader() {
 function renderMainMenu() {
     const addBtn = document.getElementById('add-btn-floating');
     if (addBtn) addBtn.style.display = 'flex';
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'flex';
     CURRENT_OBJECT = null;
     let html = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
         <h3 style="color: var(--fg);">Добро пожаловать в Master Bo 7.1!</h3>
@@ -86,12 +88,11 @@ function openObject(obj) {
 
 
 
-function openAddMenu() {
-    console.log("openAddMenu вызвана!");
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'none';
 
-    // Массив наших кнопок: [Иконка, Название, Действие]
+function openAddMenu() {
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'none'; // Прячем кнопку "+"
+
     const menuItems = [
         { icon: '📔', text: 'Запись в дневник', action: () => openDiary() },
         { icon: '📋', text: 'Новая задача', action: () => showStub('📋 Новая задача', 'add') },
@@ -106,13 +107,12 @@ function openAddMenu() {
         <div class="header" style="margin-bottom: 20px;">
             <h2 style="margin: 0; font-size: 22px;">Добавить</h2>
         </div>
-        <div id="add-menu-container" style="display: flex; flex-direction: column; gap: 10px;">
+        <div id="add-menu-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 100px;">
     `;
-    
-    // Генерируем HTML без onclick
+
     menuItems.forEach((item, index) => {
         html += `
-            <div class="add-menu-item" data-index="${index}" style="width: 100%; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: var(--fg); font-size: 16px; font-weight: bold; user-select: none;">
+            <div class="add-menu-item" data-index="${index}" style="width: 100%; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: var(--fg); font-size: 16px; font-weight: bold;">
                 <span style="font-size: 24px; pointer-events: none;">${item.icon}</span> 
                 <span style="pointer-events: none;">${item.text}</span>
             </div>
@@ -121,20 +121,24 @@ function openAddMenu() {
 
     html += `
         </div>
-        <div id="add-menu-cancel" style="width: 100%; padding: 15px; text-align: center; color: var(--fg-dim); font-size: 16px; cursor: pointer; margin-top: 20px; user-select: none;">Отмена</div>
+        <div id="add-menu-cancel" style="width: 100%; padding: 15px; text-align: center; color: var(--fg-dim); font-size: 16px; cursor: pointer; margin-top: 10px; margin-bottom: 80px;">Отмена</div>
     `;
-    
+
     document.getElementById('app-content').innerHTML = html;
 
-    // Привязываем обработчики через addEventListener
+    // Обработчики для кнопок
     document.querySelectorAll('.add-menu-item').forEach(el => {
         el.addEventListener('click', (e) => {
+            e.stopPropagation();
             const idx = parseInt(e.currentTarget.getAttribute('data-index'));
             menuItems[idx].action();
         });
     });
 
-    document.getElementById('add-menu-cancel').addEventListener('click', closeAddMenu);
+    document.getElementById('add-menu-cancel').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAddMenu();
+    });
 }
 
 
@@ -144,11 +148,10 @@ function openAddMenu() {
 
 
 
-function closeAddMenu() {
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
-    renderMainMenu();
-}
+
+
+
+
 
 function openAddObject() {
     let html = `
