@@ -111,32 +111,36 @@
     
 
     
+    
+
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const nav = document.getElementById('bottom-nav');
             let touchStartY = 0;
 
-            // Слушаем касания только на самом нижнем меню
+            // Слушаем касание строго на самом меню
             nav.addEventListener('touchstart', (e) => {
                 touchStartY = e.touches[0].clientY;
-            }, { passive: true });
+            }, { passive: false }); // passive: false позволяет отменять стандартный скролл, если нужно
 
             nav.addEventListener('touchend', (e) => {
                 let touchEndY = e.changedTouches[0].clientY;
                 const swipeDistance = touchStartY - touchEndY;
 
-                // Если свайп вверх (палец двигался вверх) и меню закрыто
+                // Если свайп вверх (расстояние больше 20 пикселей)
+                if (swipeDistance > 20) {
                     nav.classList.add('expanded');
                 } 
-                // Если свайп вниз (палец двигался вниз) и меню открыто
-                else if (swipeDistance < -30 && nav.classList.contains('expanded')) {
+                // Если свайп вниз
+                else if (swipeDistance < -20) {
                     nav.classList.remove('expanded');
                 }
             }, { passive: true });
         });
     </script>
 
-    <script src="app2.js?v=425"></script>
+    <script src="app2.js?v=426"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
