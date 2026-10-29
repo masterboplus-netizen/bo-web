@@ -100,7 +100,7 @@
         
         /* Кнопка добавить */
         .nav-add-btn {
-            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+            position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
             background: var(--accent); color: white;
             width: 56px; height: 56px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -222,19 +222,19 @@
         
         .nav-add-btn svg { width: 32px; height: 32px; }
         
-        body { padding-bottom: 100px; }
+        body { padding-bottom: 130px; }
 
         #bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--bg2); border-top: 1px solid var(--bg3);
             display: flex; flex-direction: column;
-            height: 80px; /* Высота одного ряда + ручка */
+            height: 105px; /* Высота одного ряда + стрелка */
             transition: height 0.3s ease;
             z-index: 100;
             /* Убираем overflow: hidden, чтобы ничего не обрезалось */
         }
         
-        #bottom-nav.expanded { height: 150px; } /* Высота двух рядов */
+        #bottom-nav.expanded { height: 170px; } /* Высота двух рядов */
 
         /* Ручка с кнопкой */
         .nav-toggle-btn {
@@ -258,7 +258,7 @@
         
         /* Кнопка добавить */
         .nav-add-btn {
-            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+            position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
             background: var(--accent); color: white;
             width: 56px; height: 56px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -268,12 +268,12 @@
         }
         
         #bottom-nav.expanded ~ .nav-add-btn {
-            bottom: 120px;
+            bottom: 140px;
         }
         
         .nav-add-btn svg { width: 32px; height: 32px; }
         
-        body { padding-bottom: 100px; }
+        body { padding-bottom: 130px; }
 </style>
 </head>
 <body>
@@ -323,7 +323,7 @@
 
     
 
-    <script src="app2.js?v=310"></script>
+    <script src="app2.js?v=311"></script>
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js?v=99", { updateViaCache: "none" }).catch(function(){});
