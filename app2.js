@@ -133,3 +133,20 @@ function showNav(visible) {
         else nav.classList.remove('visible');
     }
 }
+
+// 5. ЗАГЛУШКА ДЛЯ НЕГОТОВЫХ РАЗДЕЛОВ
+function showStub(title) {
+    let html = `
+        <div class="header">
+            <button class="back-btn" onclick="renderMainMenu()">← На главную</button>
+            <h2>${title}</h2>
+        </div>
+        <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
+            <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
+            <h3>Раздел в разработке</h3>
+            <p>Скоро здесь появится функционал.</p>
+        </div>
+    `;
+    document.getElementById('app-content').innerHTML = html;
+    if (typeof showNav === 'function') showNav(true);
+}
