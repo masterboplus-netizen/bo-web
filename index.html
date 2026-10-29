@@ -157,5 +157,23 @@
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
         }
     </script>
+
+    <script>
+        // Принудительно вешаем клик на кнопку "+", чтобы она точно работала
+        setTimeout(() => {
+            const btn = document.getElementById('add-btn-floating');
+            if (btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (typeof openAddMenu === 'function') {
+                        openAddMenu();
+                    } else {
+                        alert('Ошибка: функция openAddMenu не загружена!');
+                    }
+                });
+            }
+        }, 500);
+    </script>
 </body>
+
 </html>

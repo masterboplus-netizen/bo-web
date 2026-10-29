@@ -87,6 +87,7 @@ function openObject(obj) {
 
 
 function openAddMenu() {
+    console.log("openAddMenu вызвана!");
     const addBtn = document.getElementById('add-btn-floating');
     if (addBtn) addBtn.style.display = 'none';
 
