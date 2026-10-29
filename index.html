@@ -108,42 +108,35 @@
     </nav>
 
     
+    
+
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const nav = document.getElementById('bottom-nav');
             let touchStartY = 0;
 
-            // Слушаем касания на всем экране
-            document.addEventListener('touchstart', (e) => {
-                // Запоминаем точку касания только если палец в нижней части экрана (где меню)
-                // или если меню уже открыто
-                if (e.touches[0].clientY > window.innerHeight - 200 || nav.classList.contains('expanded')) {
-                    touchStartY = e.touches[0].clientY;
-                } else {
-                    touchStartY = 0;
-                }
+            // Слушаем касания только на самом нижнем меню
+            nav.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
             }, { passive: true });
 
-            document.addEventListener('touchend', (e) => {
-                if (touchStartY === 0) return; // Если касание было не в зоне меню - игнорируем
-
+            nav.addEventListener('touchend', (e) => {
                 let touchEndY = e.changedTouches[0].clientY;
                 const swipeDistance = touchStartY - touchEndY;
 
-                // Свайп вверх (открыть)
+                // Если свайп вверх (палец двигался вверх) и меню закрыто
                     nav.classList.add('expanded');
                 } 
-                // Свайп вниз (закрыть)
+                // Если свайп вниз (палец двигался вниз) и меню открыто
                 else if (swipeDistance < -30 && nav.classList.contains('expanded')) {
                     nav.classList.remove('expanded');
                 }
-                
-                touchStartY = 0; // Сбрасываем
             }, { passive: true });
         });
     </script>
 
-    <script src="app2.js?v=422"></script>
+    <script src="app2.js?v=425"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
