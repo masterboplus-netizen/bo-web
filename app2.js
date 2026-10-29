@@ -131,7 +131,7 @@ function setNavActive(tabId) {
 
 document.addEventListener('DOMContentLoaded', () => {
     renderMainMenu();
-    document.getElementById('nav-main')?.addEventListener('click', renderMainMenu);
+    
     document.getElementById('nav-objects')?.addEventListener('click', openObjects);
     document.getElementById('nav-tasks')?.addEventListener('click', () => showStub('📋 Задачи'));
     document.getElementById('nav-finance')?.addEventListener('click', () => showStub('💰 Финансы'));
