@@ -32,7 +32,6 @@ function renderMainMenu() {
             <div class="menu-item" onclick="showStub('📊 Сметы')">📊 Сметы</div>
             <div class="menu-item" onclick="showStub('📈 Отчёты')">📈 Отчёты</div>
             <div class="menu-item" onclick="showStub('📊 KPI')">📊 KPI</div>
-            <div class="menu-item" onclick="showStub('💸 Личные')">💸 Личные</div>
             <div class="menu-item" onclick="showStub('👥 CRM')">👥 CRM</div>
         </div>
     `;
