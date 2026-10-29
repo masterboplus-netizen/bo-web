@@ -1,5 +1,3 @@
-// Логика для Бо 8.1 Web App (Заглушка с данными из базы)
-
 const MOCK_OBJECTS = [
     { id: 27, name: "Рароа", status: "active", balance: 0 },
     { id: 26, name: "Арбат", status: "active", balance: 106618 },
@@ -8,25 +6,17 @@ const MOCK_OBJECTS = [
     { id: 23, name: "Объект на Ленина", status: "active", balance: 50000 }
 ];
 
+let CURRENT_OBJECT = null;
+
 function renderMainMenu() {
+    CURRENT_OBJECT = null;
     let html = `
-        <div class="header" style="justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="icon-192.png" style="width: 32px; height: 32px; border-radius: 8px;">
-            <h2 style="margin: 0;">Master Bo 7.1</h2>
-        </div>
-        <button class="back-btn" onclick="openSettings()" style="font-size: 20px; padding: 5px;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        </button>
-    </div>
-        
         <div style="margin-bottom: 20px;">
             <div class="menu-item" onclick="openObjects()" style="background: var(--accent); color: white; border: none; padding: 25px 20px; font-size: 18px; font-weight: bold;">
                 🏗 Объекты
                 <div style="font-size: 12px; font-weight: normal; opacity: 0.8; margin-top: 5px;">Список всех ваших проектов</div>
             </div>
         </div>
-
         <div class="menu-grid">
             <div class="menu-item" onclick="showStub('📋 Задачи')">📋 Задачи</div>
             <div class="menu-item" onclick="showStub('💰 Финансы')">💰 Финансы</div>
@@ -35,25 +25,18 @@ function renderMainMenu() {
             <div class="menu-item" onclick="showStub('📊 KPI')">📊 KPI</div>
             <div class="menu-item" onclick="showStub('💸 Личные')">💸 Личные</div>
             <div class="menu-item" onclick="showStub('👥 CRM')">👥 CRM</div>
-                        <div class="menu-item" onclick="showStub('➕ Добавить')">➕ Добавить</div>
-                    </div>
+            <div class="menu-item" onclick="openAddObject()">➕ Добавить</div>
+        </div>
     `;
     document.getElementById('app-content').innerHTML = html;
-    showNav(true);
+    setNavActive('main');
 }
 
 function openObjects() {
-    let html = `
-        <div class="header">
-            <button class="back-btn" onclick="renderMainMenu()">← Назад</button>
-            <h2>🏗 Объекты</h2>
-        </div>
-        <div class="menu-grid" style="margin-bottom: 20px;">
-            <div class="menu-item" onclick="showStub('📦 Архив объектов')">📦 Архив объектов</div>
-        </div>
-        <div class="object-list">
-    `;
-    MOCK_OBJECTS.forEach(obj => {
+    let saved = localStorage.getItem('bo_objects');
+    let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
+    let html = `<div class="object-list">`;
+    objects.forEach(obj => {
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
         html += `
@@ -68,100 +51,65 @@ function openObjects() {
     });
     html += `</div>`;
     document.getElementById('app-content').innerHTML = html;
-    showNav(true);
+    setNavActive('objects');
 }
 
 function openObject(obj) {
+    CURRENT_OBJECT = obj;
     let html = `
-        <div class="header">
-            <button class="back-btn" onclick="openObjects()">← Назад</button>
-            <h2>${obj.name}</h2>
-        </div>
-        <div style="margin-bottom: 20px; color: var(--fg-dim);">
-            <div>Статус: ${obj.status === 'active' ? 'В работе' : 'Завершен'}</div>
+        <div style="margin-bottom: 20px; color: var(--fg-dim); background: var(--bg2); padding: 15px; border-radius: 12px;">
+            <div>Статус: <span style="color: ${obj.status === 'active' ? 'var(--accent)' : '#fff'}">${obj.status === 'active' ? 'В работе' : 'Завершен'}</span></div>
             <div>Баланс: ${obj.balance} ₽</div>
         </div>
         <div class="menu-grid">
-            <div class="menu-item" onclick="openRooms(CURRENT_OBJECT.id)">🏠 Комнаты</div>
-            <div class="menu-item" onclick="alert('В разработке')">⚡ Электрика</div>
+            <div class="menu-item" onclick="showStub('🏠 Комнаты: ${obj.name}')">🏠 Комнаты</div>
+            <div class="menu-item" onclick="showStub('⚡ Электрика')">⚡ Электрика</div>
+            <div class="menu-item" onclick="showStub('📋 Задачи объекта')">📋 Задачи</div>
+            <div class="menu-item" onclick="showStub('💰 Финансы объекта')">💰 Финансы</div>
         </div>
     `;
     document.getElementById('app-content').innerHTML = html;
-    showNav(true);
+    setNavActive('objects');
 }
 
-document.addEventListener('DOMContentLoaded', () => { renderMainMenu(); });
-
-function openRooms(objectId) {
-    document.getElementById('app-content').innerHTML = `
-        <div class="header">
-            <button class="back-btn" onclick="openObject(CURRENT_OBJECT)">← Назад</button>
-            <h2>Комнаты</h2>
+function openAddObject() {
+    let html = `
+        <div style="background: var(--bg2); padding: 20px; border-radius: 12px;">
+            <label style="display:block; margin-bottom: 10px;">Название объекта</label>
+            <input type="text" id="new-obj-name" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="Например: Квартира на Ленина">
+            <label style="display:block; margin-bottom: 10px;">Бюджет (₽)</label>
+            <input type="number" id="new-obj-budget" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="0">
+            <button onclick="saveObject()" style="width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">Сохранить объект</button>
         </div>
-        <div id="rooms-list">Загрузка...</div>
     `;
-    fetch(`https://bo-api.onrender.com/api/objects/${objectId}/rooms`)
-        .then(r => r.json())
-        .then(data => {
-            const el = document.getElementById('rooms-list');
-            if (data.status === 'ok' && data.rooms.length > 0) {
-                el.innerHTML = data.rooms.map(r => `
-                    <div class="object-card" style="margin-bottom: 10px;">
-                        <div class="obj-title">${r.name}</div>
-                        <div class="obj-details">
-                            <span class="badge" style="background: var(--accent);">${r.room_type || 'Комната'}</span>
-                            <span class="budget">S: ${r.area_sqm || 0} м²</span>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                el.innerHTML = '<p style="color:var(--fg-dim);">Комнат пока нет или ошибка загрузки.</p>';
-            }
-        })
-        .catch(e => {
-            document.getElementById('rooms-list').innerHTML = `<p style="color:var(--red);">Ошибка API: ${e.message}</p>`;
-        });
+    document.getElementById('app-content').innerHTML = html;
 }
 
-function setNavActive(tabId) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    if (tabId) {
-        document.getElementById('nav-' + tabId)?.classList.add('active');
-    }
+function saveObject() {
+    let name = document.getElementById('new-obj-name').value;
+    let budget = document.getElementById('new-obj-budget').value;
+    if (!name) { alert('Введите название!'); return; }
+    let saved = localStorage.getItem('bo_objects');
+    let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
+    objects.unshift({ id: Date.now(), name: name, status: "active", balance: Number(budget) || 0 });
+    localStorage.setItem('bo_objects', JSON.stringify(objects));
+    alert('Объект создан!');
+    openObjects();
 }
 
-function showNav(visible) {
-    const nav = document.getElementById('bottom-nav');
-    if (nav) {
-        if (visible) nav.classList.add('visible');
-        else nav.classList.remove('visible');
-    }
-}
-
-// 5. ЗАГЛУШКА ДЛЯ НЕГОТОВЫХ РАЗДЕЛОВ
 function showStub(title) {
     let html = `
-        <div class="header">
-            <button class="back-btn" onclick="renderMainMenu()">← На главную</button>
-            <h2>${title}</h2>
-        </div>
         <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
             <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
-            <h3>Раздел в разработке</h3>
-            <p>Скоро здесь появится функционал.</p>
+            <h3>${title}</h3>
+            <p>Раздел в разработке.</p>
         </div>
     `;
     document.getElementById('app-content').innerHTML = html;
-    if (typeof showNav === 'function') showNav(true);
 }
 
-// --- НАСТРОЙКИ ---
 function openSettings() {
     document.getElementById('app-content').innerHTML = `
-        <div class="header">
-            <button class="back-btn" onclick="renderMainMenu()">← Назад</button>
-            <h2>Настройки</h2>
-        </div>
         <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
                 <span>Темная тема</span>
@@ -180,5 +128,20 @@ function openSettings() {
             Очистить данные
         </button>
     `;
-    document.getElementById('app-content').scrollIntoView();
+    setNavActive('main');
 }
+
+function setNavActive(tabId) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    const el = document.getElementById('nav-' + tabId);
+    if (el) el.classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderMainMenu();
+    document.getElementById('nav-main')?.addEventListener('click', renderMainMenu);
+    document.getElementById('nav-objects')?.addEventListener('click', openObjects);
+    document.getElementById('nav-tasks')?.addEventListener('click', () => showStub('📋 Задачи'));
+    document.getElementById('nav-finance')?.addEventListener('click', () => showStub('💰 Финансы'));
+    document.getElementById('nav-lk')?.addEventListener('click', () => showStub('👤 Личный кабинет'));
+});
