@@ -272,7 +272,7 @@
 
     
 
-    <script src="app2.js?v=307"></script>
+    <script src="app2.js?v=309"></script>
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js?v=99", { updateViaCache: "none" }).catch(function(){});
@@ -280,5 +280,41 @@ if ("serviceWorker" in navigator) {
 </script>
 
     
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Инициализируем SortableJS для контейнера с кнопками
+            const container = document.querySelector('.nav-items-container');
+            
+            // Восстанавливаем сохраненный порядок (если есть)
+            const savedOrder = localStorage.getItem('bo_nav_order');
+            if (savedOrder) {
+                const order = JSON.parse(savedOrder);
+                order.forEach(id => {
+                    const el = Array.from(container.children).find(i => i.getAttribute('data-id') === id || i.innerText.trim() === id);
+                    if (el) container.appendChild(el);
+                });
+            }
+
+            // Присваиваем data-id всем кнопкам
+            Array.from(container.children).forEach((item, index) => {
+                    item.setAttribute('data-id', item.innerText.trim() || 'btn_' + index);
+                }
+            });
+
+            // Настраиваем Sortable
+            new Sortable(container, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    // Сохраняем новый порядок
+                    const items = Array.from(container.children);
+                    const order = items.map(item => item.getAttribute('data-id'));
+                    localStorage.setItem('bo_nav_order', JSON.stringify(order));
+                }
+            });
+        });
+    </script>
 </body>
 </html>
