@@ -58,8 +58,8 @@
     
     <div id="app-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="icon-192.png" style="width: 36px; height: 36px; border-radius: 8px;">
-            <h2 style="margin: 0; font-size: 22px;">Master Bo 7.1</h2>
+            <img src="icon-192.png" onclick="renderMainMenu()" style="width: 36px; height: 36px; border-radius: 8px; cursor: pointer;">
+            <h2 style="margin: 0; font-size: 22px; cursor: pointer;" onclick="renderMainMenu()">Master Bo 7.1</h2>
         </div>
         <button class="back-btn" onclick="openSettings()" style="font-size: 24px; padding: 5px; color: var(--fg); cursor: pointer;">
             ⚙️
@@ -91,7 +91,7 @@
     </nav>
     
 
-    <script src="app2.js?v=203"></script>
+    <script src="app2.js?v=204"></script>
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js?v=99", { updateViaCache: "none" }).catch(function(){});
