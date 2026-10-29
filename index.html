@@ -29,6 +29,7 @@
             height: 70px; /* Высота одного ряда */
             transition: height 0.3s ease;
             overflow: hidden;
+            touch-action: none;
         }
         #bottom-nav.expanded { height: 140px; } /* Высота двух рядов */
 
@@ -116,43 +117,33 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const nav = document.getElementById('bottom-nav');
-        let touchStartY = 0;
-        let touchStartX = 0;
-        let isSwiping = false;
+        let startY = 0;
 
-        document.addEventListener('touchstart', (e) => {
-            const y = e.touches[0].clientY;
-            const inNavZone = y > window.innerHeight - 180; // захватываем зону чуть выше меню
-            if (inNavZone || nav.classList.contains('expanded')) {
-                touchStartY = y;
-                touchStartX = e.touches[0].clientX;
-                isSwiping = true;
-            } else {
-                isSwiping = false;
+        // passive: false ОБЯЗАТЕЛЕН, чтобы можно было отменить скролл страницы
+        nav.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        }, { passive: false });
+
+        nav.addEventListener('touchmove', (e) => {
+            // Если палец движется вертикально — блокируем прокрутку страницы
+            if (Math.abs(startY - e.touches[0].clientY) > 5) {
+                e.preventDefault(); 
             }
-        }, { passive: true });
+        }, { passive: false });
 
-        document.addEventListener('touchend', (e) => {
-            if (!isSwiping) return;
-            isSwiping = false;
+        nav.addEventListener('touchend', (e) => {
+            const endY = e.changedTouches[0].clientY;
+            const diff = startY - endY; // >0 это свайп ВВЕРХ, <0 это свайп ВНИЗ
 
-            const touchEndY = e.changedTouches[0].clientY;
-            const touchEndX = e.changedTouches[0].clientX;
-            const dy = touchStartY - touchEndY;
-            const dx = Math.abs(touchStartX - touchEndX);
-
-            // Если свайп был больше вбок, чем вниз/вверх — игнорируем
-            if (dx > Math.abs(dy)) return;
-
-            // Свайп вверх (открыть)
-            if (dy > 25 && !nav.classList.contains('expanded')) {
+            // Свайп вверх (открыть) — если меню закрыто
+            if (diff > 30 && !nav.classList.contains('expanded')) {
                 nav.classList.add('expanded');
             }
-            // Свайп вниз (закрыть)
-            else if (dy < -25 && nav.classList.contains('expanded')) {
+            // Свайп вниз (закрыть) — если меню открыто
+            else if (diff < -30 && nav.classList.contains('expanded')) {
                 nav.classList.remove('expanded');
             }
-        }, { passive: true });
+        }, { passive: true }); // на touchend пассивность не важна
     });
 </script>
 
