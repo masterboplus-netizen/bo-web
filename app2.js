@@ -89,9 +89,11 @@ function openObject(obj) {
 
 
 
+
 function openAddMenu() {
     const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'none'; // Прячем кнопку "+"
+    // Не скрываем кнопку полностью, просто прячем её под контент
+    if (addBtn) addBtn.style.zIndex = '1';
 
     const menuItems = [
         { icon: '📔', text: 'Запись в дневник', action: () => openDiary() },
@@ -104,10 +106,10 @@ function openAddMenu() {
     ];
 
     let html = `
-        <div class="header" style="margin-bottom: 20px;">
+        <div class="header" style="margin-bottom: 20px; position: relative; z-index: 100;">
             <h2 style="margin: 0; font-size: 22px;">Добавить</h2>
         </div>
-        <div id="add-menu-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 100px;">
+        <div id="add-menu-container" style="display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 100; padding-bottom: 80px;">
     `;
 
     menuItems.forEach((item, index) => {
@@ -121,12 +123,11 @@ function openAddMenu() {
 
     html += `
         </div>
-        <div id="add-menu-cancel" style="width: 100%; padding: 15px; text-align: center; color: var(--fg-dim); font-size: 16px; cursor: pointer; margin-top: 10px; margin-bottom: 80px;">Отмена</div>
+        <div id="add-menu-cancel" style="width: 100%; padding: 15px; text-align: center; color: var(--fg-dim); font-size: 16px; cursor: pointer; margin-top: 10px; position: relative; z-index: 100;">Отмена</div>
     `;
 
     document.getElementById('app-content').innerHTML = html;
 
-    // Обработчики для кнопок
     document.querySelectorAll('.add-menu-item').forEach(el => {
         el.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -140,6 +141,9 @@ function openAddMenu() {
         closeAddMenu();
     });
 }
+
+
+
 
 
 
