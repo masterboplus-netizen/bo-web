@@ -38,7 +38,6 @@ function renderMainMenu() {
             <div class="menu-item" onclick="showStub('📊 KPI')">📊 KPI</div>
             <div class="menu-item" onclick="showStub('💸 Личные')">💸 Личные</div>
             <div class="menu-item" onclick="showStub('👥 CRM')">👥 CRM</div>
-            <div class="menu-item" onclick="openAddObject()">➕ Добавить</div>
         </div>
     `;
     document.getElementById('app-content').innerHTML = html;
