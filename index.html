@@ -107,32 +107,43 @@
         </div>
     </nav>
 
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const nav = document.getElementById('bottom-nav');
             let touchStartY = 0;
 
-            // Слушаем свайп на всем меню
-            nav.addEventListener('touchstart', (e) => {
-                touchStartY = e.changedTouches[0].screenY;
+            // Слушаем касания на всем экране
+            document.addEventListener('touchstart', (e) => {
+                // Запоминаем точку касания только если палец в нижней части экрана (где меню)
+                // или если меню уже открыто
+                if (e.touches[0].clientY > window.innerHeight - 200 || nav.classList.contains('expanded')) {
+                    touchStartY = e.touches[0].clientY;
+                } else {
+                    touchStartY = 0;
+                }
             }, { passive: true });
 
-            nav.addEventListener('touchend', (e) => {
-                let touchEndY = e.changedTouches[0].screenY;
+            document.addEventListener('touchend', (e) => {
+                if (touchStartY === 0) return; // Если касание было не в зоне меню - игнорируем
+
+                let touchEndY = e.changedTouches[0].clientY;
                 const swipeDistance = touchStartY - touchEndY;
 
-                // Если свайп вверх (открыть)
-                if (swipeDistance > 30) {
+                // Свайп вверх (открыть)
                     nav.classList.add('expanded');
                 } 
-                // Если свайп вниз (закрыть)
-                else if (swipeDistance < -30) {
+                // Свайп вниз (закрыть)
+                else if (swipeDistance < -30 && nav.classList.contains('expanded')) {
                     nav.classList.remove('expanded');
                 }
+                
+                touchStartY = 0; // Сбрасываем
             }, { passive: true });
         });
     </script>
-    <script src="app2.js?v=421"></script>
+
+    <script src="app2.js?v=422"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
