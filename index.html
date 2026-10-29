@@ -88,7 +88,6 @@
     </div>
 
     <nav id="bottom-nav">
-        <div id="swipe-zone"></div> <!-- Зона для свайпа вниз -->
 
         <div class="nav-row">
             <div class="nav-item" onclick="showStub('💸 Личные')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg><span>Личные</span></div>
@@ -123,7 +122,7 @@
 
         document.addEventListener('touchstart', (e) => {
             const y = e.touches[0].clientY;
-            const inNavZone = y > window.innerHeight - 160;
+            const inNavZone = y > window.innerHeight - 180; // захватываем зону чуть выше меню
             if (inNavZone || nav.classList.contains('expanded')) {
                 touchStartY = y;
                 touchStartX = e.touches[0].clientX;
@@ -136,14 +135,21 @@
         document.addEventListener('touchend', (e) => {
             if (!isSwiping) return;
             isSwiping = false;
+
             const touchEndY = e.changedTouches[0].clientY;
             const touchEndX = e.changedTouches[0].clientX;
             const dy = touchStartY - touchEndY;
             const dx = Math.abs(touchStartX - touchEndX);
+
+            // Если свайп был больше вбок, чем вниз/вверх — игнорируем
             if (dx > Math.abs(dy)) return;
+
+            // Свайп вверх (открыть)
             if (dy > 25 && !nav.classList.contains('expanded')) {
                 nav.classList.add('expanded');
-            } else if (dy < -25 && nav.classList.contains('expanded')) {
+            }
+            // Свайп вниз (закрыть)
+            else if (dy < -25 && nav.classList.contains('expanded')) {
                 nav.classList.remove('expanded');
             }
         }, { passive: true });

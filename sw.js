@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bo-cache-v103';
+const CACHE_NAME = 'bo-cache-v104';
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((keyList) => {
