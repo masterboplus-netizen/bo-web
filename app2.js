@@ -15,7 +15,7 @@ function renderMainMenu() {
             <img src="icon-192.png" style="width: 32px; height: 32px; border-radius: 8px;">
             <h2 style="margin: 0;">Master Bo 7.1</h2>
         </div>
-        <button class="back-btn" onclick="showStub('⚙️ Настройки')" style="font-size: 20px; padding: 5px;">
+        <button class="back-btn" onclick="openSettings()" style="font-size: 20px; padding: 5px;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </button>
     </div>
@@ -153,4 +153,32 @@ function showStub(title) {
     `;
     document.getElementById('app-content').innerHTML = html;
     if (typeof showNav === 'function') showNav(true);
+}
+
+// --- НАСТРОЙКИ ---
+function openSettings() {
+    document.getElementById('app-content').innerHTML = `
+        <div class="header">
+            <button class="back-btn" onclick="renderMainMenu()">← Назад</button>
+            <h2>Настройки</h2>
+        </div>
+        <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
+                <span>Темная тема</span>
+                <span style="color: var(--accent);">Включена</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
+                <span>Версия приложения</span>
+                <span style="color: var(--fg-dim);">7.1</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Пользователь</span>
+                <span style="color: var(--fg-dim);">Master</span>
+            </div>
+        </div>
+        <button class="menu-item" onclick="localStorage.clear(); alert('Данные очищены'); renderMainMenu();" style="width: 100%; border: none; background: #ff3b30; color: white; padding: 15px; border-radius: 8px; font-weight: bold;">
+            Очистить данные
+        </button>
+    `;
+    document.getElementById('app-content').scrollIntoView();
 }
