@@ -22,7 +22,7 @@
         .budget { color: var(--fg-dim); }
 
         /* Нижняя навигация */
-        #bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg2); border-top: 1px solid var(--bg3); z-index: 100; display: flex; flex-direction: column; height: 140px; }
+        #bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg2); border-top: 1px solid var(--bg3); z-index: 9999; display: flex; flex-direction: column; height: 140px; }
 
         /* Невидимая зона для свайпа вниз */
         #swipe-zone {
@@ -48,7 +48,7 @@
             width: 56px; height: 56px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 10px rgba(0, 122, 255, 0.4);
-            z-index: 105; cursor: pointer;
+            z-index: 10000; cursor: pointer;
         }
         .nav-add-btn svg { width: 32px; height: 32px; }
         button { -webkit-tap-highlight-color: transparent; }
@@ -114,7 +114,7 @@
     
     
 
-    <script src="app2.js?v=212"></script>
+    <script src="app2.js?v=213"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
