@@ -120,7 +120,7 @@ function openDiary() {
             html += `
                 <div class="object-card" style="cursor: default;">
                     <div class="obj-title" style="font-size: 16px; margin-bottom: 5px;">${escapeHtml(r.note)}</div>
-                    <div class="obj-details" style="font-size: 12px;">
+                    <div class="obj-details" style="font-size: 10px;">
                         <span class="badge" style="background: var(--bg3); color: var(--fg);">${r.date}</span>
                         <span class="budget">⏱ ${r.hours} ч.</span>
                     </div>
@@ -138,7 +138,7 @@ function openAddDiaryRecord() {
         <div style="background: var(--bg2); padding: 20px; border-radius: 12px;">
             <h3 style="margin-top:0;">Новая запись</h3>
             <label style="display:block; margin-bottom: 5px; color: var(--fg-dim);">Что сделано?</label>
-            <textarea id="diary-note" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 15px; height: 80px; resize: none;" placeholder="Например: Покрасил стены в зале..."></textarea>
+            <textarea id="diary-note" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 15px; height: 70px; resize: none;" placeholder="Например: Покрасил стены в зале..."></textarea>
             <label style="display:block; margin-bottom: 5px; color: var(--fg-dim);">Часы (например: 2.5)</label>
             <input type="number" id="diary-hours" step="0.5" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="0">
             <button onclick="saveDiaryRecord()" style="width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">Сохранить</button>
@@ -170,13 +170,13 @@ function openFinance() {
             <div class="object-card" onclick="showStub('Сметы', 'estimates')" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <div class="obj-title">Сметы</div>
-                    <div style="font-size: 12px; color: var(--fg-dim); margin-top: 5px;">Управление сметами и расценками</div>
+                    <div style="font-size: 10px; color: var(--fg-dim); margin-top: 5px;">Управление сметами и расценками</div>
                 </div>
                 <div style="color: var(--fg-dim);">➔</div>
             </div>
             <div class="object-card" style="opacity: 0.5; cursor: default;">
                 <div class="obj-title">Доходы и расходы</div>
-                <div style="font-size: 12px; color: var(--fg-dim); margin-top: 5px;">Раздел в разработке</div>
+                <div style="font-size: 10px; color: var(--fg-dim); margin-top: 5px;">Раздел в разработке</div>
             </div>
         </div>
     `;
@@ -199,14 +199,14 @@ function openAddMenu() {
     ];
 
     let html = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
     `;
 
     menuItems.forEach((item, index) => {
         html += `
-            <div class="add-menu-item" data-index="${index}" style="background: var(--bg2); border: 1px solid var(--bg3); border-radius: 16px; padding: 10px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: var(--fg); height: 80px;">
+            <div class="add-menu-item" data-index="${index}" style="background: var(--bg2); border: 1px solid var(--bg3); border-radius: 16px; padding: 8px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: var(--fg); height: 70px;">
                 <span style="display: flex; align-items: center; justify-content: center; pointer-events: none;">${item.svg}</span> 
-                <span style="font-size: 12px; font-weight: 500; text-align: center; pointer-events: none;">${item.text}</span>
+                <span style="font-size: 10px; font-weight: 500; text-align: center; pointer-events: none;">${item.text}</span>
             </div>
         `;
     });
