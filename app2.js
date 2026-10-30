@@ -328,11 +328,11 @@ function openTasks() {
             <h2 style="margin: 0; font-size: 22px;">Задачи</h2>
         </div>
         
-        <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 10px; scrollbar-width: none;">
-            <div style="background: var(--accent); color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1px solid var(--accent);">Все</div>
-            <div style="background: transparent; color: var(--fg); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1px solid var(--bg3);">Мои</div>
-            <div style="background: transparent; color: var(--fg); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1px solid var(--bg3);">Объект</div>
-            <div style="background: transparent; color: var(--fg); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1px solid var(--bg3);">Исполнитель</div>
+        <div style="display: flex; gap: 2px; background: var(--bg2); padding: 4px; border-radius: 30px; margin-bottom: 20px; width: 100%; box-sizing: border-box;">
+            <div style="flex: 1; text-align: center; background: var(--accent); color: white; padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Все</div>
+            <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Мои</div>
+            <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Объект</div>
+            <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Исполнитель</div>
         </div>
 
         <div class="object-list" style="padding-top: 5px;">
