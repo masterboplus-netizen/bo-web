@@ -115,65 +115,55 @@
     
 
     
+    
+
+    
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const nav = document.getElementById('bottom-nav');
-        let touchStartY = 0;
-        let touchStartX = 0;
-        let isSwiping = false;
+        document.addEventListener('DOMContentLoaded', () => {
+            // Свайп меню
+            const nav = document.getElementById('bottom-nav');
+            let touchStartY = 0;
+            let touchStartX = 0;
+            let isSwiping = false;
 
-        document.addEventListener('touchstart', (e) => {
-            const y = e.touches[0].clientY;
-            const inNavZone = y > window.innerHeight - 180;
-            if (inNavZone || nav.classList.contains('expanded')) {
-                touchStartY = y;
-                touchStartX = e.touches[0].clientX;
-                isSwiping = true;
-            } else {
+            document.addEventListener('touchstart', (e) => {
+                if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.add-menu-item')) {
+                    isSwiping = false;
+                    return;
+                }
+                const y = e.touches[0].clientY;
+                if (y > window.innerHeight - 180 || nav.classList.contains('expanded')) {
+                    touchStartY = y;
+                    touchStartX = e.touches[0].clientX;
+                    isSwiping = true;
+                } else {
+                    isSwiping = false;
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                if (!isSwiping) return;
                 isSwiping = false;
-            }
-        }, { passive: true });
+                const dy = touchStartY - e.changedTouches[0].clientY;
+                const dx = Math.abs(touchStartX - e.changedTouches[0].clientX);
+                if (dx > Math.abs(dy)) return;
+                if (dy > 25 && !nav.classList.contains('expanded')) {
+                    nav.classList.add('expanded');
+                } else if (dy < -25 && nav.classList.contains('expanded')) {
+                    nav.classList.remove('expanded');
+                }
+            }, { passive: true });
+        });
+    </script>
 
-        document.addEventListener('touchend', (e) => {
-            if (!isSwiping) return;
-            isSwiping = false;
-            const touchEndY = e.changedTouches[0].clientY;
-            const touchEndX = e.changedTouches[0].clientX;
-            const dy = touchStartY - touchEndY;
-            const dx = Math.abs(touchStartX - touchEndX);
-            if (dx > Math.abs(dy)) return;
-            if (dy > 25 && !nav.classList.contains('expanded')) {
-                nav.classList.add('expanded');
-            } else if (dy < -25 && nav.classList.contains('expanded')) {
-                nav.classList.remove('expanded');
-            }
-        }, { passive: true });
-    });
-</script>
-
-    <script src="app2.js?v=426"></script>
+    <script src="app2.js?v=123"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
         }
     </script>
 
-    <script>
-        // Принудительно вешаем клик на кнопку "+", чтобы она точно работала
-        setTimeout(() => {
-            const btn = document.getElementById('add-btn-floating');
-            if (btn) {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (typeof openAddMenu === 'function') {
-                        openAddMenu();
-                    } else {
-                        alert('Ошибка: функция openAddMenu не загружена!');
-                    }
-                });
-            }
-        }, 500);
-    </script>
+    
 </body>
 
 </html>

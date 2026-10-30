@@ -1,8 +1,9 @@
-const CACHE_NAME = 'bo-cache-v121';
+const CACHE_NAME = 'bo-cache-v123';
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then((keyList) => {
-      return Promise.all(keyList.map((key) => { if (key !== CACHE_NAME) return caches.delete(key); }));
+  e.waitUntil(caches.keys().then((keys) => {
+      return Promise.all(keys.map((key) => caches.delete(key)));
     }).then(() => clients.claim())
   );
 });
+// Никакого fetch-кеширования, чтобы всегда тянуло свежие данные с сервера
