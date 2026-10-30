@@ -200,12 +200,12 @@ function openAddMenu() {
     ];
 
     let html = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
     `;
 
     menuItems.forEach((item, index) => {
         html += `
-            <div class="add-menu-item" data-index="${index}" style="background: var(--bg2); border: 1px solid var(--bg3); border-radius: 16px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; color: var(--fg); aspect-ratio: 1 / 1;">
+            <div class="add-menu-item" data-index="${index}" style="background: var(--bg2); border: 1px solid var(--bg3); border-radius: 16px; padding: 15px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; color: var(--fg); height: 110px;">
                 <span style="display: flex; align-items: center; justify-content: center; pointer-events: none;">${item.svg}</span> 
                 <span style="font-size: 13px; font-weight: 500; text-align: center; pointer-events: none;">${item.text}</span>
             </div>
