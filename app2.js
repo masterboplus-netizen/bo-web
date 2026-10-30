@@ -202,7 +202,7 @@ function openAddMenu() {
     let html = `
         <div style="display: flex; flex-direction: column; height: 100%; min-height: calc(100vh - 250px);">
             <div style="flex-grow: 1;"></div> <!-- Пустая распорка, которая толкает кнопки вниз -->
-            <div id="add-menu-container" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding-bottom: 20px;">
+            <div id="add-menu-container" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: var(--bg3); padding: 15px; border-radius: 16px; margin-bottom: 20px;">
     `;
 
     menuItems.forEach((item, index) => {
