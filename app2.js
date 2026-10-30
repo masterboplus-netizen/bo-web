@@ -46,7 +46,7 @@ function openObjects() {
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Активные</div>
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Архив</div>
         </div>
-        <div class="object-list" style="padding-top: 0px;">`;
+        <div class="object-list" style="padding-bottom: 150px;">`;
     objects.forEach(obj => {
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
@@ -338,7 +338,7 @@ function openTasks() {
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Исполнитель</div>
         </div>
 
-        <div class="object-list" style="padding-top: 5px;">
+        <div class="object-list" style="padding-bottom: 150px;">
     `;
     
     for (let i = 1; i <= 10; i++) {
