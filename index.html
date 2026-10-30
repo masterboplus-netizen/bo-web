@@ -25,7 +25,7 @@
         #bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--bg2); border-top: 1px solid var(--bg3);
-            z-index: 100; display: flex; flex-direction: column;
+            z-index: 100; display: flex; flex-direction: column; flex-shrink: 0;
             height: 140px; /* Всегда два ряда */
             overflow: hidden;
         }
@@ -61,7 +61,7 @@
     </style>
 </head>
 <body>
-    <div id="app-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; background: var(--bg); z-index: 103; position: fixed; top: 0; left: 0; right: 0;">
+    <div id="app-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; background: var(--bg); z-index: 103; flex-shrink: 0;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <img src="icon-192.png" onclick="renderMainMenu()" style="width: 36px; height: 36px; border-radius: 8px; cursor: pointer;">
             <h2 style="margin: 0; font-size: 22px; cursor: pointer;" onclick="renderMainMenu()">Master Bo 7.1</h2>
@@ -79,7 +79,7 @@
         </div>
     </div>
 
-    <div id="app-content" style="position: relative; z-index: 102; padding: 10px 20px 20px 20px;">Загрузка...</div>
+    <div id="app-content" style="position: relative; z-index: 102; padding: 10px 20px; flex-grow: 1; overflow-y: auto; padding-bottom: 20px;">Загрузка...</div>
 
     <!-- Кнопка добавить (висит всегда на одном месте) -->
     <div id="add-btn-floating" class="nav-add-btn" onclick="openAddMenu()">
@@ -120,7 +120,7 @@
     
     
 
-    <script src="app2.js?v=146"></script>
+    <script src="app2.js?v=148"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
