@@ -46,7 +46,7 @@ function openObjects() {
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Активные</div>
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Архив</div>
         </div>
-        <div class="object-list" style="padding-bottom: 150px;">`;
+        <div class="object-list">`;
     objects.forEach(obj => {
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
@@ -338,7 +338,7 @@ function openTasks() {
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Исполнитель</div>
         </div>
 
-        <div class="object-list" style="padding-bottom: 150px;">
+        <div class="object-list">
     `;
     
     for (let i = 1; i <= 10; i++) {
@@ -353,7 +353,7 @@ function openTasks() {
         `;
     }
     
-    html += `</div>`;
+    html += `<div style="height: 150px;"></div></div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('tasks');
 }
