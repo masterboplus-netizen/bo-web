@@ -73,7 +73,7 @@
         </div>
     </div>
 
-    <div id="app-content" style="position: fixed; top: 70px; bottom: 140px; left: 0; right: 0; overflow-y: auto; padding: 10px 20px; z-index: 102;">Загрузка...</div>
+    <div id="app-content" style="position: relative; z-index: 102; padding: 90px 20px 20px 20px;">Загрузка...</div>
 
     <!-- Кнопка добавить (висит всегда на одном месте) -->
     <div id="add-btn-floating" class="nav-add-btn" onclick="openAddMenu()">
@@ -114,7 +114,7 @@
     
     
 
-    <script src="app2.js?v=196"></script>
+    <script src="app2.js?v=197"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
