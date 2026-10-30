@@ -13,7 +13,6 @@ let CURRENT_OBJECT = null;
 function renderMainMenu() {
     const nav = document.getElementById('bottom-nav');
     const addBtn = document.getElementById('add-btn-floating');
-    if (nav) nav.style.display = 'flex';
     if (addBtn) addBtn.style.display = 'flex';
     
     CURRENT_OBJECT = null;
@@ -79,7 +78,6 @@ function openObject(obj) {
 function openAddMenu() {
     const nav = document.getElementById('bottom-nav');
     const addBtn = document.getElementById('add-btn-floating');
-    if (nav) nav.style.display = 'none';
     if (addBtn) addBtn.style.display = 'none';
 
     const menuItems = [
@@ -132,7 +130,6 @@ function openAddMenu() {
 function closeAddMenu() {
     const nav = document.getElementById('bottom-nav');
     const addBtn = document.getElementById('add-btn-floating');
-    if (nav) nav.style.display = 'flex';
     if (addBtn) addBtn.style.display = 'flex';
     renderMainMenu();
 }
