@@ -75,32 +75,57 @@ function openObject(obj) {
     setNavActive('objects');
 }
 
-function openAddMenu() {
-    const nav = document.getElementById('bottom-nav');
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'none';
 
+function openAddMenu() {
     const menuItems = [
-        { icon: '📔', text: 'Запись в дневник', action: () => openDiary() },
-        { icon: '📋', text: 'Новая задача', action: () => showStub('📋 Новая задача', 'add') },
-        { icon: '💸', text: 'Расход денег', action: () => showStub('💸 Расход денег', 'add') },
-        { icon: '💰', text: 'Поступление денег', action: () => showStub('💰 Поступление денег', 'add') },
-        { icon: '📄', text: 'Документ', action: () => showStub('📄 Документ', 'add') },
-        { icon: '🏠', text: 'Новый объект', action: () => openAddObject() },
-        { icon: '🛠', text: 'Инструмент', action: () => showStub('🛠 Инструмент', 'add') }
+        { 
+            text: 'Запись в дневник', 
+            action: () => openDiary(),
+            svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>'
+        },
+        { 
+            text: 'Новая задача', 
+            action: () => showStub('📋 Новая задача', 'add'),
+            svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>'
+        },
+        { 
+            text: 'Расход денег', 
+            action: () => showStub('💸 Расход денег', 'add'),
+            svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>'
+        },
+        { 
+            text: 'Поступление денег', 
+            action: () => showStub('💰 Поступление денег', 'add'),
+            svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>'
+        },
+        { 
+            text: 'Документ', 
+            action: () => showStub('📄 Документ', 'add'),
+            svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>'
+        },
+        { 
+            text: 'Новый объект', 
+            action: () => openAddObject(),
+            svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V7l8-4 8 4v14"></path><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path></svg>'
+        },
+        { 
+            text: 'Инструмент', 
+            action: () => showStub('🛠 Инструмент', 'add'),
+            svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>'
+        }
     ];
 
     let html = `
         <div class="header" style="margin-bottom: 20px;">
             <h2 style="margin: 0; font-size: 22px;">Добавить</h2>
         </div>
-        <div id="add-menu-container" style="display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px;">
+        <div id="add-menu-container" style="display: flex; flex-direction: column; gap: 10px; padding-bottom: 160px;">
     `;
 
     menuItems.forEach((item, index) => {
         html += `
             <div class="add-menu-item" data-index="${index}" style="width: 100%; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: var(--fg); font-size: 16px; font-weight: bold;">
-                <span style="font-size: 24px; pointer-events: none;">${item.icon}</span> 
+                <span style="display: flex; align-items: center; justify-content: center; pointer-events: none;">${item.svg}</span> 
                 <span style="pointer-events: none;">${item.text}</span>
             </div>
         `;
@@ -118,6 +143,7 @@ function openAddMenu() {
         });
     });
 }
+
 
 function closeAddMenu() {
     const nav = document.getElementById('bottom-nav');
