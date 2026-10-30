@@ -27,6 +27,7 @@ function setNavActive(tabId) {
 
 // --- ГЛАВНОЕ МЕНЮ ---
 function renderMainMenu() {
+    document.getElementById('filters-container').innerHTML = '';
     CURRENT_OBJECT = null;
     let html = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
         <h3 style="color: var(--fg);">Добро пожаловать в Master Bo 7.1!</h3>
@@ -111,6 +112,7 @@ function saveObject() {
 
 // --- ДНЕВНИК ---
 function openDiary() {
+    document.getElementById('filters-container').innerHTML = '';
     let records = JSON.parse(localStorage.getItem('bo_diary') || '[]');
     let html = `
         <div class="header" style="justify-content: space-between; margin-bottom: 20px; display: flex; align-items: center;">
