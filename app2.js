@@ -60,7 +60,7 @@ function openObjects() {
             </div>
         `;
     });
-    html += `</div>`;
+    html += `</div><div style="height: 140px;"></div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('objects');
 }
@@ -134,7 +134,7 @@ function openDiary() {
             `;
         });
     }
-    html += `</div>`;
+    html += `</div><div style="height: 140px;"></div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('diary');
 }
@@ -353,7 +353,7 @@ function openTasks() {
         `;
     }
     
-    html += `</div>`;
+    html += `</div><div style="height: 140px;"></div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('tasks');
 }
