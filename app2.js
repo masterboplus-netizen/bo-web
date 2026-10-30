@@ -267,6 +267,61 @@ function openAddMenu() {
 // --- ЗАГЛУШКИ И НАСТРОЙКИ ---
 
 
+
+function openTaskDetails(taskTitle) {
+    let html = `
+        <div style="padding-top: 10px;">
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Название задачи</label>
+                <input type="text" value="${escapeHtml(taskTitle)}" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; font-weight: bold; outline: none;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Объект</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: var(--bg2); cursor: pointer;">
+                    <span>Выберите объект</span>
+                    <span style="color: var(--fg-dim);">➔</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Срок</label>
+                <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;">
+                    <div style="background: var(--accent); color: white; padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer;">Сегодня</div>
+                    <div style="background: var(--bg2); border: 1px solid var(--bg3); color: var(--fg); padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer;">Завтра</div>
+                    <div style="background: var(--bg2); border: 1px solid var(--bg3); color: var(--fg); padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer;">Через 3 дня</div>
+                    <div style="background: var(--bg2); border: 1px solid var(--bg3); color: var(--fg); padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer;">Диапазон</div>
+                    <div style="background: var(--bg2); border: 1px solid var(--bg3); color: var(--fg); padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer;">Ввести вручную</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Приоритет</label>
+                <div style="display: flex; gap: 8px;">
+                    <div style="flex: 1; text-align: center; background: #ff3b30; color: white; padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer;">Высокий</div>
+                    <div style="flex: 1; text-align: center; background: var(--bg2); border: 1px solid var(--bg3); color: var(--fg); padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer;">Средний</div>
+                    <div style="flex: 1; text-align: center; background: var(--bg2); border: 1px solid var(--bg3); color: var(--fg); padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer;">Низкий</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 30px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Исполнитель</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: var(--bg2); cursor: pointer;">
+                    <span>Назначить исполнителя</span>
+                    <span style="color: var(--fg-dim);">➔</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: auto;">
+                <button onclick="openTasks()" style="flex: 1; padding: 15px; background: #ff3b30; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">Удалить</button>
+                <button onclick="openTasks()" style="flex: 2; padding: 15px; background: #34c759; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">Выполнить</button>
+            </div>
+        </div>
+    `;
+    document.getElementById('app-content').innerHTML = html;
+    setNavActive('tasks');
+}
+
 function openTasks() {
     let html = `
         <div class="header" style="margin-bottom: 15px;">
@@ -285,7 +340,7 @@ function openTasks() {
     
     for (let i = 1; i <= 10; i++) {
         html += `
-            <div class="object-card" onclick="showStub('Задача тест ${i}', 'tasks')">
+            <div class="object-card" onclick="openTaskDetails('Задача тест ${i}')">
                 <div class="obj-title">Задача тест ${i}</div>
                 <div class="obj-details">
                     <span class="badge" style="background: var(--accent)">В работе</span>
