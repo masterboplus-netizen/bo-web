@@ -221,7 +221,7 @@ function openAddMenu() {
     overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); z-index: 999; display: flex; align-items: flex-end; justify-content: center;';
 
     let html = `
-        <div id="add-menu-content" style="width: 100%; max-width: 500px; background: var(--bg); border-radius: 20px 20px 0 0; padding: 20px; animation: slideUp 0.3s ease; margin-bottom: 140px;">
+        <div id="add-menu-content" style="width: 100%; max-width: 500px; background: transparent; padding: 0 15px 15px 15px; animation: slideUp 0.3s ease; margin-bottom: 140px;">
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: var(--bg3); padding: 15px; border-radius: 16px;">
     `;
 
