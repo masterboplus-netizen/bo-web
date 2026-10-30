@@ -330,9 +330,6 @@ function openTaskDetails(taskTitle) {
 
 function openTasks() {
     let html = `
-        <div class="header" style="margin-bottom: 15px;">
-            <h2 style="margin: 0; font-size: 22px;">Задачи</h2>
-        </div>
         
         <div style="display: flex; gap: 2px; background: var(--bg2); padding: 4px; border-radius: 30px; margin-bottom: 20px; width: 100%; box-sizing: border-box;">
             <div style="flex: 1; text-align: center; background: var(--accent); color: white; padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Все</div>
