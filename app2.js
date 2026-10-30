@@ -54,7 +54,7 @@ function openObjects() {
             </div>
         `;
     });
-    html += `</div></div>`;
+    html += `</div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('objects');
 }
@@ -128,7 +128,7 @@ function openDiary() {
             `;
         });
     }
-    html += `</div></div>`;
+    html += `</div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('diary');
 }
@@ -214,7 +214,7 @@ function openAddMenu() {
         `;
     });
 
-    html += `</div></div>`;
+    html += `</div>`;
 
     document.getElementById('app-content').innerHTML = html;
 
