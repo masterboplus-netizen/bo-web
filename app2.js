@@ -266,12 +266,21 @@ function openAddMenu() {
 
 // --- ЗАГЛУШКИ И НАСТРОЙКИ ---
 
+
 function openTasks() {
     let html = `
-        <div class="header" style="margin-bottom: 20px;">
+        <div class="header" style="margin-bottom: 15px;">
             <h2 style="margin: 0; font-size: 22px;">Задачи</h2>
         </div>
-        <div class="object-list" style="padding-top: 10px;">
+        
+        <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 10px; scrollbar-width: none;">
+            <div style="background: var(--accent); color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1px solid var(--accent);">Все</div>
+            <div style="background: transparent; color: var(--fg); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1px solid var(--bg3);">Мои</div>
+            <div style="background: transparent; color: var(--fg); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1px solid var(--bg3);">Объект</div>
+            <div style="background: transparent; color: var(--fg); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1px solid var(--bg3);">Исполнитель</div>
+        </div>
+
+        <div class="object-list" style="padding-top: 5px;">
     `;
     
     for (let i = 1; i <= 10; i++) {
@@ -290,6 +299,7 @@ function openTasks() {
     document.getElementById('app-content').innerHTML = html;
     setNavActive('tasks');
 }
+
 
 function showStub(title, tabId) {
     let html = `
