@@ -1,3 +1,5 @@
+// ЧИСТАЯ ВЕРСИЯ APP2.JS
+
 const MOCK_OBJECTS = [
     { id: 27, name: "Рароа", status: "active", balance: 0 },
     { id: 26, name: "Арбат", status: "active", balance: 106618 },
@@ -8,28 +10,12 @@ const MOCK_OBJECTS = [
 
 let CURRENT_OBJECT = null;
 
-function getHeader() {
-    return `
-    <div class="header" style="justify-content: space-between; margin-bottom: 20px; display: flex; align-items: center;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="icon-192.png" style="width: 36px; height: 36px; border-radius: 8px;">
-            <h2 style="margin: 0; font-size: 22px;">Master Bo 7.1</h2>
-        </div>
-        <button class="back-btn" onclick="openSettings()" style="font-size: 24px; padding: 5px; color: var(--fg); cursor: pointer; background: none; border: none;">
-            ⚙️
-        </button>
-    </div>`;
-}
-
 function renderMainMenu() {
     const nav = document.getElementById('bottom-nav');
     const addBtn = document.getElementById('add-btn-floating');
     if (nav) nav.style.display = 'flex';
     if (addBtn) addBtn.style.display = 'flex';
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
+    
     CURRENT_OBJECT = null;
     let html = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
         <h3 style="color: var(--fg);">Добро пожаловать в Master Bo 7.1!</h3>
@@ -39,7 +25,16 @@ function renderMainMenu() {
     setNavActive('main');
 }
 
+function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+}
+
 function openObjects() {
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'flex';
+
     let saved = localStorage.getItem('bo_objects');
     let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
     let html = `<div class="object-list">`;
@@ -61,12 +56,6 @@ function openObjects() {
     setNavActive('objects');
 }
 
-function escapeHtml(text) {
-    return String(text).replace(/[&<>"']/g, function(m) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
-    });
-}
-
 function openObjectById(id) {
     let saved = localStorage.getItem('bo_objects');
     let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
@@ -78,25 +67,16 @@ function openObject(obj) {
     CURRENT_OBJECT = obj;
     let html = `
         <div style="margin-bottom: 20px; color: var(--fg-dim); background: var(--bg2); padding: 15px; border-radius: 12px;">
-            <div style="font-size: 20px; font-weight: bold; color: var(--fg); margin-bottom: 10px;">${obj.name}</div>
+            <div style="font-size: 20px; font-weight: bold; color: var(--fg); margin-bottom: 10px;">${escapeHtml(obj.name)}</div>
             <div>Статус: <span style="color: ${obj.status === 'active' ? 'var(--accent)' : '#fff'}">${obj.status === 'active' ? 'В работе' : 'Завершен'}</span></div>
             <div>Баланс: ${obj.balance} ₽</div>
         </div>
-        
     `;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('objects');
 }
 
-
-
-
-
-
-
-
 function openAddMenu() {
-    // Прячем нижнее меню и кнопку "+", чтобы они не мешали
     const nav = document.getElementById('bottom-nav');
     const addBtn = document.getElementById('add-btn-floating');
     if (nav) nav.style.display = 'none';
@@ -149,23 +129,13 @@ function openAddMenu() {
     });
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+function closeAddMenu() {
+    const nav = document.getElementById('bottom-nav');
+    const addBtn = document.getElementById('add-btn-floating');
+    if (nav) nav.style.display = 'flex';
+    if (addBtn) addBtn.style.display = 'flex';
+    renderMainMenu();
+}
 
 function openAddObject() {
     let html = `
@@ -192,8 +162,10 @@ function saveObject() {
     openObjects();
 }
 
-
 function openDiary() {
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'flex';
+
     let records = JSON.parse(localStorage.getItem('bo_diary') || '[]');
     let html = `
         <div class="header" style="justify-content: space-between; margin-bottom: 20px; display: flex; align-items: center;">
@@ -250,6 +222,9 @@ function saveDiaryRecord() {
 }
 
 function openFinance() {
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'flex';
+
     let html = `
         <div class="header" style="margin-bottom: 20px;">
             <h2 style="margin: 0; font-size: 22px;">💰 Финансы</h2>
@@ -271,7 +246,11 @@ function openFinance() {
     document.getElementById('app-content').innerHTML = html;
     setNavActive('finance');
 }
+
 function showStub(title, tabId) {
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'flex';
+
     let html = `
         <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
             <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
@@ -284,6 +263,9 @@ function showStub(title, tabId) {
 }
 
 function openSettings() {
+    const addBtn = document.getElementById('add-btn-floating');
+    if (addBtn) addBtn.style.display = 'flex';
+
     let html = `
         <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
@@ -311,8 +293,4 @@ function setNavActive(tabId) {
 
 document.addEventListener('DOMContentLoaded', () => {
     renderMainMenu();
-    
-    document.getElementById('nav-objects')?.addEventListener('click', openObjects);
-    
-    
 });

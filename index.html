@@ -29,7 +29,6 @@
             height: 70px; /* Высота одного ряда */
             transition: height 0.3s ease;
             overflow: hidden;
-            touch-action: none;
         }
         #bottom-nav.expanded { height: 140px; } /* Высота двух рядов */
 
@@ -156,7 +155,7 @@
         });
     </script>
 
-    <script src="app2.js?v=123"></script>
+    <script src="app2.js?v=124"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
