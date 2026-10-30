@@ -52,7 +52,6 @@ async function openObjects() {
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Активные</div>
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Архив</div>
         </div>
-    `;
 
     let html = `<div class="object-list" style="padding-top: 10px;">`;
 
@@ -99,7 +98,6 @@ function openObject(obj) {
             <div>Статус: <span style="color: ${obj.status === 'active' ? 'var(--accent)' : '#fff'}">${obj.status === 'active' ? 'В работе' : 'Завершен'}</span></div>
             <div>Баланс: ${obj.balance} ₽</div>
         </div>
-    `;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('objects');
 }
@@ -113,7 +111,6 @@ function openAddObject() {
             <input type="number" id="new-obj-budget" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="0">
             <button onclick="saveObject()" style="width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">Сохранить объект</button>
         </div>
-    `;
     document.getElementById('app-content').innerHTML = html;
 }
 
@@ -138,7 +135,6 @@ function openDiary() {
             <button onclick="openAddDiaryRecord()" style="background: var(--accent); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">+ Запись</button>
         </div>
         <div class="object-list">
-    `;
     if (records.length === 0) {
         html += `<div style="text-align:center; color:var(--fg-dim); margin-top:50px;">Записей пока нет.</div>`;
     } else {
@@ -170,7 +166,6 @@ function openAddDiaryRecord() {
             <button onclick="saveDiaryRecord()" style="width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">Сохранить</button>
             <button onclick="openDiary()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 14px; cursor: pointer; margin-top: 10px;">Назад</button>
         </div>
-    `;
     document.getElementById('app-content').innerHTML = html;
 }
 
@@ -206,7 +201,6 @@ function openFinance() {
                 <div style="font-size: 10px; color: var(--fg-dim); margin-top: 5px;">Раздел в разработке</div>
             </div>
         </div>
-    `;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('finance');
 }
@@ -250,7 +244,6 @@ function openAddMenu() {
     let html = `
         <div id="add-menu-content" style="width: 100%; max-width: 500px; background: transparent; padding: 0 15px 15px 15px; animation: slideUp 0.3s ease; margin-bottom: 140px;">
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: var(--bg3); padding: 15px; border-radius: 16px;">
-    `;
 
     menuItems.forEach((item, index) => {
         html += `
@@ -344,7 +337,6 @@ function openTaskDetails(taskTitle) {
                 <button onclick="openTasks()" style="flex: 2; padding: 15px; background: #34c759; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">Выполнить</button>
             </div>
         </div>
-    `;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('tasks');
 }
@@ -360,7 +352,6 @@ function openTasks() {
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Объект</div>
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Исполнитель</div>
         </div>
-    `;
 
     let html = `<div class="object-list" style="padding-top: 10px;">`;
 
@@ -391,7 +382,6 @@ function showStub(title, tabId) {
             <h3>${title}</h3>
             <p>Раздел в разработке.</p>
         </div>
-    `;
     document.getElementById('app-content').innerHTML = html;
     if (tabId) setNavActive(tabId);
 }
@@ -411,7 +401,6 @@ function openSettings() {
         <button class="menu-item" onclick="localStorage.removeItem('bo_objects'); alert('Данные очищены'); renderMainMenu();" style="width: 100%; border: none; background: #ff3b30; color: white; padding: 15px; border-radius: 8px; font-weight: bold;">
             Очистить данные
         </button>
-    `;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('main');
 }
