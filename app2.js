@@ -43,10 +43,9 @@ function renderMainMenu() {
 }
 
 // --- ОБЪЕКТЫ ---
-function openObjects() {
-    let saved = localStorage.getItem('bo_objects');
-    let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
-    let html = `
+
+async function openObjects() {
+    // Рендерим капсулы
     document.getElementById('filters-container').innerHTML = `
         <div style="display: flex; gap: 2px; background: var(--bg2); padding: 4px; border-radius: 30px; width: 100%; box-sizing: border-box;">
             <div style="flex: 1; text-align: center; background: var(--accent); color: white; padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Всё</div>
@@ -54,24 +53,36 @@ function openObjects() {
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Архив</div>
         </div>
     `;
-        <div class="object-list">`;
-    objects.forEach(obj => {
-        let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
-        let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
-        html += `
-            <div class="object-card" onclick="openObjectById(${obj.id})">
-                <div class="obj-title">${escapeHtml(obj.name)}</div>
-                <div class="obj-details">
-                    <span class="badge" style="background: ${statusColor}">${statusText}</span>
-                    <span class="budget">${obj.balance} ₽</span>
+
+    let html = `<div class="object-list" style="padding-top: 10px;">`;
+
+    // Запрос к Supabase
+    const { data: objects, error } = await db.from('objects').select('*').order('created_at', { ascending: false });
+
+    if (error) {
+        html += `<div style="color: red; text-align: center; padding: 20px;">Ошибка загрузки: ${error.message}</div>`;
+    } else if (!objects || objects.length === 0) {
+        html += `<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Объектов пока нет. Создайте первый!</div>`;
+    } else {
+        objects.forEach(obj => {
+            let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
+            let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
+            html += `
+                <div class="object-card" onclick="showStub('Объект ${escapeHtml(obj.name)}', 'objects')">
+                    <div class="obj-title">${escapeHtml(obj.name)}</div>
+                    <div class="obj-details">
+                        <span class="badge" style="background: ${statusColor}">${statusText}</span>
+                        <span class="budget">${obj.budget || 0} ₽</span>
+                    </div>
                 </div>
-            </div>
-        `;
-    });
+            `;
+        });
+    }
     html += `</div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('objects');
 }
+
 
 function openObjectById(id) {
     let saved = localStorage.getItem('bo_objects');
