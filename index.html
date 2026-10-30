@@ -33,7 +33,9 @@
         #app-content {
             position: fixed; top: 80px; left: 0; right: 0;
             height: calc(100vh - 220px);
-            overflow-y: auto; padding: 10px 20px; z-index: 102;
+            overflow-y: auto;
+            padding: 10px 20px 160px 20px; /* Добавлен отступ снизу 160px */
+            z-index: 102;
             box-sizing: border-box;
         }
 
@@ -111,7 +113,7 @@
         </div>
     </nav>
 
-    <script src="app2.js?v=217"></script>
+    <script src="app2.js?v=219"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
