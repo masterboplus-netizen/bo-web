@@ -205,8 +205,6 @@ function openAddMenu() {
             <div id="add-menu-container" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding-bottom: 20px;">
     `;
 
-    `;
-
     menuItems.forEach((item, index) => {
         html += `
             <div class="add-menu-item" data-index="${index}" style="background: var(--bg2); border: 1px solid var(--bg3); border-radius: 16px; padding: 8px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: var(--fg); height: 70px;">
