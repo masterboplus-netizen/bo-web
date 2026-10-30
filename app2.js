@@ -106,10 +106,7 @@ function openAddMenu() {
         `;
     });
 
-    html += `
-        </div>
-        <div id="add-menu-cancel" style="width: 100%; padding: 15px; text-align: center; color: var(--fg-dim); font-size: 16px; cursor: pointer; margin-top: 10px;">Отмена</div>
-    `;
+    html += `</div>`;
 
     document.getElementById('app-content').innerHTML = html;
 
@@ -119,11 +116,6 @@ function openAddMenu() {
             const idx = parseInt(e.currentTarget.getAttribute('data-index'));
             menuItems[idx].action();
         });
-    });
-
-    document.getElementById('add-menu-cancel').addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeAddMenu();
     });
 }
 
