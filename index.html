@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#007aff">
     <style>
         :root { --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --fg: #c9d1d9; --fg-dim: #8b949e; --accent: #007aff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 0; height: 100vh; overflow: hidden; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 0; height: 100vh; overflow-y: auto; overscroll-behavior-y: contain; }
 
         .header { display: flex; align-items: center; margin-bottom: 25px; gap: 15px; }
         .header h2 { margin: 0; font-size: 22px; }
@@ -113,7 +113,7 @@
         </div>
     </nav>
 
-    <script src="app2.js?v=221"></script>
+    <script src="app2.js?v=222"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=108").catch(function(){});
