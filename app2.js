@@ -327,6 +327,7 @@ function openTaskDetails(taskTitle) {
     setNavActive('tasks');
 }
 
+
 function openTasks() {
     let html = `
         <div class="header" style="margin-bottom: 15px;">
@@ -359,6 +360,7 @@ function openTasks() {
     document.getElementById('app-content').innerHTML = html;
     setNavActive('tasks');
 }
+
 
 
 function showStub(title, tabId) {
