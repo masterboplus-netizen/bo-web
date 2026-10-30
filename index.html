@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#007aff">
     <style>
         :root { --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --fg: #c9d1d9; --fg-dim: #8b949e; --accent: #007aff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 0; padding-bottom: 160px; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
         .header { display: flex; align-items: center; margin-bottom: 25px; gap: 15px; }
         .header h2 { margin: 0; font-size: 22px; }
@@ -25,7 +25,7 @@
         #bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--bg2); border-top: 1px solid var(--bg3);
-            z-index: 100; display: flex; flex-direction: column;
+            z-index: 100; display: flex; flex-direction: column; flex-shrink: 0;
             height: 140px; /* Всегда два ряда */
             overflow: hidden;
         }
@@ -61,7 +61,7 @@
     </style>
 </head>
 <body>
-    <div id="app-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; position: sticky; top: 0; background: var(--bg); z-index: 103;">
+    <div id="app-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; background: var(--bg); z-index: 103; flex-shrink: 0;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <img src="icon-192.png" onclick="renderMainMenu()" style="width: 36px; height: 36px; border-radius: 8px; cursor: pointer;">
             <h2 style="margin: 0; font-size: 22px; cursor: pointer;" onclick="renderMainMenu()">Master Bo 7.1</h2>
@@ -79,7 +79,7 @@
         </div>
     </div>
 
-    <div id="app-content" style="position: relative; z-index: 102; padding: 10px 20px; height: calc(100vh - 100px); overflow-y: auto; padding-bottom: 120px;">Загрузка...</div>
+    <div id="app-content" style="position: relative; z-index: 102; padding: 10px 20px 20px 20px; flex-grow: 1; overflow-y: auto;">Загрузка...</div>
 
     <!-- Кнопка добавить (висит всегда на одном месте) -->
     <div id="add-btn-floating" class="nav-add-btn" onclick="openAddMenu()">
@@ -120,7 +120,7 @@
     
     
 
-    <script src="app2.js?v=144"></script>
+    <script src="app2.js?v=145"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
