@@ -54,7 +54,7 @@ function openObjects() {
             </div>
         `;
     });
-    html += `</div>`;
+    html += `</div></div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('objects');
 }
@@ -128,7 +128,7 @@ function openDiary() {
             `;
         });
     }
-    html += `</div>`;
+    html += `</div></div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('diary');
 }
@@ -198,8 +198,13 @@ function openAddMenu() {
         { text: 'Контрагент', action: () => showStub('Контрагент', 'crm'), svg: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--fg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>' }
     ];
 
+    
     let html = `
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px;">
+        <div style="display: flex; flex-direction: column; height: 100%; min-height: calc(100vh - 250px);">
+            <div style="flex-grow: 1;"></div> <!-- Пустая распорка, которая толкает кнопки вниз -->
+            <div id="add-menu-container" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding-bottom: 20px;">
+    `;
+
     `;
 
     menuItems.forEach((item, index) => {
@@ -211,7 +216,7 @@ function openAddMenu() {
         `;
     });
 
-    html += `</div>`;
+    html += `</div></div>`;
 
     document.getElementById('app-content').innerHTML = html;
 
