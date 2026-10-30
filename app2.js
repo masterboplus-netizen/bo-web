@@ -199,7 +199,7 @@ function openAddMenu() {
     ];
 
     let html = `
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px;">
     `;
 
     menuItems.forEach((item, index) => {
