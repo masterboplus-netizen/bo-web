@@ -292,13 +292,12 @@ function openTaskDetails(taskTitle) {
 
             <div style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Срок</label>
-                <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;">
-                    <div style="background: var(--accent); color: white; padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer;">Сегодня</div>
-                    <div style="background: var(--bg2); border: 1px solid var(--bg3); color: var(--fg); padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer;">Завтра</div>
-                    <div style="background: var(--bg2); border: 1px solid var(--bg3); color: var(--fg); padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer;">Через 3 дня</div>
-                    <div style="background: var(--bg2); border: 1px solid var(--bg3); color: var(--fg); padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer;">Диапазон</div>
-                    <div style="background: var(--bg2); border: 1px solid var(--bg3); color: var(--fg); padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer;">Ввести вручную</div>
-                </div>
+                        <div style="display: flex; gap: 2px; background: var(--bg2); padding: 4px; border-radius: 30px; margin-bottom: 20px; width: 100%; box-sizing: border-box;">
+            <div style="flex: 1; text-align: center; background: var(--accent); color: white; padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Все</div>
+            <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Мои</div>
+            <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Объект</div>
+            <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Исполнитель</div>
+        </div>
             </div>
 
             <div style="margin-bottom: 20px;">
