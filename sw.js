@@ -1,4 +1,4 @@
-// Полное отключение кеширования
+const CACHE_NAME = 'bo-cache-v202';
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((keys) => {
@@ -6,4 +6,3 @@ self.addEventListener('activate', (e) => {
     }).then(() => clients.claim())
   );
 });
-// Никаких fetch-обработчиков, запросы идут напрямую в сеть
