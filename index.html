@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#007aff">
     <style>
         :root { --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --fg: #c9d1d9; --fg-dim: #8b949e; --accent: #007aff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 20px; padding-bottom: 200px; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 20px; padding-bottom: 160px; }
 
         .header { display: flex; align-items: center; margin-bottom: 25px; gap: 15px; }
         .header h2 { margin: 0; font-size: 22px; }
@@ -26,11 +26,9 @@
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--bg2); border-top: 1px solid var(--bg3);
             z-index: 100; display: flex; flex-direction: column;
-            height: 70px; /* Высота одного ряда */
-            transition: height 0.3s ease;
+            height: 140px; /* Всегда два ряда */
             overflow: hidden;
         }
-        #bottom-nav.expanded { height: 140px; } /* Высота двух рядов */
 
         /* Невидимая зона для свайпа вниз */
         #swipe-zone {
@@ -120,57 +118,9 @@
     
 
     
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const nav = document.getElementById('bottom-nav');
-        let touchStartY = 0;
-        let touchStartX = 0;
-        let isSwiping = false;
+    
 
-        // Открываем/закрываем меню свайпом
-        document.addEventListener('touchstart', (e) => {
-            // Если палец на кнопке или инпуте - не свайпаем
-            if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.add-menu-item')) {
-                isSwiping = false;
-                return;
-            }
-
-            const y = e.touches[0].clientY;
-            // Зона свайпа: нижние 200px экрана ИЛИ меню уже открыто
-            if (y > window.innerHeight - 200 || nav.classList.contains('expanded')) {
-                touchStartY = y;
-                touchStartX = e.touches[0].clientX;
-                isSwiping = true;
-            } else {
-                isSwiping = false;
-            }
-        }, { passive: true });
-
-        document.addEventListener('touchend', (e) => {
-            if (!isSwiping) return;
-            isSwiping = false;
-
-            const touchEndY = e.changedTouches[0].clientY;
-            const touchEndX = e.changedTouches[0].clientX;
-            const dy = touchStartY - touchEndY; // >0 вверх, <0 вниз
-            const dx = Math.abs(touchStartX - touchEndX);
-
-            // Игнорируем горизонтальные жесты
-            if (dx > Math.abs(dy)) return;
-
-            // Свайп вверх (открыть)
-            if (dy > 30 && !nav.classList.contains('expanded')) {
-                nav.classList.add('expanded');
-            }
-            // Свайп вниз (закрыть)
-            else if (dy < -30 && nav.classList.contains('expanded')) {
-                nav.classList.remove('expanded');
-            }
-        }, { passive: true });
-    });
-    </script>
-
-    <script src="app2.js?v=127"></script>
+    <script src="app2.js?v=128"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
