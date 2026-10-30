@@ -350,9 +350,9 @@ function openTaskDetails(taskTitle) {
 }
 
 
+
 function openTasks() {
-    let html = `
-        
+    // Рендерим капсулы в отдельный контейнер
     document.getElementById('filters-container').innerHTML = `
         <div style="display: flex; gap: 2px; background: var(--bg2); padding: 4px; border-radius: 30px; width: 100%; box-sizing: border-box;">
             <div style="flex: 1; text-align: center; background: var(--accent); color: white; padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Все</div>
@@ -362,9 +362,8 @@ function openTasks() {
         </div>
     `;
 
-        <div class="object-list">
-    `;
-    
+    let html = `<div class="object-list" style="padding-top: 10px;">`;
+
     for (let i = 1; i <= 10; i++) {
         html += `
             <div class="object-card" onclick="openTaskDetails('Задача тест ${i}')">
@@ -376,11 +375,12 @@ function openTasks() {
             </div>
         `;
     }
-    
+
     html += `</div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('tasks');
 }
+
 
 
 
