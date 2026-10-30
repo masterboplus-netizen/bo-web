@@ -63,6 +63,33 @@ function showStub(title, tabId) {
     if (tabId) setNavActive(tabId);
 }
 
+
+function openPersonal() {
+    document.getElementById('filters-container').innerHTML = '';
+    showStub('💸 Личные', 'personal');
+}
+
+function openFinance() {
+    document.getElementById('filters-container').innerHTML = '';
+    showStub('💰 Финансы', 'finance');
+}
+
+function openReports() {
+    document.getElementById('filters-container').innerHTML = '';
+    showStub('📈 Отчёты', 'reports');
+}
+
+function openKPI() {
+    document.getElementById('filters-container').innerHTML = '';
+    showStub('📊 KPI', 'kpi');
+}
+
+function openCRM() {
+    document.getElementById('filters-container').innerHTML = '';
+    showStub('👥 CRM', 'crm');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     renderMainMenu();
 });
+
