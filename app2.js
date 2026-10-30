@@ -163,3 +163,26 @@ function openAddMenu() {
         });
     });
 }
+
+function openDiary() {
+    document.getElementById('filters-container').innerHTML = '';
+    showStub('📔 Дневник', 'diary');
+}
+
+function openSettings() {
+    document.getElementById('filters-container').innerHTML = '';
+    let html = `
+        <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
+                <span>Версия приложения</span>
+                <span style="color: var(--fg-dim);">7.1</span>
+            </div>
+        </div>
+    `;
+    document.getElementById('app-content').innerHTML = html;
+    setNavActive('main');
+}
+
+function openAddObject() {
+    showStub('🏠 Новый объект', 'objects');
+}
