@@ -40,7 +40,13 @@ function renderMainMenu() {
 function openObjects() {
     let saved = localStorage.getItem('bo_objects');
     let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
-    let html = `<div class="object-list" style="padding-top: 20px;">`;
+    let html = `
+        <div style="display: flex; gap: 2px; background: var(--bg2); padding: 4px; border-radius: 30px; margin-bottom: 20px; width: 100%; box-sizing: border-box;">
+            <div style="flex: 1; text-align: center; background: var(--accent); color: white; padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Всё</div>
+            <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Активные</div>
+            <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Архив</div>
+        </div>
+        <div class="object-list" style="padding-top: 0px;">`;
     objects.forEach(obj => {
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
