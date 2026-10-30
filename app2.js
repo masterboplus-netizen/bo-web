@@ -95,12 +95,11 @@ function openAddObject() {
 function saveObject() {
     let name = document.getElementById('new-obj-name').value;
     let budget = document.getElementById('new-obj-budget').value;
-    if (!name) { alert('Введите название!'); return; }
+    if (!name) { document.getElementById('new-obj-name').focus(); return; }
     let saved = localStorage.getItem('bo_objects');
     let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
     objects.unshift({ id: Date.now(), name: name, status: "active", balance: Number(budget) || 0 });
     localStorage.setItem('bo_objects', JSON.stringify(objects));
-    alert('Объект создан!');
     openObjects();
 }
 
@@ -152,7 +151,7 @@ function openAddDiaryRecord() {
 function saveDiaryRecord() {
     let note = document.getElementById('diary-note').value;
     let hours = document.getElementById('diary-hours').value;
-    if (!note) { alert('Напишите, что было сделано!'); return; }
+    if (!note) { document.getElementById('diary-note').focus(); return; }
     let records = JSON.parse(localStorage.getItem('bo_diary') || '[]');
     let d = new Date();
     let dateStr = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
