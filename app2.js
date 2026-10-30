@@ -1,4 +1,6 @@
-// ЧИСТАЯ ВЕРСИЯ APP2.JS
+// ==========================================
+// ЧИСТЫЙ КОД APP2.JS (БЕЗ ДУБЛЕЙ И МУСОРА)
+// ==========================================
 
 const MOCK_OBJECTS = [
     { id: 27, name: "Рароа", status: "active", balance: 0 },
@@ -10,11 +12,21 @@ const MOCK_OBJECTS = [
 
 let CURRENT_OBJECT = null;
 
+// --- УТИЛИТЫ ---
+function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+}
+
+function setNavActive(tabId) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    const el = document.getElementById('nav-' + tabId);
+    if (el) el.classList.add('active');
+}
+
+// --- ГЛАВНОЕ МЕНЮ ---
 function renderMainMenu() {
-    const nav = document.getElementById('bottom-nav');
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
-    
     CURRENT_OBJECT = null;
     let html = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
         <h3 style="color: var(--fg);">Добро пожаловать в Master Bo 7.1!</h3>
@@ -24,16 +36,8 @@ function renderMainMenu() {
     setNavActive('main');
 }
 
-function escapeHtml(text) {
-    return String(text).replace(/[&<>"']/g, function(m) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
-    });
-}
-
+// --- ОБЪЕКТЫ ---
 function openObjects() {
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
-
     let saved = localStorage.getItem('bo_objects');
     let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
     let html = `<div class="object-list">`;
@@ -75,17 +79,6 @@ function openObject(obj) {
     setNavActive('objects');
 }
 
-
-
-
-
-function closeAddMenu() {
-    const nav = document.getElementById('bottom-nav');
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
-    renderMainMenu();
-}
-
 function openAddObject() {
     let html = `
         <div style="background: var(--bg2); padding: 20px; border-radius: 12px;">
@@ -111,14 +104,12 @@ function saveObject() {
     openObjects();
 }
 
+// --- ДНЕВНИК ---
 function openDiary() {
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
-
     let records = JSON.parse(localStorage.getItem('bo_diary') || '[]');
     let html = `
         <div class="header" style="justify-content: space-between; margin-bottom: 20px; display: flex; align-items: center;">
-            <h2 style="margin: 0; font-size: 22px;">📔 Дневник работ</h2>
+            <h2 style="margin: 0; font-size: 22px;">Дневник работ</h2>
             <button onclick="openAddDiaryRecord()" style="background: var(--accent); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">+ Запись</button>
         </div>
         <div class="object-list">
@@ -152,7 +143,7 @@ function openAddDiaryRecord() {
             <label style="display:block; margin-bottom: 5px; color: var(--fg-dim);">Часы (например: 2.5)</label>
             <input type="number" id="diary-hours" step="0.5" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="0">
             <button onclick="saveDiaryRecord()" style="width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">Сохранить</button>
-            <button onclick="openDiary()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 14px; cursor: pointer; margin-top: 10px;">Отмена</button>
+            <button onclick="openDiary()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 14px; cursor: pointer; margin-top: 10px;">Назад</button>
         </div>
     `;
     document.getElementById('app-content').innerHTML = html;
@@ -170,24 +161,22 @@ function saveDiaryRecord() {
     openDiary();
 }
 
+// --- ФИНАНСЫ ---
 function openFinance() {
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
-
     let html = `
         <div class="header" style="margin-bottom: 20px;">
-            <h2 style="margin: 0; font-size: 22px;">💰 Финансы</h2>
+            <h2 style="margin: 0; font-size: 22px;">Финансы</h2>
         </div>
         <div class="object-list">
-            <div class="object-card" onclick="showStub('📊 Сметы', 'estimates')" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="object-card" onclick="showStub('Сметы', 'estimates')" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <div class="obj-title">📊 Сметы</div>
+                    <div class="obj-title">Сметы</div>
                     <div style="font-size: 12px; color: var(--fg-dim); margin-top: 5px;">Управление сметами и расценками</div>
                 </div>
                 <div style="color: var(--fg-dim);">➔</div>
             </div>
             <div class="object-card" style="opacity: 0.5; cursor: default;">
-                <div class="obj-title">📈 Доходы и расходы</div>
+                <div class="obj-title">Доходы и расходы</div>
                 <div style="font-size: 12px; color: var(--fg-dim); margin-top: 5px;">Раздел в разработке</div>
             </div>
         </div>
@@ -196,51 +185,7 @@ function openFinance() {
     setNavActive('finance');
 }
 
-function showStub(title, tabId) {
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
-
-    let html = `
-        <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
-            <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
-            <h3>${title}</h3>
-            <p>Раздел в разработке.</p>
-        </div>
-    `;
-    document.getElementById('app-content').innerHTML = html;
-    if (tabId) setNavActive(tabId);
-}
-
-function openSettings() {
-    const addBtn = document.getElementById('add-btn-floating');
-    if (addBtn) addBtn.style.display = 'flex';
-
-    let html = `
-        <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
-                <span>Темная тема</span>
-                <span style="color: var(--accent);">Включена</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
-                <span>Версия приложения</span>
-                <span style="color: var(--fg-dim);">7.1</span>
-            </div>
-        </div>
-        <button class="menu-item" onclick="localStorage.removeItem('bo_objects'); alert('Данные очищены'); renderMainMenu();" style="width: 100%; border: none; background: #ff3b30; color: white; padding: 15px; border-radius: 8px; font-weight: bold;">
-            Очистить данные
-        </button>
-    `;
-    document.getElementById('app-content').innerHTML = html;
-    setNavActive('main');
-}
-
-function setNavActive(tabId) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    const el = document.getElementById('nav-' + tabId);
-    if (el) el.classList.add('active');
-}
-
-
+// --- МЕНЮ "ДОБАВИТЬ" (ТОЛЬКО SVG, БЕЗ ЭМОДЖИ) ---
 function openAddMenu() {
     const menuItems = [
         { 
@@ -250,22 +195,22 @@ function openAddMenu() {
         },
         { 
             text: 'Новая задача', 
-            action: () => showStub('Новая задача', 'add'),
+            action: () => showStub('Новая задача', 'tasks'),
             svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>'
         },
         { 
             text: 'Расход денег', 
-            action: () => showStub('Расход денег', 'add'),
+            action: () => showStub('Расход денег', 'finance'),
             svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>'
         },
         { 
             text: 'Поступление денег', 
-            action: () => showStub('Поступление денег', 'add'),
+            action: () => showStub('Поступление денег', 'finance'),
             svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>'
         },
         { 
             text: 'Документ', 
-            action: () => showStub('Документ', 'add'),
+            action: () => showStub('Документ', 'reports'),
             svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>'
         },
         { 
@@ -275,7 +220,7 @@ function openAddMenu() {
         },
         { 
             text: 'Инструмент', 
-            action: () => showStub('Инструмент', 'add'),
+            action: () => showStub('Инструмент', 'objects'),
             svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>'
         }
     ];
@@ -309,7 +254,40 @@ function openAddMenu() {
     });
 }
 
+// --- ЗАГЛУШКИ И НАСТРОЙКИ ---
+function showStub(title, tabId) {
+    let html = `
+        <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
+            <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
+            <h3>${title}</h3>
+            <p>Раздел в разработке.</p>
+        </div>
+    `;
+    document.getElementById('app-content').innerHTML = html;
+    if (tabId) setNavActive(tabId);
+}
 
+function openSettings() {
+    let html = `
+        <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
+                <span>Темная тема</span>
+                <span style="color: var(--accent);">Включена</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
+                <span>Версия приложения</span>
+                <span style="color: var(--fg-dim);">7.1</span>
+            </div>
+        </div>
+        <button class="menu-item" onclick="localStorage.removeItem('bo_objects'); alert('Данные очищены'); renderMainMenu();" style="width: 100%; border: none; background: #ff3b30; color: white; padding: 15px; border-radius: 8px; font-weight: bold;">
+            Очистить данные
+        </button>
+    `;
+    document.getElementById('app-content').innerHTML = html;
+    setNavActive('main');
+}
+
+// --- ИНИЦИАЛИЗАЦИЯ ---
 document.addEventListener('DOMContentLoaded', () => {
     renderMainMenu();
 });
