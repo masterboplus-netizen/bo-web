@@ -240,7 +240,7 @@ function openAddMenu() {
         `;
     });
 
-    html += `</div></div>`;
+    html += `</div>`;
     overlay.innerHTML = html;
     document.body.appendChild(overlay);
 
@@ -353,7 +353,7 @@ function openTasks() {
         `;
     }
     
-    html += `<div style="height: 150px;"></div></div>`;
+    html += `</div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('tasks');
 }
