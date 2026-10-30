@@ -117,6 +117,9 @@
     
 
     
+    
+
+    
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const nav = document.getElementById('bottom-nav');
@@ -124,16 +127,17 @@
         let touchStartX = 0;
         let isSwiping = false;
 
+        // Открываем/закрываем меню свайпом
         document.addEventListener('touchstart', (e) => {
-            // Не перехватываем клики по кнопкам
+            // Если палец на кнопке или инпуте - не свайпаем
             if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.add-menu-item')) {
                 isSwiping = false;
                 return;
             }
-            
+
             const y = e.touches[0].clientY;
-            // Зона свайпа: нижние 180px экрана ИЛИ уже открытое меню
-            if (y > window.innerHeight - 180 || nav.classList.contains('expanded')) {
+            // Зона свайпа: нижние 200px экрана ИЛИ меню уже открыто
+            if (y > window.innerHeight - 200 || nav.classList.contains('expanded')) {
                 touchStartY = y;
                 touchStartX = e.touches[0].clientX;
                 isSwiping = true;
@@ -145,28 +149,28 @@
         document.addEventListener('touchend', (e) => {
             if (!isSwiping) return;
             isSwiping = false;
-            
+
             const touchEndY = e.changedTouches[0].clientY;
             const touchEndX = e.changedTouches[0].clientX;
             const dy = touchStartY - touchEndY; // >0 вверх, <0 вниз
             const dx = Math.abs(touchStartX - touchEndX);
 
-            // Игнорируем, если движение было больше вбок, чем вниз/вверх
+            // Игнорируем горизонтальные жесты
             if (dx > Math.abs(dy)) return;
 
             // Свайп вверх (открыть)
-            if (dy > 25 && !nav.classList.contains('expanded')) {
+            if (dy > 30 && !nav.classList.contains('expanded')) {
                 nav.classList.add('expanded');
             }
             // Свайп вниз (закрыть)
-            else if (dy < -25 && nav.classList.contains('expanded')) {
+            else if (dy < -30 && nav.classList.contains('expanded')) {
                 nav.classList.remove('expanded');
             }
         }, { passive: true });
     });
-</script>
+    </script>
 
-    <script src="app2.js?v=126"></script>
+    <script src="app2.js?v=127"></script>
     <script>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("sw.js?v=107").catch(function(){});
