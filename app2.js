@@ -42,11 +42,13 @@ function openObjects() {
     let saved = localStorage.getItem('bo_objects');
     let objects = saved ? JSON.parse(saved) : [...MOCK_OBJECTS];
     let html = `
-        <div style="position: sticky; top: 0; z-index: 10; display: flex; gap: 2px; background: var(--bg); padding: 10px 0; margin-bottom: 10px; width: 100%; box-sizing: border-box;">
+    document.getElementById('filters-container').innerHTML = `
+        <div style="display: flex; gap: 2px; background: var(--bg2); padding: 4px; border-radius: 30px; width: 100%; box-sizing: border-box;">
             <div style="flex: 1; text-align: center; background: var(--accent); color: white; padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Всё</div>
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Активные</div>
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Архив</div>
         </div>
+    `;
         <div class="object-list">`;
     objects.forEach(obj => {
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
@@ -170,6 +172,7 @@ function saveDiaryRecord() {
 
 // --- ФИНАНСЫ ---
 function openFinance() {
+    document.getElementById('filters-container').innerHTML = '';
     let html = `
         <div class="header" style="margin-bottom: 20px;">
             <h2 style="margin: 0; font-size: 22px;">Финансы</h2>
@@ -334,12 +337,14 @@ function openTaskDetails(taskTitle) {
 function openTasks() {
     let html = `
         
-        <div style="position: sticky; top: 0; z-index: 10; display: flex; gap: 2px; background: var(--bg); padding: 10px 0; margin-bottom: 10px; width: 100%; box-sizing: border-box;">
+    document.getElementById('filters-container').innerHTML = `
+        <div style="display: flex; gap: 2px; background: var(--bg2); padding: 4px; border-radius: 30px; width: 100%; box-sizing: border-box;">
             <div style="flex: 1; text-align: center; background: var(--accent); color: white; padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Все</div>
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Мои</div>
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Объект</div>
             <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Исполнитель</div>
         </div>
+    `;
 
         <div class="object-list">
     `;
