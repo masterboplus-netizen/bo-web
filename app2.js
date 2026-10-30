@@ -226,9 +226,7 @@ function openAddMenu() {
     ];
 
     let html = `
-        <div class="header" style="margin-bottom: 20px;">
-            <h2 style="margin: 0; font-size: 22px;">Добавить</h2>
-        </div>
+
         <div id="add-menu-container" style="display: flex; flex-direction: column; gap: 10px; padding-bottom: 160px;">
     `;
 
