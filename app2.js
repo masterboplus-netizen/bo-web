@@ -73,7 +73,10 @@ function openAddObject() {
     document.getElementById('app-content').innerHTML = html;
 }
 
+let isSavingObject = false;
 async function saveObject() {
+    if (isSavingObject) return;
+    isSavingObject = true;
     let name = document.getElementById('new-obj-name').value;
     let address = document.getElementById('new-obj-address').value;
     let budget = document.getElementById('new-obj-budget').value;
@@ -85,6 +88,7 @@ async function saveObject() {
         const objectId = newObj[0].id;
         await db.from('floors').insert([{ object_id: objectId, floor_number: 1, floor_name: 'Этаж 1' }]);
     }
+    isSavingObject = false;
     openObjects();
 }
 
