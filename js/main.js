@@ -1,4 +1,41 @@
+import { renderObjects } from './screens/objects.js';
 import { fetchObjects } from './api/objects.js';
-import { placeholder } from './screens/objects.js';
-console.log('Main.js loaded');
-placeholder();
+
+window.renderMainMenu = function() {
+    document.getElementById('app-content').innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
+        <h3 style="color: var(--fg);">Добро пожаловать в Master Bo!</h3>
+        <p>Выберите раздел в меню внизу.</p>
+    </div>`;
+    setNavActive('main');
+};
+
+window.openObjects = async function() {
+    document.getElementById('app-content').innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка...</div>';
+    try {
+        const objects = await fetchObjects();
+        renderObjects(objects);
+    } catch (e) {
+        document.getElementById('app-content').innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${e.message}</div>`;
+    }
+    setNavActive('objects');
+};
+
+window.showStub = function(title, tabId) {
+    document.getElementById('app-content').innerHTML = `
+        <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
+            <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
+            <h3>${title}</h3>
+            <p>Раздел в разработке.</p>
+        </div>`;
+    if (tabId) setNavActive(tabId);
+};
+
+export function setNavActive(tabId) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    const el = document.getElementById('nav-' + tabId);
+    if (el) el.classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.renderMainMenu();
+});
