@@ -1,3 +1,5 @@
+import { createObject } from '../api/objects.js';
+
 export function openAddMenu() {
     const addBtn = document.getElementById('add-btn-floating');
     const existing = document.getElementById('add-menu-overlay');
@@ -69,5 +71,37 @@ export function openAddMenu() {
 }
 
 export function openAddObject() {
-    window.showStub('Новый объект', 'objects');
+    let html = `
+        <div style="padding-top: 10px;">
+            <div style="margin-bottom: 25px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Название объекта</label>
+                <input type="text" id="new-obj-name" style="width: 100%; box-sizing: border-box; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="Например: Квартира на Ленина">
+            </div>
+            <div style="margin-bottom: 25px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Адрес</label>
+                <input type="text" id="new-obj-address" style="width: 100%; box-sizing: border-box; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="Улица, дом, квартира">
+            </div>
+            <div style="margin-bottom: 25px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Бюджет (₽)</label>
+                <input type="number" id="new-obj-budget" style="width: 100%; box-sizing: border-box; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="0">
+            </div>
+            <button onclick="window.saveNewObject()" style="width: 100%; padding: 18px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;">Создать объект</button>
+            <button onclick="window.openObjects()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 14px; cursor: pointer; margin-top: 10px;">Отмена</button>
+        </div>
+    `;
+    document.getElementById('app-content').innerHTML = html;
+}
+
+export async function saveNewObject() {
+    let name = document.getElementById('new-obj-name').value;
+    let address = document.getElementById('new-obj-address').value;
+    let budget = document.getElementById('new-obj-budget').value;
+    if (!name) { document.getElementById('new-obj-name').focus(); return; }
+    
+    try {
+        await createObject(name, address, budget);
+        window.openObjects();
+    } catch (e) {
+        alert('Ошибка: ' + e.message);
+    }
 }
