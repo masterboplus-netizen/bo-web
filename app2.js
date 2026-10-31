@@ -16,7 +16,7 @@ function setNavActive(tabId) {
 }
 
 function renderMainMenu() {
-    document.getElementById('filters-container').innerHTML = '';
+    
     let html = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
         <h3 style="color: var(--fg);">Добро пожаловать в Master Bo 7.1!</h3>
         <p>Выберите раздел в меню внизу.</p>
@@ -26,13 +26,7 @@ function renderMainMenu() {
 }
 
 async function openObjects() {
-    document.getElementById('filters-container').innerHTML = `
-        <div style="display: flex; gap: 2px; background: var(--bg2); padding: 4px; border-radius: 30px; width: 100%; box-sizing: border-box;">
-            <div style="flex: 1; text-align: center; background: var(--accent); color: white; padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Всё</div>
-            <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Активные</div>
-            <div style="flex: 1; text-align: center; color: var(--fg-dim); padding: 10px 0; border-radius: 26px; font-size: 14px; font-weight: 500; cursor: pointer;">Архив</div>
-        </div>
-    `;
+    
     let html = `<div class="object-list" style="padding-top: 10px;">`;
     const { data: objects, error } = await db.from('objects').select('*').order('created_at', { ascending: false });
     if (error) {
@@ -50,7 +44,7 @@ async function openObjects() {
 }
 
 function openTasks() {
-    document.getElementById('filters-container').innerHTML = '';
+    
     let html = `<div class="object-list" style="padding-top: 10px;"><div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Задачи (в разработке)</div></div>`;
     document.getElementById('app-content').innerHTML = html;
     setNavActive('tasks');
@@ -65,27 +59,27 @@ function showStub(title, tabId) {
 
 
 function openPersonal() {
-    document.getElementById('filters-container').innerHTML = '';
+    
     showStub('💸 Личные', 'personal');
 }
 
 function openFinance() {
-    document.getElementById('filters-container').innerHTML = '';
+    
     showStub('💰 Финансы', 'finance');
 }
 
 function openReports() {
-    document.getElementById('filters-container').innerHTML = '';
+    
     showStub('📈 Отчёты', 'reports');
 }
 
 function openKPI() {
-    document.getElementById('filters-container').innerHTML = '';
+    
     showStub('📊 KPI', 'kpi');
 }
 
 function openCRM() {
-    document.getElementById('filters-container').innerHTML = '';
+    
     showStub('👥 CRM', 'crm');
 }
 
@@ -165,12 +159,12 @@ function openAddMenu() {
 }
 
 function openDiary() {
-    document.getElementById('filters-container').innerHTML = '';
+    
     showStub('📔 Дневник', 'diary');
 }
 
 function openSettings() {
-    document.getElementById('filters-container').innerHTML = '';
+    
     let html = `
         <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
@@ -185,7 +179,7 @@ function openSettings() {
 
 
 function openAddObject() {
-    document.getElementById('filters-container').innerHTML = '';
+    
     let html = `
         <div style="padding-top: 10px;">
             <div style="margin-bottom: 25px;">
