@@ -183,24 +183,71 @@ function openSettings() {
     setNavActive('main');
 }
 
+
 function openAddObject() {
     let html = `
-        <div style="background: var(--bg2); padding: 20px; border-radius: 12px;">
-            <label style="display:block; margin-bottom: 10px;">Название объекта</label>
-            <input type="text" id="new-obj-name" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="Например: Квартира на Ленина">
-            <label style="display:block; margin-bottom: 10px;">Бюджет (₽)</label>
-            <input type="number" id="new-obj-budget" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="0">
-            <button onclick="saveObject()" style="width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">Сохранить объект</button>
+        <div style="padding-top: 10px;">
+            <div style="margin-bottom: 25px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Название объекта</label>
+                <input type="text" id="new-obj-name" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="Например: Квартира на Ленина">
+            </div>
+
+            <div style="margin-bottom: 25px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Адрес</label>
+                <input type="text" id="new-obj-address" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="Улица, дом, квартира">
+            </div>
+
+            <div style="margin-bottom: 25px;">
+                <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Бюджет (₽)</label>
+                <input type="number" id="new-obj-budget" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="0">
+            </div>
+
+            <button onclick="saveObject()" style="width: 100%; padding: 18px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;">Создать объект</button>
+            <button onclick="openObjects()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 14px; cursor: pointer; margin-top: 10px;">Отмена</button>
         </div>
     `;
     document.getElementById('app-content').innerHTML = html;
 }
 
 
+
+
 async function saveObject() {
     let name = document.getElementById('new-obj-name').value;
+    let address = document.getElementById('new-obj-address').value;
     let budget = document.getElementById('new-obj-budget').value;
+    
     if (!name) { document.getElementById('new-obj-name').focus(); return; }
-    const { error } = await db.from('objects').insert([{ name: name, budget: Number(budget) || 0, status: 'active' }]);
-    if (error) { alert('Ошибка: ' + error.message); } else { openObjects(); }
+
+    // Генерируем код как в боте: OBJ-XXXXXXXX
+    let code = 'OBJ-' + Math.random().toString(16).substring(2, 10).toUpperCase();
+
+    // 1. Создаем объект
+    const { data: newObj, error } = await db.from('objects').insert([{
+        code: code,
+        name: name,
+        address: address || null,
+        budget: Number(budget) || 0,
+        status: 'active'
+    }]).select();
+
+    if (error) {
+        alert('Ошибка: ' + error.message);
+        return;
+    }
+
+    // 2. Автосоздаем "Этаж 1" (как в боте)
+    if (newObj && newObj.length > 0) {
+        const objectId = newObj[0].id;
+        const { error: floorError } = await db.from('floors').insert([{
+            object_id: objectId,
+            floor_number: 1,
+            floor_name: 'Этаж 1'
+        }]);
+        if (floorError) console.warn('Ошибка создания этажа:', floorError.message);
+    }
+
+    // 3. Возвращаемся к списку
+    openObjects();
 }
+
