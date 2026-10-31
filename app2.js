@@ -36,7 +36,7 @@ async function openObjects() {
             let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
             let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
             html += `
-                <div class="object-card">
+                <div class="object-card" onclick="openObject(${obj.id})">
                     <div class="obj-title">${escapeHtml(obj.name)}</div>
                     <div class="obj-details">
                         <span class="badge" style="background: ${statusColor}">${statusText}</span>
