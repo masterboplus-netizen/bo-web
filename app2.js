@@ -285,13 +285,11 @@ function openAddMenu() {
 async function openObject(objectId) {
     const { data: obj, error } = await db.from('objects').select('*').eq('id', objectId).single();
     if (error || !obj) { alert('Ошибка: ' + (error?.message || 'Объект не найден')); return; }
-
     let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
     let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
     let address = obj.address || 'Адрес не указан';
     let yandexLink = 'https://yandex.ru/maps/?text=' + encodeURIComponent(address);
     let gisLink = 'https://2gis.ru/search/' + encodeURIComponent(address);
-
     let html = `
         <div style="padding-top: 10px;">
             <div style="background: var(--bg2); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
@@ -321,7 +319,6 @@ async function openObject(objectId) {
     setNavActive('objects');
 }
 
-// === РЕДАКТИРОВАНИЕ ОБЪЕКТА ===
 async function openEditObject(objectId) {
     const { data: obj, error } = await db.from('objects').select('*').eq('id', objectId).single();
     if (error || !obj) { alert('Ошибка: ' + (error?.message || 'Объект не найден')); return; }
