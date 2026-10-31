@@ -6,7 +6,7 @@ import { openAddMenu, openAddObject, saveNewObject } from './modals/add_menu.js'
 
 window.renderMainMenu = function() {
     document.getElementById('app-content').innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
-        <h3 style="color: var(--fg);">Добро пожаловать в Master Bo!</h3>
+        <h3 style="color: var(--fg);">Добро пожаловать в Master Boss!</h3>
         <p>Выберите раздел в меню внизу.</p>
     </div>`;
     setNavActive('main');
