@@ -56,15 +56,15 @@ function openAddObject() {
         <div style="padding-top: 10px;">
             <div style="margin-bottom: 25px;">
                 <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Название объекта</label>
-                <input type="text" id="new-obj-name" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="Например: Квартира на Ленина">
+                <input type="text" id="new-obj-name" style="width: 100%; box-sizing: border-box; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="Например: Квартира на Ленина">
             </div>
             <div style="margin-bottom: 25px;">
                 <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Адрес</label>
-                <input type="text" id="new-obj-address" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="Улица, дом, квартира">
+                <input type="text" id="new-obj-address" style="width: 100%; box-sizing: border-box; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="Улица, дом, квартира">
             </div>
             <div style="margin-bottom: 25px;">
                 <label style="display:block; margin-bottom: 8px; color: var(--fg-dim); font-size: 14px;">Бюджет (₽)</label>
-                <input type="number" id="new-obj-budget" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="0">
+                <input type="number" id="new-obj-budget" style="width: 100%; box-sizing: border-box; padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 16px; outline: none;" placeholder="0">
             </div>
             <button onclick="saveObject()" style="width: 100%; padding: 18px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;">Создать объект</button>
             <button onclick="openObjects()" style="width: 100%; padding: 15px; background: none; color: var(--fg-dim); border: none; font-size: 14px; cursor: pointer; margin-top: 10px;">Отмена</button>
