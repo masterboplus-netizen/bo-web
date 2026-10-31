@@ -185,6 +185,7 @@ function openSettings() {
 
 
 function openAddObject() {
+    document.getElementById('filters-container').innerHTML = '';
     let html = `
         <div style="padding-top: 10px;">
             <div style="margin-bottom: 25px;">
