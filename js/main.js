@@ -2,6 +2,7 @@ import { renderObjects } from './screens/objects.js';
 import { openObject } from './screens/objectDetail.js';
 import { openEditObject, saveObjectEdit } from './screens/objectEdit.js';
 import { fetchObjects } from './api/objects.js';
+import { openAddMenu, openAddObject } from './modals/add_menu.js';
 
 window.renderMainMenu = function() {
     document.getElementById('app-content').innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
@@ -25,6 +26,20 @@ window.openObjects = async function() {
 window.openObject = openObject;
 window.openEditObject = openEditObject;
 window.saveObjectEdit = saveObjectEdit;
+window.openAddMenu = openAddMenu;
+window.openAddObject = openAddObject;
+
+window.openSettings = function() {
+    document.getElementById('app-content').innerHTML = `
+        <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
+                <span>Версия приложения</span>
+                <span style="color: var(--fg-dim);">7.1</span>
+            </div>
+        </div>
+    `;
+    setNavActive('main');
+};
 
 window.showStub = function(title, tabId) {
     document.getElementById('app-content').innerHTML = `
