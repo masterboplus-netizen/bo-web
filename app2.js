@@ -184,5 +184,23 @@ function openSettings() {
 }
 
 function openAddObject() {
-    showStub('🏠 Новый объект', 'objects');
+    let html = `
+        <div style="background: var(--bg2); padding: 20px; border-radius: 12px;">
+            <label style="display:block; margin-bottom: 10px;">Название объекта</label>
+            <input type="text" id="new-obj-name" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="Например: Квартира на Ленина">
+            <label style="display:block; margin-bottom: 10px;">Бюджет (₽)</label>
+            <input type="number" id="new-obj-budget" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: white; margin-bottom: 20px;" placeholder="0">
+            <button onclick="saveObject()" style="width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">Сохранить объект</button>
+        </div>
+    `;
+    document.getElementById('app-content').innerHTML = html;
+}
+
+
+async function saveObject() {
+    let name = document.getElementById('new-obj-name').value;
+    let budget = document.getElementById('new-obj-budget').value;
+    if (!name) { document.getElementById('new-obj-name').focus(); return; }
+    const { error } = await db.from('objects').insert([{ name: name, budget: Number(budget) || 0, status: 'active' }]);
+    if (error) { alert('Ошибка: ' + error.message); } else { openObjects(); }
 }
