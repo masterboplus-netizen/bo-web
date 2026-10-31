@@ -1,4 +1,6 @@
 import { renderObjects } from './screens/objects.js';
+import { openObject } from './screens/objectDetail.js';
+import { openEditObject, saveObjectEdit } from './screens/objectEdit.js';
 import { fetchObjects } from './api/objects.js';
 
 window.renderMainMenu = function() {
@@ -19,6 +21,10 @@ window.openObjects = async function() {
     }
     setNavActive('objects');
 };
+
+window.openObject = openObject;
+window.openEditObject = openEditObject;
+window.saveObjectEdit = saveObjectEdit;
 
 window.showStub = function(title, tabId) {
     document.getElementById('app-content').innerHTML = `
