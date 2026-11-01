@@ -1,6 +1,6 @@
 {
-  "name": "Master Boss",
-  "short_name": "Master Boss",
+  "name": "MasterBoss",
+  "short_name": "MasterBoss",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
