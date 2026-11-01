@@ -36,7 +36,7 @@ export function initFloatingMenu() {
     wrapper.addEventListener('touchend', () => {
         if (isDragging) {
             isDragging = false;
-            wrapper.style.transition = 'all 0.3s ease';
+            wrapper.style.transition = 'transform 0.3s ease'; // Восстанавливаем анимацию
         }
     });
 
@@ -64,24 +64,26 @@ export function initFloatingMenu() {
     window.addEventListener('mouseup', () => {
         if (isDragging) {
             isDragging = false;
-            wrapper.style.transition = 'all 0.3s ease';
+            wrapper.style.transition = 'transform 0.3s ease';
         }
     });
 
-    // === СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ (СДВИГ ВПРАВО) ===
+    // === СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ (ПОЛНЫЙ ВЫЕЗД) ===
     window.toggleCapsule = function(e) {
         e.stopPropagation();
         isCollapsed = !isCollapsed;
 
         if (isCollapsed) {
-            // Сдвигаем вправо, оставляя только 20% (чтобы было за что зацепить)
-            wrapper.style.transform = 'translateX(75%)';
-            // Поворачиваем стрелочку влево
-            toggleIcon.style.transform = 'rotate(90deg)';
+            // Уезжаем вправо почти полностью (оставляем только стрелку)
+            // Ширина капсулы примерно 66px, стрелка 25px. Сдвигаем на 90%.
+            wrapper.style.transform = 'translateX(92%)';
+            // Стрелочка поворачивается влево (указывает, что можно вытянуть)
+            toggleIcon.style.transform = 'rotate(0deg)'; 
         } else {
             // Возвращаем на место
             wrapper.style.transform = 'translateX(0)';
-            toggleIcon.style.transform = 'rotate(0deg)';
+            // Стрелочка поворачивается вправо (указывает, что можно спрятать)
+            toggleIcon.style.transform = 'rotate(180deg)';
         }
     };
 }
