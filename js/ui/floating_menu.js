@@ -70,14 +70,28 @@ export function initFloatingMenu() {
     }
   });
 
-  // СВОРАЧИВАНИЕ КАПСУЛЫ (через right, чтобы не конфликтовать с top при драге)
+  // СВОРАЧИВАНИЕ (вешаем обработчик прямо здесь)
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isCollapsed = !isCollapsed;
+      
+      if (isCollapsed) {
+        wrapper.style.right = '-80px';
+        toggleIcon.style.transform = 'rotate(180deg)';
+      } else {
+        wrapper.style.right = '8px';
+        toggleIcon.style.transform = 'rotate(0deg)';
+      }
+    });
+  }
+
+  // Делаем глобальную функцию на всякий случай
   window.toggleCapsule = function(e) {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     isCollapsed = !isCollapsed;
-    
     if (isCollapsed) {
-      // Сдвигаем вправо так, чтобы осталась только стрелка (ширина ~50px)
-      wrapper.style.right = '-80px'; 
+      wrapper.style.right = '-80px';
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
       wrapper.style.right = '8px';
