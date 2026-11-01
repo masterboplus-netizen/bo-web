@@ -14,7 +14,7 @@ window.renderMainMenu = function() {
 };
 
 window.openObjects = async function() {
-    document.getElementById('app-content').innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка...</div>';
+    // Загрузка убрана
     try {
         const objects = await fetchObjects();
         renderObjects(objects);
