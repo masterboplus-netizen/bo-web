@@ -1,3 +1,7 @@
+window.onerror = function(msg, url, line) {
+  document.body.innerHTML += '<div style="position:fixed; bottom:10px; left:10px; right:10px; background:red; color:white; padding:10px; z-index:999999; font-size:12px;">ОШИБКА: ' + msg + ' (строка ' + line + ')</div>';
+};
+
 import { renderObjects } from './screens/objects.js';
 import { openObject } from './screens/objectDetail.js';
 import { openEditObject, saveObjectEdit } from './screens/objectEdit.js';
