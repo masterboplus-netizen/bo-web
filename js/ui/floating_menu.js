@@ -77,7 +77,7 @@ export function initFloatingMenu() {
     
     if (isCollapsed) {
       // Сдвигаем вправо так, чтобы осталась только стрелка (ширина ~50px)
-      wrapper.style.right = '-60px'; 
+      wrapper.style.right = '-75px'; 
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
       wrapper.style.right = '16px';
