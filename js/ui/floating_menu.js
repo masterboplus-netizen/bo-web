@@ -11,7 +11,8 @@ export function initFloatingMenu() {
     let currentTop = wrapper.getBoundingClientRect().top;
     let isCollapsed = false;
 
-    // === ПЕРЕТАСКИВАНИЕ (ТАЧ) ===
+    // ... (логика перетаскивания капсулы остается без изменений, я её не трогаю, чтобы не сломать)
+    // ПЕРЕТАСКИВАНИЕ (ТАЧ)
     wrapper.addEventListener('touchstart', (e) => {
         if (e.target.closest('button') || e.target.closest('#toggle-capsule')) return;
         isDragging = true;
@@ -36,11 +37,11 @@ export function initFloatingMenu() {
     wrapper.addEventListener('touchend', () => {
         if (isDragging) {
             isDragging = false;
-            wrapper.style.transition = 'transform 0.3s ease'; // Восстанавливаем анимацию
+            wrapper.style.transition = 'transform 0.3s ease';
         }
     });
 
-    // === ПЕРЕТАСКИВАНИЕ (МЫШКА) ===
+    // ПЕРЕТАСКИВАНИЕ (МЫШКА)
     wrapper.addEventListener('mousedown', (e) => {
         if (e.target.closest('button') || e.target.closest('#toggle-capsule')) return;
         isDragging = true;
@@ -68,49 +69,38 @@ export function initFloatingMenu() {
         }
     });
 
-    // === СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ (ПОЛНЫЙ ВЫЕЗД) ===
+    // СВОРАЧИВАНИЕ КАПСУЛЫ
     window.toggleCapsule = function(e) {
         e.stopPropagation();
         isCollapsed = !isCollapsed;
-
         if (isCollapsed) {
-            // Уезжаем вправо почти полностью (оставляем только стрелку)
-            // Ширина капсулы примерно 66px, стрелка 25px. Сдвигаем на 90%.
             wrapper.style.transform = 'translateX(92%)';
-            // Стрелочка поворачивается влево (указывает, что можно вытянуть)
-            toggleIcon.style.transform = 'rotate(0deg)'; 
+            toggleIcon.style.transform = 'rotate(0deg)';
         } else {
-            // Возвращаем на место
             wrapper.style.transform = 'translateX(0)';
-            // Стрелочка поворачивается вправо (указывает, что можно спрятать)
             toggleIcon.style.transform = 'rotate(180deg)';
         }
     };
-}
 
-    // === СВОРАЧИВАНИЕ НИЖНЕГО МЕНЮ ===
+    // === СВОРАЧИВАНИЕ НИЖНЕГО РЯДА МЕНЮ ===
     window.toggleBottomNav = function() {
-        const nav = document.getElementById('bottom-nav');
-        const toggleBtn = document.getElementById('nav-toggle');
+        const row2 = document.getElementById('bottom-nav-row2');
         const icon = document.getElementById('nav-toggle-icon');
-        const isCollapsed = nav.style.transform === 'translateY(100%)';
+        const btn = document.getElementById('nav-toggle');
+        if (!row2) return;
 
-        if (isCollapsed) {
+        const isHidden = row2.style.transform === 'translateY(100%)';
+
+        if (isHidden) {
             // Разворачиваем
-            nav.style.transform = 'translateY(0)';
-            toggleBtn.style.bottom = '140px';
-            toggleBtn.style.borderBottom = 'none';
-            toggleBtn.style.borderTop = '1px solid var(--bg3)';
-            toggleBtn.style.borderRadius = '10px 10px 0 0';
+            row2.style.transform = 'translateY(0)';
+            btn.style.bottom = '70px'; // Поднимаем ручку над верхним рядом
             icon.style.transform = 'rotate(0deg)';
         } else {
-            // Сворачиваем
-            nav.style.transform = 'translateY(100%)';
-            toggleBtn.style.bottom = '0px'; // Ручка опускается в самый низ
-            toggleBtn.style.borderBottom = 'none';
-            toggleBtn.style.borderTop = '1px solid var(--bg3)';
-            toggleBtn.style.borderRadius = '10px 10px 0 0';
+            // Сворачиваем (сдвигаем вниз только второй ряд)
+            row2.style.transform = 'translateY(100%)';
+            btn.style.bottom = '0px'; // Ручка опускается вниз
             icon.style.transform = 'rotate(180deg)';
         }
     };
-    
+}

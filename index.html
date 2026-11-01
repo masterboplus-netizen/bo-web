@@ -60,26 +60,20 @@
         </div>
     </div>
 
-    <!-- Ручка для сворачивания меню -->
-    <div id="nav-toggle" onclick="toggleBottomNav()" style="position: fixed; bottom: 140px; left: 50%; transform: translateX(-50%); width: 40px; height: 20px; background: var(--bg2); border: 1px solid var(--bg3); border-bottom: none; border-radius: 10px 10px 0 0; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10000; transition: all 0.3s ease;">
-        <svg id="nav-toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M6 9l6 6 6-6"/></svg>
-    </div>
-<nav id="bottom-nav">
+    <nav id="bottom-nav">
         <div class="nav-row">
             <div class="nav-item" id="nav-personal" onclick="window.showStub('💸 Личные', 'personal')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg><span>Личные</span></div>
-            <div class="nav-item" id="nav-objects" onclick="window.openObjects()"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V7l8-4 8 4v14"></path><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path></svg><span>Объекты</span></div>
-            <div style="flex: 1;"></div>
-            <div class="nav-item" id="nav-finance" onclick="window.showStub('💰 Финансы', 'finance')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg><span>Финансы</span></div>
-            <div class="nav-item" id="nav-tasks" onclick="window.showStub('📋 Задачи', 'tasks')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg><span>Задачи</span></div>
+
+        <!-- Ручка для сворачивания нижнего ряда -->
+        <div id="nav-toggle" onclick="toggleBottomNav()" style="position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%); width: 40px; height: 15px; background: var(--bg2); border: 1px solid var(--bg3); border-bottom: none; border-radius: 10px 10px 0 0; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10000; transition: all 0.3s ease;">
+            <svg id="nav-toggle-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M6 9l6 6 6-6"/></svg>
         </div>
-        <div class="nav-row">
+        <div id="bottom-nav-row2" style="transition: transform 0.3s ease;">
+            <div class="nav-row">
             <div class="nav-item" id="nav-diary" onclick="window.showStub('📔 Дневник', 'diary')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Дневник</span></div>
-            <div class="nav-item" id="nav-reports" onclick="window.showStub('📈 Отчёты', 'reports')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg><span>Отчёты</span></div>
-            <div style="flex: 1;"></div>
-            <div class="nav-item" id="nav-kpi" onclick="window.showStub('📊 KPI', 'kpi')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg><span>KPI</span></div>
-            <div class="nav-item" id="nav-crm" onclick="window.showStub('👥 CRM', 'crm')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span>CRM</span></div>
         </div>
     </nav>
+
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="js/main.js"></script>
