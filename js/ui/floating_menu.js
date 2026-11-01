@@ -80,7 +80,7 @@ export function initFloatingMenu() {
       wrapper.style.right = '-75px'; 
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
-      wrapper.style.right = '16px';
+      wrapper.style.right = '8px';
       toggleIcon.style.transform = 'rotate(0deg)';
     }
   };
