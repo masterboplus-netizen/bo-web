@@ -1,0 +1,47 @@
+import re
+p = 'index.html'
+s = open(p).read()
+
+new_html = """
+<!-- Плавающее меню -->
+<div id="floating-capsule-wrapper" style="position: fixed; right: 16px; bottom: 90px; z-index: 10000; touch-action: none;">
+  <div id="floating-capsule" style="display: flex; flex-direction: row; align-items: center; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 32px; padding: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.3s ease;">
+    
+    <!-- Стрелка (слева) -->
+    <div id="toggle-capsule" onclick="toggleCapsule(event)" style="padding: 0 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--fg-dim);">
+      <svg id="toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+
+    <!-- Колонка с кнопками -->
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0 4px;">
+      <button class="capsule-btn" onclick="window.openCamera()" style="width: 48px; height: 48px; border-radius: 50%; background: var(--bg3); border: none; color: var(--fg); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </button>
+      <button class="capsule-btn" onclick="window.openMic()" style="width: 48px; height: 48px; border-radius: 50%; background: var(--bg3); border: none; color: var(--fg); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <button class="capsule-btn" onclick="window.openAddMenu()" style="width: 52px; height: 52px; border-radius: 50%; background: var(--accent); border: none; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,122,255,0.4);">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+
+    <!-- Три точки (справа) -->
+    <div style="padding: 0 4px; cursor: grab; display: flex; flex-direction: column; gap: 3px;" title="Перетащить">
+      <div style="width: 4px; height: 4px; border-radius: 50%; background: var(--fg-dim); opacity: 0.5;"></div>
+      <div style="width: 4px; height: 4px; border-radius: 50%; background: var(--fg-dim); opacity: 0.5;"></div>
+      <div style="width: 4px; height: 4px; border-radius: 50%; background: var(--fg-dim); opacity: 0.5;"></div>
+    </div>
+
+  </div>
+</div>
+<!-- КОНЕЦ ПЛАВАЮЩЕГО МЕНЮ -->
+"""
+
+# Ищем блок от начала до конца и заменяем его
+pattern = re.compile(r'<!-- Плавающее меню -->.*?<!-- КОНЕЦ ПЛАВАЮЩЕГО МЕНЮ -->', re.DOTALL)
+if pattern.search(s):
+    s = pattern.sub(new_html, s)
+    open(p, 'w').write(s)
+    print('Готово: блок меню аккуратно заменен')
+else:
+    print('Ошибка: не найден блок меню')
