@@ -1,6 +1,7 @@
 import { renderObjects } from './screens/objects.js';
 import { openObject } from './screens/objectDetail.js';
 import { openEditObject, saveObjectEdit } from './screens/objectEdit.js';
+import { initFloatingMenu } from './ui/floating_menu.js';
 import { fetchObjects } from './api/objects.js';
 import { openAddMenu, openAddObject, saveNewObject } from './modals/add_menu.js';
 
@@ -59,5 +60,6 @@ export function setNavActive(tabId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initFloatingMenu();
     window.renderMainMenu();
 });
