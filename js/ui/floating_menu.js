@@ -87,3 +87,30 @@ export function initFloatingMenu() {
         }
     };
 }
+
+    // === СВОРАЧИВАНИЕ НИЖНЕГО МЕНЮ ===
+    window.toggleBottomNav = function() {
+        const nav = document.getElementById('bottom-nav');
+        const toggleBtn = document.getElementById('nav-toggle');
+        const icon = document.getElementById('nav-toggle-icon');
+        const isCollapsed = nav.style.transform === 'translateY(100%)';
+
+        if (isCollapsed) {
+            // Разворачиваем
+            nav.style.transform = 'translateY(0)';
+            toggleBtn.style.bottom = '140px';
+            toggleBtn.style.borderBottom = 'none';
+            toggleBtn.style.borderTop = '1px solid var(--bg3)';
+            toggleBtn.style.borderRadius = '10px 10px 0 0';
+            icon.style.transform = 'rotate(0deg)';
+        } else {
+            // Сворачиваем
+            nav.style.transform = 'translateY(100%)';
+            toggleBtn.style.bottom = '0px'; // Ручка опускается в самый низ
+            toggleBtn.style.borderBottom = 'none';
+            toggleBtn.style.borderTop = '1px solid var(--bg3)';
+            toggleBtn.style.borderRadius = '10px 10px 0 0';
+            icon.style.transform = 'rotate(180deg)';
+        }
+    };
+    
