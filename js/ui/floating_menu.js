@@ -74,8 +74,8 @@ export function initFloatingMenu() {
         e.stopPropagation();
         isCollapsed = !isCollapsed;
         if (isCollapsed) {
-            wrapper.style.transform = 'translateX(calc(100% - 40px))';
-            toggleIcon.style.transform = 'rotate(0deg)';
+            wrapper.style.transform = 'translateX(calc(100% - 30px))';
+            toggleIcon.style.transform = 'rotate(180deg)';
         } else {
             wrapper.style.transform = 'translateX(0)';
             toggleIcon.style.transform = 'rotate(180deg)';
