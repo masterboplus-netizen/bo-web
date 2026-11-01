@@ -36,10 +36,10 @@ export function openAddMenu() {
   document.body.appendChild(overlay);
   document.body.appendChild(sheet);
 
-  requestAnimationFrame(() => {
+  setTimeout(() => {
     overlay.style.opacity = '1';
     sheet.style.transform = 'translateY(0)';
-  });
+  }, 10);
 
   function closeMenu() {
     overlay.style.opacity = '0';
