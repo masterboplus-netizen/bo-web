@@ -22,25 +22,28 @@ export function openAddMenu() {
     btn.onmouseover = () => btn.style.background = 'var(--border)';
     btn.onmouseout = () => btn.style.background = 'var(--bg3)';
     
-    btn.onclick = () => {
+    btn.onclick = (e) => {
+      e.stopPropagation(); // Останавливаем клик, чтобы он не улетал на фон
       closeMenu();
       item.action();
     };
     grid.appendChild(btn);
   });
 
+  // Шапка с крестиком (без полоски и текста)
   sheet.innerHTML = `
-  <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 24px;">
-    <div id="add-menu-close" style="cursor: pointer; padding: 8px; color: var(--fg-dim); background: var(--bg3); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 16px;">
+      <div id="add-menu-close" style="cursor: pointer; padding: 8px; color: var(--fg-dim); background: var(--bg3); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </div>
     </div>
-  </div>
-`;
+  `;
   sheet.appendChild(grid);
   
   document.body.appendChild(overlay);
   document.body.appendChild(sheet);
 
+  // Плавная анимация выезда
   setTimeout(() => {
     overlay.style.opacity = '1';
     sheet.style.transform = 'translateY(0)';
@@ -55,5 +58,8 @@ export function openAddMenu() {
     }, 300);
   }
 
+  // Привязываем закрытие к крестику и фону
   overlay.onclick = closeMenu;
+  const closeBtn = document.getElementById('add-menu-close');
+  if (closeBtn) closeBtn.onclick = closeMenu;
 }
