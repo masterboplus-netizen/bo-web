@@ -1,5 +1,6 @@
+import { db } from '../api/supabase.js';
+
 export function openCameraModal() {
-  // Создаем контейнер для модалки
   const modal = document.createElement('div');
   modal.id = 'camera-modal';
   modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;';
@@ -10,7 +11,8 @@ export function openCameraModal() {
       <canvas id="camera-canvas" style="display: none;"></canvas>
       <img id="camera-preview" style="display: none; width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0;">
       
-      <!-- Кнопки управления -->
+      <div id="camera-loading" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; font-size: 18px;">Загрузка...</div>
+
       <div style="position: absolute; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; gap: 20px; align-items: center;">
         <button id="camera-close" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer;">✕</button>
         <button id="camera-shoot" style="background: white; border: none; width: 70px; height: 70px; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(255,255,255,0.5);"></button>
@@ -27,11 +29,11 @@ export function openCameraModal() {
   const shootBtn = document.getElementById('camera-shoot');
   const saveBtn = document.getElementById('camera-save');
   const closeBtn = document.getElementById('camera-close');
+  const loading = document.getElementById('camera-loading');
 
   let stream = null;
   let photoData = null;
 
-  // Запуск камеры
   async function startCamera() {
     try {
       stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
@@ -42,26 +44,21 @@ export function openCameraModal() {
     }
   }
 
-  // Остановка камеры
   function stopCamera() {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
+    if (stream) stream.getTracks().forEach(track => track.stop());
   }
 
-  // Закрытие
   function closeModal() {
     stopCamera();
     modal.remove();
   }
 
-  // Сделать фото
   shootBtn.addEventListener('click', () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    photoData = canvas.toDataURL('image/jpeg');
+    photoData = canvas.toDataURL('image/jpeg', 0.8);
     
     video.style.display = 'none';
     preview.src = photoData;
@@ -71,15 +68,43 @@ export function openCameraModal() {
     saveBtn.style.display = 'block';
   });
 
-  // Сохранить (пока просто выводим в консоль, потом привяжем к Supabase)
-  saveBtn.addEventListener('click', () => {
-    console.log('Фото готово:', photoData.substring(0, 50) + '...');
-    alert('Фото сделано! (Сохранение в базу добавим позже)');
-    closeModal();
+  // СОХРАНЕНИЕ В SUPABASE STORAGE
+  saveBtn.addEventListener('click', async () => {
+    if (!photoData) return;
+    loading.style.display = 'flex';
+
+    try {
+      // Конвертируем Base64 в Blob
+      const res = await fetch(photoData);
+      const blob = await res.blob();
+      
+      // Генерируем уникальное имя файла
+      const fileName = `photo_${Date.now()}.jpg`;
+      
+      // Загружаем в бакет 'photos'
+      const { data, error } = await db.storage
+        .from('photos')
+        .upload(fileName, blob, { contentType: 'image/jpeg' });
+
+      if (error) throw error;
+
+      // Получаем публичную ссылку
+      const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
+      
+      console.log('Фото загружено! Ссылка:', urlData.publicUrl);
+      
+      // Тут потом можно сохранить urlData.publicUrl в таблицу базы данных
+      
+      alert('Фото успешно загружено в облако!');
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert('Ошибка загрузки: ' + err.message);
+    } finally {
+      loading.style.display = 'none';
+    }
   });
 
   closeBtn.addEventListener('click', closeModal);
-
-  // Запускаем
   startCamera();
 }
