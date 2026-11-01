@@ -67,3 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initFloatingMenu();
     window.renderMainMenu();
 });
+
+
+window.showToast = function(msg) {
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; z-index: 999999; border: 1px solid rgba(255,255,255,0.2); transition: opacity 0.3s;';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2000);
+};
