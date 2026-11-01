@@ -53,9 +53,13 @@
             <!-- Кнопка сворачивания -->
             
             <!-- Кнопка сворачивания (сбоку) -->
-            <div id="toggle-capsule" onclick="toggleCapsule(event)" style="position: absolute; left: -25px; top: 50%; transform: translateY(-50%); width: 25px; height: 50px; background: var(--bg2); border: 1px solid var(--bg3); border-right: none; border-radius: 10px 0 0 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--fg-dim); z-index: 10002;">
+            
+            <div id="toggle-capsule" onclick="toggleCapsule(event)" style="position: absolute; left: -30px; top: 0; bottom: 0; width: 30px; background: var(--bg2); border: 1px solid var(--bg3); border-right: none; border-radius: 15px 0 0 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--fg-dim); z-index: 10002;">
+                <!-- Визуальная ручка (полоска) -->
+                <div style="width: 4px; height: 20px; background: var(--fg-dim); border-radius: 2px; opacity: 0.5; margin-bottom: 5px;"></div>
                 <svg id="toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M15 18l-6-6 6-6"/></svg>
             </div>
+
 
         </div>
     </div>
@@ -64,15 +68,10 @@
         <div class="nav-row">
             <div class="nav-item" id="nav-personal" onclick="window.showStub('💸 Личные', 'personal')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg><span>Личные</span></div>
 
-        <!-- Ручка для сворачивания нижнего ряда -->
-        <div id="nav-toggle" onclick="toggleBottomNav()" style="position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%); width: 40px; height: 15px; background: var(--bg2); border: 1px solid var(--bg3); border-bottom: none; border-radius: 10px 10px 0 0; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10000; transition: all 0.3s ease;">
-            <svg id="nav-toggle-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M6 9l6 6 6-6"/></svg>
-        </div>
-        <div id="bottom-nav-row2" style="transition: transform 0.3s ease;">
+        
             <div class="nav-row">
             <div class="nav-item" id="nav-diary" onclick="window.showStub('📔 Дневник', 'diary')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Дневник</span></div>
-        </div>
-    </nav>
+        </nav>
 
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

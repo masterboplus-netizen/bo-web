@@ -82,25 +82,5 @@ export function initFloatingMenu() {
         }
     };
 
-    // === СВОРАЧИВАНИЕ НИЖНЕГО РЯДА МЕНЮ ===
-    window.toggleBottomNav = function() {
-        const row2 = document.getElementById('bottom-nav-row2');
-        const icon = document.getElementById('nav-toggle-icon');
-        const btn = document.getElementById('nav-toggle');
-        if (!row2) return;
-
-        const isHidden = row2.style.transform === 'translateY(100%)';
-
-        if (isHidden) {
-            // Разворачиваем
-            row2.style.transform = 'translateY(0)';
-            btn.style.bottom = '70px'; // Поднимаем ручку над верхним рядом
-            icon.style.transform = 'rotate(0deg)';
-        } else {
-            // Сворачиваем (сдвигаем вниз только второй ряд)
-            row2.style.transform = 'translateY(100%)';
-            btn.style.bottom = '0px'; // Ручка опускается вниз
-            icon.style.transform = 'rotate(180deg)';
-        }
-    };
+    
 }
