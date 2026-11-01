@@ -13,7 +13,6 @@ export function initFloatingMenu() {
 
     // === ПЕРЕТАСКИВАНИЕ (ТАЧ) ===
     wrapper.addEventListener('touchstart', (e) => {
-        // Игнорируем нажатия на кнопки или на кнопку сворачивания
         if (e.target.closest('button') || e.target.closest('#toggle-capsule')) return;
         isDragging = true;
         startY = e.touches[0].clientY;
@@ -69,34 +68,20 @@ export function initFloatingMenu() {
         }
     });
 
-    // === СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ ===
+    // === СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ (СДВИГ ВПРАВО) ===
     window.toggleCapsule = function(e) {
-        e.stopPropagation(); // Чтобы не срабатывало перетаскивание
+        e.stopPropagation();
         isCollapsed = !isCollapsed;
 
-        // Находим кнопки (Камера и Диктофон), которые нужно скрыть
-        const cameraBtn = capsule.querySelector('button:nth-child(1)');
-        const micBtn = capsule.querySelector('button:nth-child(2)');
-
         if (isCollapsed) {
-            cameraBtn.style.display = 'none';
-            micBtn.style.display = 'none';
-            toggleIcon.style.transform = 'rotate(180deg)';
-            // Делаем капсулу круглой (убираем лишнее)
-            capsule.style.borderRadius = '50%';
-            capsule.style.padding = '4px';
-            capsule.style.background = 'transparent';
-            capsule.style.border = 'none';
-            capsule.style.boxShadow = 'none';
+            // Сдвигаем вправо, оставляя только 20% (чтобы было за что зацепить)
+            wrapper.style.transform = 'translateX(75%)';
+            // Поворачиваем стрелочку влево
+            toggleIcon.style.transform = 'rotate(90deg)';
         } else {
-            cameraBtn.style.display = 'flex';
-            micBtn.style.display = 'flex';
+            // Возвращаем на место
+            wrapper.style.transform = 'translateX(0)';
             toggleIcon.style.transform = 'rotate(0deg)';
-            capsule.style.borderRadius = '30px';
-            capsule.style.padding = '8px';
-            capsule.style.background = 'var(--bg2)';
-            capsule.style.border = '1px solid var(--bg3)';
-            capsule.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
         }
     };
 }
