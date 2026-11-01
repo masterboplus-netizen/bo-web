@@ -159,6 +159,9 @@ export function openAudioModal() {
     }
     clearInterval(timerInterval);
     modal.remove();
+    // Возвращаем виджет на место
+    const wrapper = document.getElementById('floating-capsule-wrapper');
+    if (wrapper) wrapper.style.right = '8px';
   }
 
   closeBtn.addEventListener('click', closeModal);

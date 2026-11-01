@@ -51,6 +51,9 @@ export function openCameraModal() {
   function closeModal() {
     stopCamera();
     modal.remove();
+    // Возвращаем виджет на место, если он был свернут
+    const wrapper = document.getElementById('floating-capsule-wrapper');
+    if (wrapper) wrapper.style.right = '8px';
   }
 
   shootBtn.addEventListener('click', () => {
