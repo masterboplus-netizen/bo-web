@@ -1,9 +1,9 @@
-// import { renderObjects } from './screens/objects.js';
+import { renderObjects } from './screens/objects.js';
 // import { openObject } from './screens/objectDetail.js';
 // import { openEditObject, saveObjectEdit } from './screens/objectEdit.js';
 import { initFloatingMenu } from './ui/floating_menu.js';
-// import { fetchObjects } from './api/objects.js';
-// import { openAddMenu, openAddObject, saveNewObject } from './modals/add_menu.js';
+import { fetchObjects } from './api/objects.js';
+import { openAddMenu } from './modals/add_menu.js';
 
 window.renderMainMenu = function() {
     document.getElementById('app-content').innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
@@ -14,9 +14,17 @@ window.renderMainMenu = function() {
 };
 
 window.openObjects = async function() {
-    document.getElementById('app-content').innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">В разработке</div>';
+    document.getElementById('app-content').innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка...</div>';
+    try {
+        const objects = await fetchObjects();
+        renderObjects(objects);
+    } catch (e) {
+        document.getElementById('app-content').innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${e.message}</div>`;
+    }
     setNavActive('objects');
 };
+
+window.openAddMenu = openAddMenu;
 
 window.openSettings = function() {
     document.getElementById('app-content').innerHTML = `
