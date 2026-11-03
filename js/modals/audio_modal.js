@@ -1,3 +1,11 @@
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; z-index: 100000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+
 export function initAudioButton() {
   const micBtn = document.getElementById('main-mic-btn');
   if (!micBtn) return;
@@ -5,45 +13,34 @@ export function initAudioButton() {
   let mediaRecorder = null;
   let audioChunks = [];
   let isRecording = false;
-  let startTime = 0;
+  let timerInterval = null;
 
-  // Создаем окно один раз и вешаем на body
-  const modal = document.createElement('div');
-  modal.id = 'audio-modal';
-  modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 99999; display: none; flex-direction: column; align-items: center; justify-content: center; color: white;';
-  modal.innerHTML = `
-    <div style="width: 100%; max-width: 320px; background: var(--bg2); border-radius: 24px; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
-      <div id="audio-timer" style="font-size: 36px; font-weight: bold; color: var(--accent);">00:00</div>
-      
-      <div id="audio-visualizer" style="width: 100%; height: 60px; display: flex; align-items: center; justify-content: center; gap: 4px;">
-        <!-- Полоски эквалайзера -->
-      </div>
-
-      <div id="audio-status" style="font-size: 14px; color: var(--fg-dim);">Говорите...</div>
-      <button id="audio-stop" style="background: #ff3b30; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 16px; cursor: pointer; margin-top: 10px;">Остановить и распознать</button>
+  // Создаем шторку снизу
+  const sheet = document.createElement('div');
+  sheet.id = 'audio-sheet';
+  sheet.style.cssText = 'position: fixed; bottom: -300px; left: 0; width: 100%; background: #1e1e1e; border-radius: 24px 24px 0 0; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; transition: bottom 0.3s ease; z-index: 99999; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);';
+  sheet.innerHTML = `
+    <div id="audio-timer" style="font-size: 32px; font-weight: bold; color: #fff; font-variant-numeric: tabular-nums;">00:00</div>
+    
+    <div id="audio-waves" style="display: flex; gap: 4px; height: 40px; align-items: center; justify-content: center;">
+      ${Array(12).fill(0).map(() => `<div class="wave-bar" style="width: 4px; height: 10px; background: #007aff; border-radius: 2px; transition: height 0.1s ease;"></div>`).join('')}
     </div>
+
+    <div id="audio-status" style="color: #888; font-size: 14px;">Говорите...</div>
   `;
-  document.body.appendChild(modal);
+  document.body.appendChild(sheet);
 
   const timerEl = document.getElementById('audio-timer');
-  const visEl = document.getElementById('audio-visualizer');
+  const wavesEl = document.getElementById('audio-waves');
   const statusEl = document.getElementById('audio-status');
-  const stopBtn = document.getElementById('audio-stop');
 
-  // Создаем полоски
-  for (let i = 0; i < 15; i++) {
-    const bar = document.createElement('div');
-    bar.style.cssText = 'width: 6px; height: 10px; background: var(--accent); border-radius: 3px; transition: height 0.1s ease;';
-    visEl.appendChild(bar);
-  }
-
-  function animateBars() {
+  function animateWaves() {
     if (!isRecording) return;
-    const bars = visEl.children;
+    const bars = wavesEl.children;
     for (let i = 0; i < bars.length; i++) {
-      bars[i].style.height = (Math.random() * 40 + 10) + 'px';
+      bars[i].style.height = (Math.random() * 30 + 10) + 'px';
     }
-    requestAnimationFrame(animateBars);
+    requestAnimationFrame(animateWaves);
   }
 
   async function startRecording() {
@@ -58,19 +55,12 @@ export function initAudioButton() {
       };
 
       mediaRecorder.onstop = async () => {
-        const duration = Date.now() - startTime;
+        clearInterval(timerInterval);
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
         stream.getTracks().forEach(track => track.stop());
 
-        if (duration < 1000) {
-          hideModal();
-          micBtn.style.color = '';
-          alert('Слишком короткая запись. Говорите чуть дольше.');
-          return;
-        }
-
         statusEl.textContent = 'Распознавание...';
-        
+
         try {
           const formData = new FormData();
           formData.append('file', audioBlob, 'audio.webm');
@@ -83,36 +73,44 @@ export function initAudioButton() {
           if (!response.ok) throw new Error('Ошибка сервера');
 
           const data = await response.json();
-          micBtn.style.color = '';
-          hideModal();
-          showTaskConfirm(data.text);
+          
+          sheet.style.bottom = '-300px';
+          micBtn.style.transform = 'scale(1)';
+          micBtn.style.color = 'var(--fg)';
+          
+          setTimeout(() => {
+            showTaskConfirm(data.text);
+          }, 300);
+
         } catch (err) {
-          hideModal();
-          alert('Ошибка распознавания');
+          sheet.style.bottom = '-300px';
+          micBtn.style.transform = 'scale(1)';
+          micBtn.style.color = 'var(--fg)';
+          showToast('Ошибка распознавания');
         }
       };
 
       mediaRecorder.start();
       isRecording = true;
-      startTime = Date.now();
-      micBtn.style.color = '#ff3b30';
       
-      // Показываем окно
-      modal.style.display = 'flex';
+      micBtn.style.transform = 'scale(1.2)';
+      micBtn.style.color = '#007aff';
+
+      sheet.style.bottom = '0';
       timerEl.textContent = '00:00';
-      
+      statusEl.textContent = 'Говорите...';
+
       let seconds = 0;
-      setInterval(() => {
-        if (!isRecording) return;
+      timerInterval = setInterval(() => {
         seconds++;
         const m = String(Math.floor(seconds / 60)).padStart(2, '0');
         const s = String(seconds % 60).padStart(2, '0');
         timerEl.textContent = m + ':' + s;
       }, 1000);
-      
-      animateBars();
+
+      animateWaves();
     } catch (err) {
-      alert('Нет доступа к микрофону. Разрешите в настройках.');
+      showToast('Нет доступа к микрофону');
     }
   }
 
@@ -123,20 +121,30 @@ export function initAudioButton() {
     }
   }
 
-  function hideModal() {
-    modal.style.display = 'none';
-  }
-
-  // Клик по нижней кнопке
-  micBtn.addEventListener('click', (e) => {
+  // Запись по удержанию (Тач)
+  micBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    if (!isRecording) startRecording();
-  });
+    startRecording();
+  }, { passive: false });
 
-  // Клик по кнопке "Остановить" внутри окна
-  stopBtn.addEventListener('click', (e) => {
+  micBtn.addEventListener('touchend', (e) => {
     e.preventDefault();
     stopRecording();
+  }, { passive: false });
+
+  micBtn.addEventListener('touchcancel', (e) => {
+    e.preventDefault();
+    stopRecording();
+  }, { passive: false });
+
+  // Запись по удержанию (Мышь для десктопа)
+  micBtn.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    startRecording();
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isRecording) stopRecording();
   });
 }
 
@@ -148,14 +156,14 @@ function showTaskConfirm(text) {
       <h3 style="margin: 0 0 12px 0; font-size: 18px;">Создать задачу?</h3>
       <div style="background: var(--bg3); border-radius: 12px; padding: 14px; margin-bottom: 20px; font-size: 15px; line-height: 1.4;">${text || '(пусто)'}</div>
       <div style="display: flex; gap: 10px;">
-        <button id="btn-task-no" style="flex: 1; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
-        <button id="btn-task-yes" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Создать</button>
+        <button id="task-confirm-no" style="flex: 1; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
+        <button id="task-confirm-yes" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Создать</button>
       </div>
     </div>`;
   document.body.appendChild(confirm);
 
-  document.getElementById('btn-task-no').onclick = () => confirm.remove();
-  document.getElementById('btn-task-yes').onclick = () => {
+  document.getElementById('task-confirm-no').onclick = () => confirm.remove();
+  document.getElementById('task-confirm-yes').onclick = () => {
       console.log('TASK CREATE:', text);
       confirm.remove();
   };
