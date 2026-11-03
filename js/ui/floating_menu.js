@@ -100,10 +100,10 @@ export function initFloatingMenu() {
       e.preventDefault();
       isCollapsed = !isCollapsed;
       if (isCollapsed) {
-        wrapper.style.right = 'calc(-100% + 40px)';
+        capsule.style.transform = 'translateX(calc(100% - 40px))';
         toggleIcon.style.transform = 'rotate(180deg)';
       } else {
-        wrapper.style.right = '0';
+        capsule.style.transform = 'translateX(0)';
         toggleIcon.style.transform = 'rotate(0deg)';
       }
     }
@@ -115,10 +115,10 @@ export function initFloatingMenu() {
     e.preventDefault();
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      wrapper.style.right = 'calc(-100% + 40px)';
+      capsule.style.transform = 'translateX(calc(100% - 40px))';
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
-      wrapper.style.right = '0';
+      capsule.style.transform = 'translateX(0)';
       toggleIcon.style.transform = 'rotate(0deg)';
     }
   });
