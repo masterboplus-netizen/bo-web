@@ -55,6 +55,6 @@ export function setNavActive(tabId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    initFloatingMenu();
+    setTimeout(() => initFloatingMenu(), 100);
     window.renderMainMenu();
 });

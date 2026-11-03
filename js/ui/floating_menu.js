@@ -68,6 +68,46 @@ export function initFloatingMenu() {
   // В открытом состоянии стрелка смотрит влево (0deg)
   toggleIcon.style.transform = 'rotate(0deg)';
 
+  // Перетаскивание за стрелку (в свернутом состоянии)
+  let isDraggingArrow = false;
+  let startYArrow = 0;
+  let startTopArrow = 0;
+  let moved = false;
+
+  toggleBtn.addEventListener('touchstart', (e) => {
+    isDraggingArrow = true;
+    moved = false;
+    startYArrow = e.touches[0].clientY;
+    startTopArrow = wrapper.getBoundingClientRect().top;
+    wrapper.style.transition = 'none';
+  }, { passive: false });
+
+  toggleBtn.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    moved = true;
+    const deltaY = e.touches[0].clientY - startYArrow;
+    const newTop = startTopArrow + deltaY;
+    if (newTop > 100 && newTop < window.innerHeight - 350) {
+      wrapper.style.bottom = 'auto';
+      wrapper.style.top = newTop + 'px';
+    }
+  }, { passive: false });
+
+  toggleBtn.addEventListener('touchend', (e) => {
+    isDraggingArrow = false;
+    wrapper.style.transition = 'transform 0.3s ease';
+      // Если не двигали — это клик на сворачивание
+      e.preventDefault();
+      if (isCollapsed) {
+        wrapper.style.right = '-100%';
+        toggleIcon.style.transform = 'rotate(180deg)';
+      } else {
+        wrapper.style.right = '0';
+        toggleIcon.style.transform = 'rotate(0deg)';
+      }
+    }
+  });
+
   toggleBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     isCollapsed = !isCollapsed;
