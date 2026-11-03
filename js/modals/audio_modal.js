@@ -37,9 +37,8 @@ export function initAudioButton() {
           fd.append('model', 'whisper-large-v3-turbo');
           fd.append('language', 'ru');
 
-          const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+          const response = await fetch('https://ruomhtlvyqmaqhqqsfqn.supabase.co/functions/v1/voice-task', {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${GROQ_KEY}` },
             body: fd
           });
 
