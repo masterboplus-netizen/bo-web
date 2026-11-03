@@ -77,10 +77,10 @@ export function initFloatingMenu() {
       isCollapsed = !isCollapsed;
       
       if (isCollapsed) {
-        wrapper.style.right = -(wrapper.offsetWidth - 30) + 'px';
+        wrapper.style.right = '-100%';
         toggleIcon.style.transform = 'rotate(180deg)';
       } else {
-        wrapper.style.right = '8px';
+        wrapper.style.right = '0';
         toggleIcon.style.transform = 'rotate(0deg)';
       }
     });
@@ -91,10 +91,10 @@ export function initFloatingMenu() {
     if (e) e.stopPropagation();
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      wrapper.style.right = -(wrapper.offsetWidth - 30) + 'px';
+      wrapper.style.right = '-100%';
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
-      wrapper.style.right = '8px';
+      wrapper.style.right = '0';
       toggleIcon.style.transform = 'rotate(0deg)';
     }
   };
