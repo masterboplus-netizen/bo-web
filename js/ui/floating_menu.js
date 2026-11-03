@@ -26,7 +26,7 @@ export function initFloatingMenu() {
     e.preventDefault();
     const deltaY = e.touches[0].clientY - startY;
     const newTop = currentTop + deltaY;
-    if (newTop > 100 && newTop < window.innerHeight - wrapper.offsetHeight - 70) {
+    if (newTop > 70 && newTop < window.innerHeight - wrapper.offsetHeight - 70) {
       wrapper.style.bottom = 'auto';
       wrapper.style.top = newTop + 'px';
     }
@@ -53,7 +53,7 @@ export function initFloatingMenu() {
     if (!isDragging) return;
     const deltaY = e.clientY - startY;
     const newTop = currentTop + deltaY;
-    if (newTop > 100 && newTop < window.innerHeight - wrapper.offsetHeight - 70) {
+    if (newTop > 70 && newTop < window.innerHeight - wrapper.offsetHeight - 70) {
       wrapper.style.bottom = 'auto';
       wrapper.style.top = newTop + 'px';
     }
@@ -86,7 +86,7 @@ export function initFloatingMenu() {
     moved = true;
     const deltaY = e.touches[0].clientY - startYArrow;
     const newTop = startTopArrow + deltaY;
-    if (newTop > 100 && newTop < window.innerHeight - wrapper.offsetHeight - 70) {
+    if (newTop > 70 && newTop < window.innerHeight - wrapper.offsetHeight - 70) {
       wrapper.style.bottom = 'auto';
       wrapper.style.top = newTop + 'px';
     }
