@@ -20,6 +20,7 @@ export function initAudioButton() {
   let timerInterval = null;
   let audioContext = null;
   let analyser = null;
+  let isProcessing = false; // Защита от двойных кликов
 
   const modal = document.createElement('div');
   modal.id = 'audio-modal';
@@ -54,6 +55,7 @@ export function initAudioButton() {
     for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
     const average = sum / dataArray.length;
     
+    // Умножаем на 1.5, чтобы пузырек активнее двигался
     const offset = Math.min(average * 1.5, 100);
     bubbleEl.style.transform = `translateX(calc(-50% + ${offset}px))`;
     
@@ -78,7 +80,8 @@ export function initAudioButton() {
   }
 
   async function startRecording() {
-    if (isRecording) return;
+    if (isRecording || isProcessing) return;
+    isProcessing = true;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
@@ -105,6 +108,7 @@ export function initAudioButton() {
           hideModal();
           micBtn.style.color = '';
           showToast('Слишком короткая запись. Говорите чуть дольше.');
+          isProcessing = false;
           return;
         }
 
@@ -135,6 +139,8 @@ export function initAudioButton() {
           micBtn.style.color = '';
           hideModal();
           showToast(err.message);
+        } finally {
+          isProcessing = false;
         }
       };
 
@@ -156,6 +162,7 @@ export function initAudioButton() {
       animateBubble();
     } catch (err) {
       showToast('Нет доступа к микрофону. Разрешите в настройках.');
+      isProcessing = false;
     }
   }
 
@@ -166,6 +173,7 @@ export function initAudioButton() {
     }
   }
 
+  // Один обработчик клика
   micBtn.addEventListener('click', (e) => {
     e.preventDefault();
     if (isRecording) stopRecording();
@@ -175,6 +183,7 @@ export function initAudioButton() {
   document.getElementById('audio-close').addEventListener('click', () => {
     if (isRecording) stopRecording();
     hideModal();
+    isProcessing = false;
   });
 }
 
