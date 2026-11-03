@@ -5,6 +5,7 @@ export function initAudioButton() {
   let mediaRecorder = null;
   let audioChunks = [];
   let isRecording = false;
+  let timerId = null;
   let startTime = 0;
 
   const sheet = document.createElement('div');
@@ -44,6 +45,7 @@ export function initAudioButton() {
       };
 
       mediaRecorder.onstop = async () => {
+        if (timerId) { clearInterval(timerId); timerId = null; }
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
         stream.getTracks().forEach(track => track.stop());
 
@@ -89,7 +91,7 @@ export function initAudioButton() {
       statusEl.textContent = 'Говорите...';
 
       let seconds = 0;
-      setInterval(() => {
+      timerId = setInterval(() => {
         if (!isRecording) return;
         seconds++;
         const m = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -104,6 +106,7 @@ export function initAudioButton() {
   }
 
   function stopRecording() {
+    if (timerId) { clearInterval(timerId); timerId = null; }
     if (mediaRecorder && isRecording) {
       mediaRecorder.stop();
       isRecording = false;
