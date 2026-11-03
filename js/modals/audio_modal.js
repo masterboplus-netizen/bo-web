@@ -25,12 +25,7 @@ export function initAudioButton() {
         micBtn.style.color = '#ffcc00'; // желтый цвет
 
         try {
-          let GROQ_KEY = localStorage.getItem('groq_api_key');
-          if (!GROQ_KEY) {
-            GROQ_KEY = prompt('Вставь Groq API Key (console.groq.com):');
-            if (GROQ_KEY) localStorage.setItem('groq_api_key', GROQ_KEY.trim());
-          }
-          if (!GROQ_KEY) throw new Error('Groq API Key не задан');
+
 
           const fd = new FormData();
           fd.append('file', audioBlob, 'audio.webm');
