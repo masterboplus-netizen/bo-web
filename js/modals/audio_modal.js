@@ -170,3 +170,5 @@ export function openAudioModal() {
 
   closeBtn.addEventListener('click', closeModal);
 }
+
+window.openAudioModal = openAudioModal;
