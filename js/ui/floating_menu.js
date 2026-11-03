@@ -11,9 +11,10 @@ export function initFloatingMenu() {
   let currentTop = wrapper.getBoundingClientRect().top;
   let isCollapsed = false;
 
-  // ПЕРЕТАСКИВАНИЕ (ТАЧ) за саму капсулу
+  // ПЕРЕТАСКИВАНИЕ (ТАЧ) за саму капсулу (кроме кнопок и стрелки)
   wrapper.addEventListener('touchstart', (e) => {
-    if (e.target.closest('button') || e.target.closest('#toggle-capsule')) return;
+    if (e.target.closest('button')) return;
+    if (e.target.closest('#toggle-capsule')) return; // Стрелку обрабатываем отдельно
     isDragging = true;
     startY = e.touches[0].clientY;
     currentTop = wrapper.getBoundingClientRect().top;
@@ -40,7 +41,8 @@ export function initFloatingMenu() {
 
   // ПЕРЕТАСКИВАНИЕ (МЫШКА)
   wrapper.addEventListener('mousedown', (e) => {
-    if (e.target.closest('button') || e.target.closest('#toggle-capsule')) return;
+    if (e.target.closest('button')) return;
+    if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
     startY = e.clientY;
     currentTop = wrapper.getBoundingClientRect().top;
@@ -64,11 +66,7 @@ export function initFloatingMenu() {
     }
   });
 
-  // СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ (по клику на стрелку)
-  // В открытом состоянии стрелка смотрит влево (0deg)
-  toggleIcon.style.transform = 'rotate(0deg)';
-
-  // Перетаскивание за стрелку (в свернутом состоянии)
+  // ЛОГИКА СТРЕЛКИ (перетаскивание + сворачивание)
   let isDraggingArrow = false;
   let startYArrow = 0;
   let startTopArrow = 0;
@@ -83,6 +81,7 @@ export function initFloatingMenu() {
   }, { passive: false });
 
   toggleBtn.addEventListener('touchmove', (e) => {
+    if (!isDraggingArrow) return;
     e.preventDefault();
     moved = true;
     const deltaY = e.touches[0].clientY - startYArrow;
@@ -96,8 +95,10 @@ export function initFloatingMenu() {
   toggleBtn.addEventListener('touchend', (e) => {
     isDraggingArrow = false;
     wrapper.style.transition = 'transform 0.3s ease';
-      // Если не двигали — это клик на сворачивание
+    if (!moved) {
+      // Если не двигали, значит это клик на сворачивание
       e.preventDefault();
+      isCollapsed = !isCollapsed;
       if (isCollapsed) {
         wrapper.style.right = '-100%';
         toggleIcon.style.transform = 'rotate(180deg)';
@@ -108,16 +109,17 @@ export function initFloatingMenu() {
     }
   });
 
+  // Для десктопа (клик мышкой)
   toggleBtn.addEventListener('click', (e) => {
     e.stopPropagation();
+    e.preventDefault();
     isCollapsed = !isCollapsed;
-    
     if (isCollapsed) {
       wrapper.style.right = '-100%';
-      toggleIcon.style.transform = 'rotate(180deg)'; // Смотрит вправо
+      toggleIcon.style.transform = 'rotate(180deg)';
     } else {
       wrapper.style.right = '0';
-      toggleIcon.style.transform = 'rotate(0deg)'; // Смотрит влево
+      toggleIcon.style.transform = 'rotate(0deg)';
     }
   });
 }
