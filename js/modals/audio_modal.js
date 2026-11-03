@@ -158,6 +158,7 @@ export function openAudioModal() {
   recordBtn.addEventListener('touchstart', (e) => {
     e.stopPropagation();
     e.preventDefault();
+    if (!isRecording) startRecording();
   }, { passive: false });
 
   recordBtn.addEventListener('touchend', (e) => {
