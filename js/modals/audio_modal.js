@@ -1,11 +1,3 @@
-function showToast(message) {
-  const toast = document.createElement('div');
-  toast.style.cssText = 'position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; z-index: 100000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 2500);
-}
-
 export function initAudioButton() {
   const micBtn = document.getElementById('main-mic-btn');
   if (!micBtn) return;
@@ -13,19 +5,16 @@ export function initAudioButton() {
   let mediaRecorder = null;
   let audioChunks = [];
   let isRecording = false;
-  let timerInterval = null;
+  let startTime = 0;
 
-  // Создаем шторку снизу
   const sheet = document.createElement('div');
   sheet.id = 'audio-sheet';
   sheet.style.cssText = 'position: fixed; bottom: -300px; left: 0; width: 100%; background: #1e1e1e; border-radius: 24px 24px 0 0; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; transition: bottom 0.3s ease; z-index: 99999; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);';
   sheet.innerHTML = `
     <div id="audio-timer" style="font-size: 32px; font-weight: bold; color: #fff; font-variant-numeric: tabular-nums;">00:00</div>
-    
     <div id="audio-waves" style="display: flex; gap: 4px; height: 40px; align-items: center; justify-content: center;">
       ${Array(12).fill(0).map(() => `<div class="wave-bar" style="width: 4px; height: 10px; background: #007aff; border-radius: 2px; transition: height 0.1s ease;"></div>`).join('')}
     </div>
-
     <div id="audio-status" style="color: #888; font-size: 14px;">Говорите...</div>
   `;
   document.body.appendChild(sheet);
@@ -55,7 +44,6 @@ export function initAudioButton() {
       };
 
       mediaRecorder.onstop = async () => {
-        clearInterval(timerInterval);
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
         stream.getTracks().forEach(track => track.stop());
 
@@ -86,7 +74,7 @@ export function initAudioButton() {
           sheet.style.bottom = '-300px';
           micBtn.style.transform = 'scale(1)';
           micBtn.style.color = 'var(--fg)';
-          showToast('Ошибка распознавания');
+          alert('Ошибка распознавания');
         }
       };
 
@@ -101,7 +89,8 @@ export function initAudioButton() {
       statusEl.textContent = 'Говорите...';
 
       let seconds = 0;
-      timerInterval = setInterval(() => {
+      setInterval(() => {
+        if (!isRecording) return;
         seconds++;
         const m = String(Math.floor(seconds / 60)).padStart(2, '0');
         const s = String(seconds % 60).padStart(2, '0');
@@ -110,7 +99,7 @@ export function initAudioButton() {
 
       animateWaves();
     } catch (err) {
-      showToast('Нет доступа к микрофону');
+      alert('Нет доступа к микрофону');
     }
   }
 
@@ -121,7 +110,7 @@ export function initAudioButton() {
     }
   }
 
-  // Запись по удержанию (Тач)
+  // ЗАЖАТИЕ (Тач)
   micBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
     startRecording();
@@ -137,7 +126,7 @@ export function initAudioButton() {
     stopRecording();
   }, { passive: false });
 
-  // Запись по удержанию (Мышь для десктопа)
+  // ЗАЖАТИЕ (Мышь)
   micBtn.addEventListener('mousedown', (e) => {
     e.preventDefault();
     startRecording();
