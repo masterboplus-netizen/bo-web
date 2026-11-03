@@ -4,14 +4,14 @@ export function initFloatingMenu() {
   const toggleBtn = document.getElementById('toggle-capsule');
   const toggleIcon = document.getElementById('toggle-icon');
 
-  if (!wrapper || !capsule) return;
+  if (!wrapper || !capsule || !toggleBtn) return;
 
   let isDragging = false;
   let startY = 0;
   let currentTop = wrapper.getBoundingClientRect().top;
   let isCollapsed = false;
 
-  // ПЕРЕТАСКИВАНИЕ (ТАЧ)
+  // ПЕРЕТАСКИВАНИЕ (ТАЧ) за саму капсулу
   wrapper.addEventListener('touchstart', (e) => {
     if (e.target.closest('button') || e.target.closest('#toggle-capsule')) return;
     isDragging = true;
@@ -25,10 +25,7 @@ export function initFloatingMenu() {
     e.preventDefault();
     const deltaY = e.touches[0].clientY - startY;
     const newTop = currentTop + deltaY;
-    const minTop = 100;
-    const maxTop = window.innerHeight - 350;
-
-    if (newTop > minTop && newTop < maxTop) {
+    if (newTop > 100 && newTop < window.innerHeight - 350) {
       wrapper.style.bottom = 'auto';
       wrapper.style.top = newTop + 'px';
     }
@@ -54,10 +51,7 @@ export function initFloatingMenu() {
     if (!isDragging) return;
     const deltaY = e.clientY - startY;
     const newTop = currentTop + deltaY;
-    const minTop = 100;
-    const maxTop = window.innerHeight - 350;
-
-    if (newTop > minTop && newTop < maxTop) {
+    if (newTop > 100 && newTop < window.innerHeight - 350) {
       wrapper.style.bottom = 'auto';
       wrapper.style.top = newTop + 'px';
     }
@@ -70,59 +64,20 @@ export function initFloatingMenu() {
     }
   });
 
-  // СВОРАЧИВАНИЕ (вешаем обработчик прямо здесь)
-  if (toggleBtn) {
-    let isDraggingArrow = false;
-    let startYArrow = 0;
-    let startTopArrow = 0;
-    let moved = false;
+  // СВОРАЧИВАНИЕ / РАЗВОРАЧИВАНИЕ (по клику на стрелку)
+  // В открытом состоянии стрелка смотрит влево (0deg)
+  toggleIcon.style.transform = 'rotate(0deg)';
 
-    toggleBtn.addEventListener('touchstart', (e) => {
-      isDraggingArrow = true;
-      moved = false;
-      startYArrow = e.touches[0].clientY;
-      startTopArrow = wrapper.getBoundingClientRect().top;
-      wrapper.style.transition = 'none';
-    }, { passive: false });
-
-    toggleBtn.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      moved = true;
-      const deltaY = e.touches[0].clientY - startYArrow;
-      const newTop = startTopArrow + deltaY;
-      const minTop = 100;
-      const maxTop = window.innerHeight - 350;
-      if (newTop > minTop && newTop < maxTop) {
-        wrapper.style.bottom = 'auto';
-        wrapper.style.top = newTop + 'px';
-      }
-    }, { passive: false });
-
-    toggleBtn.addEventListener('touchend', (e) => {
-      isDraggingArrow = false;
-      wrapper.style.transition = 'transform 0.3s ease';
-        e.preventDefault();
-        if (isCollapsed) {
-          wrapper.style.right = '-100%';
-          toggleIcon.style.transform = 'rotate(180deg)';
-        } else {
-          wrapper.style.right = '0';
-          toggleIcon.style.transform = 'rotate(180deg)';
-        }
-      }
-    });
-  }
-
-  // Делаем глобальную функцию на всякий случай
-  window.toggleCapsule = function(e) {
-    if (e) e.stopPropagation();
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
     isCollapsed = !isCollapsed;
+    
     if (isCollapsed) {
       wrapper.style.right = '-100%';
-      toggleIcon.style.transform = 'rotate(180deg)';
+      toggleIcon.style.transform = 'rotate(180deg)'; // Смотрит вправо
     } else {
       wrapper.style.right = '0';
-      toggleIcon.style.transform = 'rotate(180deg)';
+      toggleIcon.style.transform = 'rotate(0deg)'; // Смотрит влево
     }
-  };
+  });
 }
