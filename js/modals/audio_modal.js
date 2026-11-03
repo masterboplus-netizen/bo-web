@@ -1,3 +1,14 @@
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(40, 40, 40, 0.95); color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; z-index: 100000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: opacity 0.3s;';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
 export function initAudioButton() {
   const micBtn = document.getElementById('main-mic-btn');
   if (!micBtn) return;
@@ -5,6 +16,7 @@ export function initAudioButton() {
   let mediaRecorder = null;
   let audioChunks = [];
   let isRecording = false;
+  let startTime = 0;
 
   async function startRecording() {
     if (isRecording) return;
@@ -18,45 +30,51 @@ export function initAudioButton() {
       };
 
       mediaRecorder.onstop = async () => {
+        const duration = Date.now() - startTime;
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
         stream.getTracks().forEach(track => track.stop());
 
-        // Визуальный эффект отправки
-        micBtn.style.color = '#ffcc00'; // желтый цвет
+        if (duration < 1000) {
+          micBtn.style.color = '';
+          showToast('Слишком короткая запись. Говорите чуть дольше.');
+          return;
+        }
+
+        micBtn.style.color = '#ffcc00'; // Желтый (отправка)
 
         try {
-
-
-          const fd = new FormData();
-          fd.append('file', audioBlob, 'audio.webm');
-          fd.append('model', 'whisper-large-v3-turbo');
-          fd.append('language', 'ru');
+          const formData = new FormData();
+          formData.append('file', audioBlob, 'audio.webm');
 
           const response = await fetch('https://ruomhtlvyqmaqhqqsfqn.supabase.co/functions/v1/voice-task', {
             method: 'POST',
-            body: fd
+            body: formData
           });
 
           if (!response.ok) {
             const err = await response.text();
-            throw new Error(err);
+            if (err.includes('too short')) {
+              throw new Error('Слишком короткая запись. Говорите чуть дольше.');
+            }
+            throw new Error('Ошибка сервера. Попробуйте позже.');
           }
 
           const data = await response.json();
-          micBtn.style.color = ''; // вернуть цвет
+          micBtn.style.color = ''; // Вернуть цвет
           showTaskConfirm(data.text);
         } catch (err) {
           console.error(err);
           micBtn.style.color = '';
-          alert('Ошибка распознавания: ' + err.message);
+          showToast(err.message);
         }
       };
 
       mediaRecorder.start();
       isRecording = true;
-      micBtn.style.color = '#ff3b30'; // красный цвет во время записи
+      startTime = Date.now();
+      micBtn.style.color = '#ff3b30'; // Красный (запись)
     } catch (err) {
-      alert('Ошибка доступа к микрофону: ' + err.message);
+      showToast('Нет доступа к микрофону. Разрешите в настройках.');
     }
   }
 
@@ -67,11 +85,12 @@ export function initAudioButton() {
     }
   }
 
-  micBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); }, { passive: false });
-  micBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopRecording(); }, { passive: false });
-  micBtn.addEventListener('touchcancel', (e) => { e.preventDefault(); stopRecording(); }, { passive: false });
-  micBtn.addEventListener('mousedown', (e) => { e.preventDefault(); startRecording(); });
-  micBtn.addEventListener('mouseup', () => { stopRecording(); });
+  // Тап для старта/остановки
+  micBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (isRecording) stopRecording();
+    else startRecording();
+  });
 }
 
 function showTaskConfirm(text) {
