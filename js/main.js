@@ -56,5 +56,6 @@ export function setNavActive(tabId) {
 
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => initFloatingMenu(), 100);
+    initAudioButton();
     window.renderMainMenu();
 });
