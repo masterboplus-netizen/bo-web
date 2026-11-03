@@ -32,7 +32,7 @@ export function initAudioButton() {
           fd.append('model', 'whisper-large-v3-turbo');
           fd.append('language', 'ru');
 
-          const response = await fetch('https://ruomhtlvyqmaqhqqsfqn.supabase.co/functions/v1/Voice-task', {
+          const response = await fetch('https://ruomhtlvyqmaqhqqsfqn.supabase.co/functions/v1/voice-task', {
             method: 'POST',
             body: fd
           });
