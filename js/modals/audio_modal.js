@@ -153,6 +153,32 @@ export function openAudioModal() {
 
   
 
+  
+  // Запись по удержанию
+  recordBtn.addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+  }, { passive: false });
+
+  recordBtn.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (isRecording) stopRecording();
+  }, { passive: false });
+
+  recordBtn.addEventListener('touchcancel', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (isRecording) stopRecording();
+  }, { passive: false });
+
+  // Для десктопа (клик мышкой)
+  recordBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isRecording) stopRecording();
+    else startRecording();
+  });
+
   saveBtn.addEventListener('click', () => {
     // Пока просто выводим текст и закрываем
     alert('Текст: ' + recognizedText);
