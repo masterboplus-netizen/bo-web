@@ -26,7 +26,7 @@ export function initFloatingMenu() {
     const deltaY = e.touches[0].clientY - startY;
     const newTop = currentTop + deltaY;
     const minTop = 100;
-    const maxTop = window.innerHeight - 250;
+    const maxTop = window.innerHeight - 350;
 
     if (newTop > minTop && newTop < maxTop) {
       wrapper.style.bottom = 'auto';
@@ -55,7 +55,7 @@ export function initFloatingMenu() {
     const deltaY = e.clientY - startY;
     const newTop = currentTop + deltaY;
     const minTop = 100;
-    const maxTop = window.innerHeight - 250;
+    const maxTop = window.innerHeight - 350;
 
     if (newTop > minTop && newTop < maxTop) {
       wrapper.style.bottom = 'auto';
