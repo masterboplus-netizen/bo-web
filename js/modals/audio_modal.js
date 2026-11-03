@@ -15,7 +15,7 @@ export function openAudioModal() {
       <div style="display: flex; gap: 20px; align-items: center; margin-top: 16px;">
         <button id="audio-close" style="background: rgba(255,255,255,0.1); border: none; color: white; width: 56px; height: 56px; border-radius: 50%; font-size: 24px; cursor: pointer;">✕</button>
 
-        <button id="audio-record" style="background: #ff3b30; border: none; width: 72px; height: 72px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center;">
+        <button id="audio-record" style="background: #ff3b30; border: none; width: 72px; height: 72px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
           <div id="audio-record-icon" style="width: 24px; height: 24px; background: white; border-radius: 50%; transition: all 0.3s ease;"></div>
         </button>
 
