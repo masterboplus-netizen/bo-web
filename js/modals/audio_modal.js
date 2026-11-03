@@ -148,9 +148,15 @@ function showTaskConfirm(text) {
       <h3 style="margin: 0 0 12px 0; font-size: 18px;">Создать задачу?</h3>
       <div style="background: var(--bg3); border-radius: 12px; padding: 14px; margin-bottom: 20px; font-size: 15px; line-height: 1.4;">${text || '(пусто)'}</div>
       <div style="display: flex; gap: 10px;">
-        <button onclick="this.closest('div').parentElement.remove()" style="flex: 1; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
-        <button onclick="console.log('TASK:', '${text}'); this.closest('div').parentElement.remove()" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Создать</button>
+        <button id="btn-task-no" style="flex: 1; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
+        <button id="btn-task-yes" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Создать</button>
       </div>
     </div>`;
   document.body.appendChild(confirm);
+
+  document.getElementById('btn-task-no').onclick = () => confirm.remove();
+  document.getElementById('btn-task-yes').onclick = () => {
+      console.log('TASK CREATE:', text);
+      confirm.remove();
+  };
 }
