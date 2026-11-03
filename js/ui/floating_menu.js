@@ -77,7 +77,7 @@ export function initFloatingMenu() {
       isCollapsed = !isCollapsed;
       
       if (isCollapsed) {
-        wrapper.style.right = '-40px';
+        wrapper.style.right = -(wrapper.offsetWidth - 30) + 'px';
         toggleIcon.style.transform = 'rotate(180deg)';
       } else {
         wrapper.style.right = '8px';
@@ -91,7 +91,7 @@ export function initFloatingMenu() {
     if (e) e.stopPropagation();
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      wrapper.style.right = '-40px';
+      wrapper.style.right = -(wrapper.offsetWidth - 30) + 'px';
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
       wrapper.style.right = '8px';
