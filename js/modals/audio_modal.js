@@ -151,10 +151,7 @@ export function openAudioModal() {
     }
   }
 
-  recordBtn.addEventListener('click', () => {
-    if (isRecording) stopRecording();
-    else startRecording();
-  });
+  
 
   saveBtn.addEventListener('click', () => {
     // Пока просто выводим текст и закрываем
