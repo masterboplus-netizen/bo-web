@@ -104,7 +104,7 @@ export function initFloatingMenu() {
         e.preventDefault();
         if (isCollapsed) {
           wrapper.style.right = '-100%';
-          toggleIcon.style.transform = 'rotate(0deg)';
+          toggleIcon.style.transform = 'rotate(180deg)';
         } else {
           wrapper.style.right = '0';
           toggleIcon.style.transform = 'rotate(180deg)';
@@ -122,7 +122,7 @@ export function initFloatingMenu() {
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
       wrapper.style.right = '0';
-      toggleIcon.style.transform = 'rotate(0deg)';
+      toggleIcon.style.transform = 'rotate(180deg)';
     }
   };
 }
