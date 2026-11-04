@@ -4,7 +4,7 @@ import { fetchObjects } from './api/objects.js';
 import { openAddMenu } from './modals/add_menu.js';
 import { initAudioButton } from './modals/audio_modal.js';
 import './modals/camera_modal.js';
-import { renderTasks } from './screens/tasks.js';
+import { renderTasks, openNewTask, saveNewTask } from './screens/tasks.js';
 
 window.renderMainMenu = function() {
     document.getElementById('app-content').innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
@@ -26,6 +26,8 @@ window.openObjects = async function() {
 };
 
 window.openTasks = renderTasks;
+window.openNewTask = openNewTask;
+window.saveNewTask = saveNewTask;
 
 window.openAddMenu = openAddMenu;
 
