@@ -11,10 +11,10 @@ export function initFloatingMenu() {
   let currentTop = wrapper.getBoundingClientRect().top;
   let isCollapsed = false;
 
-  // ПЕРЕТАСКИВАНИЕ (ТАЧ) за саму капсулу (кроме кнопок и стрелки)
+  // ПЕРЕТАСКИВАНИЕ (ТАЧ) за саму капсулу
   wrapper.addEventListener('touchstart', (e) => {
     if (e.target.closest('button')) return;
-    if (e.target.closest('#toggle-capsule')) return; // Стрелку обрабатываем отдельно
+    if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
     startY = e.touches[0].clientY;
     currentTop = wrapper.getBoundingClientRect().top;
@@ -39,7 +39,7 @@ export function initFloatingMenu() {
     }
   });
 
-  // ПЕРЕТАСКИВАНИЕ (МЫШКА)
+  // ПЕРЕТАСКИВАНИЕ (МЫШКА) за саму капсулу
   wrapper.addEventListener('mousedown', (e) => {
     if (e.target.closest('button')) return;
     if (e.target.closest('#toggle-capsule')) return;
@@ -66,60 +66,27 @@ export function initFloatingMenu() {
     }
   });
 
-  // ЛОГИКА СТРЕЛКИ (перетаскивание + сворачивание)
-  let isDraggingArrow = false;
-  let startYArrow = 0;
-  let startTopArrow = 0;
-  let moved = false;
-
-  toggleBtn.addEventListener('touchstart', (e) => {
-    isDraggingArrow = true;
-    moved = false;
-    startYArrow = e.touches[0].clientY;
-    startTopArrow = wrapper.getBoundingClientRect().top;
-    wrapper.style.transition = 'none';
-  }, { passive: false });
-
-  toggleBtn.addEventListener('touchmove', (e) => {
-    if (!isDraggingArrow) return;
-    e.preventDefault();
-    moved = true;
-    const deltaY = e.touches[0].clientY - startYArrow;
-    const newTop = startTopArrow + deltaY;
-    if (newTop > 70 && newTop < window.innerHeight - wrapper.offsetHeight - 90) {
-      wrapper.style.bottom = 'auto';
-      wrapper.style.top = newTop + 'px';
-    }
-  }, { passive: false });
-
-  toggleBtn.addEventListener('touchend', (e) => {
-    isDraggingArrow = false;
-    wrapper.style.transition = 'transform 0.3s ease';
-    if (!moved) {
-      // Если не двигали, значит это клик на сворачивание
-      e.preventDefault();
-      isCollapsed = !isCollapsed;
-      if (isCollapsed) {
-        capsule.style.transform = 'translateX(calc(100% - 40px))';
-        toggleIcon.style.transform = 'rotate(180deg)';
-      } else {
-        capsule.style.transform = 'translateX(0)';
-        toggleIcon.style.transform = 'rotate(0deg)';
-      }
-    }
-  });
-
-  // Для десктопа (клик мышкой)
-  toggleBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
+  // СТРЕЛКА (только сворачивание, без перетаскивания)
+  function toggleCollapse() {
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      capsule.style.transform = 'translateX(calc(100% - 40px))';
+      capsule.style.transform = 'translateX(calc(100% - 30px))';
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
       capsule.style.transform = 'translateX(0)';
       toggleIcon.style.transform = 'rotate(0deg)';
     }
+  }
+
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    toggleCollapse();
+  });
+
+  // Для тача — тоже просто клик
+  toggleBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    toggleCollapse();
   });
 }
