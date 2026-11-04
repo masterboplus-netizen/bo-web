@@ -70,14 +70,17 @@ export function initFloatingMenu() {
     function toggleCollapse() {
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      // Уводим капсулу вправо. Стрелка едет вместе с ней благодаря flex.
-      capsule.style.transform = 'translateX(calc(100% - 36px))';
+      // Сдвигаем весь wrapper (капсулу + стрелку) вправо
+      // Ширина стрелки (36) + отступ (10). Капсула уезжает, стрелка остается на краю.
+      wrapper.style.transform = 'translateX(calc(100% - 36px))';
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
-      capsule.style.transform = 'translateX(0)';
+      wrapper.style.transform = 'translateX(0)';
       toggleIcon.style.transform = 'rotate(0deg)';
     }
   }
+
+  
 
   
 
