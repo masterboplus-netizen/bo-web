@@ -9,7 +9,6 @@ function escapeHtml(text) {
 export async function renderTasks() {
     if (window.setNavActive) window.setNavActive('tasks');
     const container = document.getElementById('app-content');
-    container.innerHTML = '';
     container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка задач...</div>';
 
     try {
@@ -26,17 +25,20 @@ export async function renderTasks() {
             let statusColor = task.status === 'done' ? 'var(--fg-dim)' : 'var(--accent)';
             let statusText = task.status === 'done' ? 'Выполнена' : 'В работе';
             
+            // Фото в списке НЕ выводим (только в карточке задачи)
             html += `
-                <div style="background: var(--bg2); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--bg3); overflow: hidden;">
+                <div style="background: var(--bg2); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--bg3);">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div style="font-weight: bold; font-size: 16px; color: var(--fg); word-break: break-word;">${escapeHtml(task.title || 'Без названия')}</div>
                         <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; white-space: nowrap; margin-left: 10px;">${statusText}</span>
                     </div>
                     ${task.description ? `<div style="font-size: 14px; color: var(--fg-dim); word-break: break-word;">${escapeHtml(task.description)}</div>` : ''}
-                    ${task.photo_url ? `<img src="${task.photo_url}" style="width: 100%; max-height: 200px; border-radius: 8px; margin-top: 5px; object-fit: cover;">` : ''}
-                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--fg-dim); margin-top: 5px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--fg-dim); margin-top: 5px;">
                         <span>ID: ${task.id}</span>
-                        <span>${new Date(task.created_at).toLocaleDateString('ru-RU')}</span>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <span>${new Date(task.created_at).toLocaleDateString('ru-RU')}</span>
+                            <button onclick="window.deleteTask(${task.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; font-size: 16px;">🗑️</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -120,7 +122,7 @@ window.handlePhotoAttach = function(input) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
         if (file.size > 3 * 1024 * 1024) {
-            alert('Фото слишком большое (больше 3 МБ). Пожалуйста, выберите фото меньшего размера или сожмите его.');
+            alert('Фото слишком большое (больше 3 МБ). Пожалуйста, выберите фото меньшего размера.');
             input.value = '';
             document.getElementById('photo-preview').style.display = 'none';
             return;
@@ -150,7 +152,7 @@ export async function saveNewTask() {
 
     if (photoInput && photoInput.files && photoInput.files[0]) {
         const file = photoInput.files[0];
-        const fileName = `task_${Date.now()}_${file.name.replace(/\\s/g, '_')}`;
+        const fileName = `task_${Date.now()}_${file.name.replace(/\s/g, '_')}`;
         
         try {
             const { data, error } = await db.storage.from('photos').upload(fileName, file);
@@ -185,3 +187,14 @@ export async function saveNewTask() {
         alert('Ошибка сохранения: ' + err.message);
     }
 }
+
+window.deleteTask = async function(id) {
+    if (!confirm('Удалить задачу?')) return;
+    try {
+        const { error } = await db.from('tasks').delete().eq('id', id);
+        if (error) throw error;
+        window.openTasks();
+    } catch (err) {
+        alert('Ошибка удаления: ' + err.message);
+    }
+};
