@@ -73,9 +73,13 @@ export function initFloatingMenu() {
       // Уводим капсулу вправо. Стрелка едет вместе с ней благодаря flex.
       capsule.style.transform = 'translateX(calc(100% - 36px))';
       toggleIcon.style.transform = 'rotate(180deg)';
-    
-  
+    } else {
+      capsule.style.transform = 'translateX(0)';
+      toggleIcon.style.transform = 'rotate(0deg)';
+    }
   }
+
+  
 
   toggleBtn.addEventListener('click', (e) => {
     e.stopPropagation();
