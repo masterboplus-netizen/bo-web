@@ -126,7 +126,14 @@
 
 <div id="floating-capsule-wrapper" style="position: fixed; right: 0; bottom: 90px; z-index: 10000; display: flex;">
     
-    <div id="floating-capsule" style="display: flex; flex-direction: column; align-items: center; padding: 6px 6px 6px 6px; gap: 2px; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.3s ease; z-index: 10000;"><div style="display: flex; flex-direction: column;">
+    <div id="floating-capsule" style="position: relative; display: flex; flex-direction: row; align-items: stretch; padding: 6px 6px 6px 44px; gap: 2px; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.3s ease; z-index: 10000;">
+      
+      <!-- Стрелка: жесткий размер 36x40, прижата к низу -->
+      <div id="toggle-capsule" style="position: absolute; left: 0; bottom: 6px; width: 36px; height: 40px; min-height: 40px; max-height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); background: transparent; z-index: 10002;">
+        <svg id="toggle-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <div style="display: flex; flex-direction: column;"><div style="display: flex; flex-direction: column;"><div style="display: flex; flex-direction: column;">
 <div class="nav-item" id="nav-personal" onclick="window.showStub('Личные', 'personal')" style="display: flex; align-items: center; width: 100%; padding: 6px 8px; cursor: pointer; gap: 8px;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
       <span style="font-size: 11px;">Личные</span>
@@ -160,12 +167,10 @@
       <span style="font-size: 11px;">CRM</span>
     </div>
   </div>
-  </div>
-    <!-- Стрелка (язычок слева, напротив CRM) -->
-    <div id="toggle-capsule" style="position: absolute; left: -36px; bottom: 6px; width: 36px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); background: var(--bg2); border: 1px solid var(--bg3); border-right: none; border-radius: 12px 0 0 12px; z-index: 9999;">
-      <svg id="toggle-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M9 18l6-6-6-6"/></svg>
     </div>
-
+  </div>
+    </div>
+  </div>
 </div>
 </div>
 </div>
