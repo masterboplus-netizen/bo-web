@@ -19,19 +19,19 @@ export async function renderTasks() {
             return;
         }
 
-        let html = '<div style="padding: 10px;">';
+        let html = '<div style="padding: 10px; max-width: 600px; margin: 0 auto;">';
         tasks.forEach(task => {
             let statusColor = task.status === 'done' ? 'var(--fg-dim)' : 'var(--accent)';
             let statusText = task.status === 'done' ? 'Выполнена' : 'В работе';
             
             html += `
-                <div style="background: var(--bg2); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="background: var(--bg2); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--bg3);">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div style="font-weight: bold; font-size: 16px; color: var(--fg);">${escapeHtml(task.title || 'Без названия')}</div>
-                        <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px;">${statusText}</span>
+                        <div style="font-weight: bold; font-size: 16px; color: var(--fg); word-break: break-word;">${escapeHtml(task.title || 'Без названия')}</div>
+                        <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; white-space: nowrap; margin-left: 10px;">${statusText}</span>
                     </div>
-                    ${task.description ? `<div style="font-size: 14px; color: var(--fg-dim);">${escapeHtml(task.description)}</div>` : ''}
-                    ${task.photo_url ? `<img src="${task.photo_url}" style="max-width: 100%; border-radius: 8px; margin-top: 5px;">` : ''}
+                    ${task.description ? `<div style="font-size: 14px; color: var(--fg-dim); word-break: break-word;">${escapeHtml(task.description)}</div>` : ''}
+                    ${task.photo_url ? `<img src="${task.photo_url}" style="max-width: 100%; border-radius: 8px; margin-top: 5px; object-fit: cover; max-height: 200px;">` : ''}
                     <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--fg-dim); margin-top: 5px;">
                         <span>ID: ${task.id}</span>
                         <span>${new Date(task.created_at).toLocaleDateString('ru-RU')}</span>
@@ -103,10 +103,6 @@ export function openNewTask() {
         </div>
     `;
 }
-
-window.setDateMode = function(mode) {
-    // Заглушка, так как мы убрали переключатель для упрощения
-};
 
 window.applyQuickDate = function(val) {
     if (!val) return;
