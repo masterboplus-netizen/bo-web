@@ -56,8 +56,6 @@ export async function renderTasks() {
 
 export function openNewTask() {
     const container = document.getElementById('app-content');
-    
-    // Стандартная дата - сегодня
     const today = new Date().toISOString().split('T')[0];
 
     container.innerHTML = `
@@ -71,29 +69,51 @@ export function openNewTask() {
 
             <div style="margin-bottom: 15px;">
                 <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Описание</label>
-                <textarea id="new-task-desc" rows="3" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; resize: vertical;" placeholder="Детали задачи..."></textarea>
+                <textarea id="new-task-desc" rows="2" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; resize: vertical;" placeholder="Детали задачи..."></textarea>
             </div>
 
-            <div style="margin-bottom: 15px; display: flex; gap: 10px;">
-                <div style="flex: 1;">
-                    <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Приоритет</label>
-                    <select id="new-task-priority" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
-                        <option value="low">Низкий</option>
-                        <option value="medium" selected>Средний</option>
-                        <option value="high">Высокий</option>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Приоритет</label>
+                <select id="new-task-priority" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
+                    <option value="low">Низкий</option>
+                    <option value="medium" selected>Средний</option>
+                    <option value="high">Высокий</option>
+                </select>
+            </div>
+
+            <!-- Срок -->
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label style="color: var(--fg-dim);">Срок</label>
+                    <div style="display: flex; gap: 5px;">
+                        <button type="button" id="btn-single-date" onclick="window.setDateMode('single')" style="padding: 4px 10px; border-radius: 12px; border: 1px solid var(--accent); background: var(--accent); color: white; font-size: 12px; cursor: pointer;">Одна дата</button>
+                        <button type="button" id="btn-range-date" onclick="window.setDateMode('range')" style="padding: 4px 10px; border-radius: 12px; border: 1px solid var(--bg3); background: transparent; color: var(--fg-dim); font-size: 12px; cursor: pointer;">Диапазон</button>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="date" id="new-task-deadline-start" value="${today}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="date" id="new-task-deadline-end" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; display: none;">
+                    
+                    <select id="new-task-quick-date" onchange="window.applyQuickDate(this.value)" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; max-width: 100px;">
+                        <option value="">Быстро...</option>
+                        <option value="today">Сегодня</option>
+                        <option value="tomorrow">Завтра</option>
+                        <option value="plus3">+3 дня</option>
                     </select>
                 </div>
-                <div style="flex: 1;">
-                    <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Срок</label>
-                    <input type="date" id="new-task-deadline" value="${today}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                </div>
             </div>
 
-            <!-- Быстрые кнопки срока -->
-            <div style="display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap;">
-                <button onclick="document.getElementById('new-task-deadline').value = new Date().toISOString().split('T')[0]" style="flex: 1; padding: 8px; border-radius: 20px; border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer; font-size: 12px;">Сегодня</button>
-                <button onclick="const d = new Date(); d.setDate(d.getDate() + 1); document.getElementById('new-task-deadline').value = d.toISOString().split('T')[0]" style="flex: 1; padding: 8px; border-radius: 20px; border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer; font-size: 12px;">Завтра</button>
-                <button onclick="const d = new Date(); d.setDate(d.getDate() + 3); document.getElementById('new-task-deadline').value = d.toISOString().split('T')[0]" style="flex: 1; padding: 8px; border-radius: 20px; border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer; font-size: 12px;">+3 дня</button>
+            <!-- Фото -->
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Фото</label>
+                <input type="file" id="new-task-photo" accept="image/*" capture="environment" style="display: none;" onchange="window.handlePhotoAttach(this)">
+                <button type="button" onclick="document.getElementById('new-task-photo').click()" style="padding: 10px 15px; border-radius: 8px; border: 1px dashed var(--fg-dim); background: transparent; color: var(--fg); cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    📷 Прикрепить фото
+                </button>
+                <div id="photo-preview" style="margin-top: 10px; display: none;">
+                    <img id="photo-img" style="max-width: 100px; border-radius: 8px;">
+                </div>
             </div>
 
             <button onclick="window.saveNewTask()" style="width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">Сохранить</button>
@@ -102,29 +122,87 @@ export function openNewTask() {
     `;
 }
 
+// Вспомогательные функции для формы
+window.setDateMode = function(mode) {
+    const startInput = document.getElementById('new-task-deadline-start');
+    const endInput = document.getElementById('new-task-deadline-end');
+    const btnSingle = document.getElementById('btn-single-date');
+    const btnRange = document.getElementById('btn-range-date');
+
+    if (mode === 'range') {
+        endInput.style.display = 'block';
+        btnRange.style.background = 'var(--accent)';
+        btnRange.style.color = 'white';
+        btnRange.style.borderColor = 'var(--accent)';
+        btnSingle.style.background = 'transparent';
+        btnSingle.style.color = 'var(--fg-dim)';
+        btnSingle.style.borderColor = 'var(--bg3)';
+    } else {
+        endInput.style.display = 'none';
+        endInput.value = '';
+        btnSingle.style.background = 'var(--accent)';
+        btnSingle.style.color = 'white';
+        btnSingle.style.borderColor = 'var(--accent)';
+        btnRange.style.background = 'transparent';
+        btnRange.style.color = 'var(--fg-dim)';
+        btnRange.style.borderColor = 'var(--bg3)';
+    }
+};
+
+window.applyQuickDate = function(val) {
+    if (!val) return;
+    const d = new Date();
+    if (val === 'today') { /* keep today */ }
+    else if (val === 'tomorrow') { d.setDate(d.getDate() + 1); }
+    else if (val === 'plus3') { d.setDate(d.getDate() + 3); }
+    
+    document.getElementById('new-task-deadline-start').value = d.toISOString().split('T')[0];
+    document.getElementById('new-task-quick-date').value = ''; // reset
+};
+
+window.handlePhotoAttach = function(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('photo-preview').style.display = 'block';
+            document.getElementById('photo-img').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+};
+
 export async function saveNewTask() {
     const title = document.getElementById('new-task-title').value.trim();
     const desc = document.getElementById('new-task-desc').value.trim();
     const priority = document.getElementById('new-task-priority').value;
-    const deadline = document.getElementById('new-task-deadline').value;
-
+    
+    const dateStart = document.getElementById('new-task-deadline-start').value;
+    const dateEnd = document.getElementById('new-task-deadline-end').value;
+    
     if (!title) {
         alert('Название задачи обязательно!');
         return;
     }
 
+    // Формируем описание с учетом фото (пока просто текстом)
+    let finalDescription = desc;
+    const photoInput = document.getElementById('new-task-photo');
+    if (photoInput.files && photoInput.files[0]) {
+        finalDescription += (finalDescription ? '\n' : '') + '[Фото прикреплено: ' + photoInput.files[0].name + ']';
+    }
+
     try {
         const { error } = await db.from('tasks').insert([{
             title: title,
-            description: desc || null,
+            description: finalDescription || null,
             priority: priority,
-            deadline: deadline || null,
+            deadline_start: dateStart || null,
+            deadline_end: dateEnd || null,
             status: 'active'
         }]);
 
         if (error) throw error;
         
-        // Возвращаемся к списку задач
         window.openTasks();
     } catch (err) {
         console.error(err);
