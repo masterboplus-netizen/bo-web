@@ -27,7 +27,7 @@ export async function renderTasks() {
             
             // Фото в списке НЕ выводим (только в карточке задачи)
             html += `
-                <div style="background: var(--bg2); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--bg3);">
+                <div onclick="window.openTaskDetail(${task.id})" style="background: var(--bg2); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--bg3); cursor: pointer;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div style="font-weight: bold; font-size: 16px; color: var(--fg); word-break: break-word;">${escapeHtml(task.title || 'Без названия')}</div>
                         <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; white-space: nowrap; margin-left: 10px;">${statusText}</span>
