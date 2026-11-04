@@ -70,8 +70,6 @@ export function initFloatingMenu() {
     function toggleCollapse() {
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      // Сдвигаем капсулу вправо на её ширину минус ширина стрелки.
-      // Капсула уезжает, стрелка (36px) остается на краю экрана.
       capsule.style.transform = 'translateX(calc(100% - 36px))';
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
@@ -79,6 +77,8 @@ export function initFloatingMenu() {
       toggleIcon.style.transform = 'rotate(0deg)';
     }
   }
+
+  
 
   
 
