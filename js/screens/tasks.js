@@ -115,12 +115,19 @@ window.applyQuickDate = function(val) {
 
 window.handlePhotoAttach = function(input) {
     if (input.files && input.files[0]) {
+        const file = input.files[0];
+        if (file.size > 3 * 1024 * 1024) {
+            alert('Фото слишком большое (больше 3 МБ). Пожалуйста, выберите фото меньшего размера или сожмите его.');
+            input.value = '';
+            document.getElementById('photo-preview').style.display = 'none';
+            return;
+        }
         const reader = new FileReader();
         reader.onload = function(e) {
             document.getElementById('photo-preview').style.display = 'block';
             document.getElementById('photo-img').src = e.target.result;
         }
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
     }
 };
 
@@ -140,7 +147,7 @@ export async function saveNewTask() {
 
     if (photoInput && photoInput.files && photoInput.files[0]) {
         const file = photoInput.files[0];
-        const fileName = `task_${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+        const fileName = `task_${Date.now()}_${file.name.replace(/\\s/g, '_')}`;
         
         try {
             const { data, error } = await db.storage.from('photos').upload(fileName, file);
