@@ -175,30 +175,53 @@ export async function saveNewTask() {
     const title = document.getElementById('new-task-title').value.trim();
     const desc = document.getElementById('new-task-desc').value.trim();
     const priority = document.getElementById('new-task-priority').value;
-    
     const dateStart = document.getElementById('new-task-deadline-start').value;
     const dateEnd = document.getElementById('new-task-deadline-end').value;
-    
+    const photoInput = document.getElementById('new-task-photo');
+
     if (!title) {
         alert('Название задачи обязательно!');
         return;
     }
 
-    // Формируем описание с учетом фото (пока просто текстом)
-    let finalDescription = desc;
-    const photoInput = document.getElementById('new-task-photo');
+    let photoUrl = null;
+
+    // 1. Если выбрано фото - загружаем в Supabase Storage
     if (photoInput.files && photoInput.files[0]) {
-        finalDescription += (finalDescription ? '\n' : '') + '[Фото прикреплено: ' + photoInput.files[0].name + ']';
+        const file = photoInput.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `task_${Date.now()}.${fileExt}`;
+
+        try {
+            const { data, error } = await db.storage
+                .from('photos')
+                .upload(fileName, file);
+
+            if (error) throw error;
+
+            // Получаем публичную ссылку
+            const { data: urlData } = db.storage
+                .from('photos')
+                .getPublicUrl(fileName);
+            
+            photoUrl = urlData.publicUrl;
+        } catch (err) {
+            console.error('Ошибка загрузки фото:', err);
+            alert('Не удалось загрузить фото: ' + err.message);
+            // Не прерываем создание задачи, просто идем дальше без фото
+        }
     }
 
+    // 2. Сохраняем задачу
     try {
         const { error } = await db.from('tasks').insert([{
             title: title,
-            description: finalDescription || null,
+            description: desc || null,
             priority: priority,
             deadline_start: dateStart || null,
             deadline_end: dateEnd || null,
-            status: 'active'
+            status: 'active',
+            photo_url: photoUrl // Сохраняем ссылку в поле photo_url (если оно есть)
         }]);
 
         if (error) throw error;
