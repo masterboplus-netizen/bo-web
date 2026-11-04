@@ -126,10 +126,12 @@
 
 <div id="floating-capsule-wrapper" style="position: fixed; right: 0; bottom: 90px; z-index: 10000;  display: flex;">
   
-  <div id="floating-capsule" style="position: relative; display: flex; flex-direction: row; align-items: center; padding: 6px 6px 6px 42px; gap: 2px; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.3s ease;">
-  <div id="toggle-capsule" style="position: absolute; left: 0; bottom: 6px; width: 36px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); flex-shrink: 0;">
-    <svg id="toggle-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M9 18l6-6-6-6"/></svg>
-  </div>
+  <div id="toggle-capsule" style="position: absolute; right: 100%; margin-right: -1px; top: 50%; transform: translateY(-50%); width: 32px; height: 48px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); background: var(--bg2); border: 1px solid var(--bg3); border-right: none; border-radius: 12px 0 0 12px; z-index: 10000;">
+      <svg id="toggle-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+
+  <div id="floating-capsule" style="display: flex; flex-direction: column; align-items: center; padding: 6px; gap: 2px; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.3s ease;">
+  
 
     <div style="display: flex; flex-direction: column;">
 <div class="nav-item" id="nav-personal" onclick="window.showStub('Личные', 'personal')" style="display: flex; align-items: center; width: 100%; padding: 6px 8px; cursor: pointer; gap: 8px;">
