@@ -70,15 +70,17 @@ export function initFloatingMenu() {
     function toggleCollapse() {
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      // Сдвигаем капсулу вправо. Ширина стрелки 36px.
-      // Капсула уедет за экран, а стрелка (слева) останется на краю экрана.
-      capsule.style.transform = 'translateX(calc(100% + 5px))';
+      // Сдвигаем капсулу вправо на её ширину минус ширина стрелки.
+      // Капсула уезжает, стрелка (36px) остается на краю экрана.
+      capsule.style.transform = 'translateX(calc(100% - 36px))';
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
       capsule.style.transform = 'translateX(0)';
       toggleIcon.style.transform = 'rotate(0deg)';
     }
   }
+
+  
 
   
 
