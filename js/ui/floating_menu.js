@@ -67,12 +67,17 @@ export function initFloatingMenu() {
   });
 
   // СТРЕЛКА (только сворачивание, без перетаскивания)
-  function toggleCollapse() {
+    function toggleCollapse() {
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      capsule.style.transform = 'translateX(calc(100% - 30px))';
+      // Уводим капсулу вправо. Стрелка едет вместе с ней благодаря flex.
+      capsule.style.transform = 'translateX(calc(100% - 36px))';
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
+      capsule.style.transform = 'translateX(0)';
+      toggleIcon.style.transform = 'rotate(0deg)';
+    }
+  } else {
       capsule.style.transform = 'translateX(0)';
       toggleIcon.style.transform = 'rotate(0deg)';
     }
