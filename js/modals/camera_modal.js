@@ -111,3 +111,6 @@ export function openCameraModal() {
   closeBtn.addEventListener('click', closeModal);
   startCamera();
 }
+
+
+window.openCameraModal = openCameraModal;

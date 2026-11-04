@@ -3,6 +3,7 @@ import { initFloatingMenu } from './ui/floating_menu.js';
 import { fetchObjects } from './api/objects.js';
 import { openAddMenu } from './modals/add_menu.js';
 import { initAudioButton } from './modals/audio_modal.js';
+import './modals/camera_modal.js';
 import { renderTasks } from './screens/tasks.js';
 
 window.renderMainMenu = function() {
