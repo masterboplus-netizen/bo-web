@@ -25,10 +25,6 @@
 </head>
 <body style="user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
     <script>
-    window.onerror = function(msg, url, line) {
-        document.body.innerHTML += '<div style="position:fixed; top:0; left:0; right:0; background:red; color:white; padding:10px; z-index:999999; font-size:12px;">ОШИБКА: ' + msg + ' (строка ' + line + ')</div>';
-    };
-    </script>
     <div id="app-header">
         <div style="display: flex; align-items: center; gap: 10px;">
             <img src="icon-192.png" onclick="window.renderMainMenu()" style="width: 36px; height: 36px; border-radius: 8px; cursor: pointer;">
@@ -63,21 +59,13 @@
 
 
 
-<!-- Плавающее меню -->
-
-
-  </div>
-</div>
-<!-- КОНЕЦ ПЛАВАЮЩЕГО МЕНЮ -->
 
 
 
 
-    </div>
 
     
     
-
 
 
 
@@ -85,21 +73,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="js/main.js"></script>
     <script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="js/main.js"></script>
+    <script>
         if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("sw.js?v=119
+            navigator.serviceWorker.register("sw.js?v=120").catch(function(e) { console.log("SW error:", e); });
         }
     </script>
-
-
-
-
-<nav style="position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 10px 0; background: var(--bg2); border-top: 1px solid var(--border); z-index: 10001;">
-    <div onclick="window.openCameraModal()" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; color: var(--fg);">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-    </div>
-    <div onclick="window.openAddMenu()" style="width: 56px; height: 56px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,122,255,0.4); margin-bottom: 10px;">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </div>
     <div id="main-mic-btn" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; color: var(--fg); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
     </div>
