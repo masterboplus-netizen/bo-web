@@ -7,6 +7,7 @@ function escapeHtml(text) {
 }
 
 export async function renderTasks() {
+    if (window.setNavActive) window.setNavActive('tasks');
     const container = document.getElementById('app-content');
     container.innerHTML = '';
     container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка задач...</div>';
