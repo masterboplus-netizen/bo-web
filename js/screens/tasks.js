@@ -198,3 +198,69 @@ window.deleteTask = async function(id) {
         alert('Ошибка удаления: ' + err.message);
     }
 };
+
+window.openTaskDetail = async function(id) {
+    const container = document.getElementById('app-content');
+    container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка...</div>';
+
+    try {
+        const { data: task, error } = await db.from('tasks').select('*').eq('id', id).single();
+        if (error) throw error;
+
+        let statusText = task.status === 'done' ? 'Выполнена' : 'В работе';
+        let statusColor = task.status === 'done' ? 'var(--fg-dim)' : 'var(--accent)';
+
+        let html = `
+            <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
+                <button onclick="window.openTasks()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад к списку</button>
+                
+                <div style="background: var(--bg2); border-radius: 16px; padding: 20px; border: 1px solid var(--bg3);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                        <h2 style="color: var(--fg); margin: 0; font-size: 22px; word-break: break-word;">${escapeHtml(task.title || 'Без названия')}</h2>
+                        <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px; white-space: nowrap; margin-left: 10px;">${statusText}</span>
+                    </div>
+
+                    ${task.description ? `<div style="color: var(--fg-dim); margin-bottom: 15px; font-size: 15px; white-space: pre-wrap;">${escapeHtml(task.description)}</div>` : ''}
+
+                    ${task.photo_url ? `<img src="${task.photo_url}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; margin-bottom: 15px;">` : ''}
+
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; font-size: 14px; color: var(--fg-dim);">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Приоритет:</span>
+                            <span style="color: var(--fg);">${task.priority || 'Не указан'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Срок:</span>
+                            <span style="color: var(--fg);">${task.deadline_start ? new Date(task.deadline_start).toLocaleDateString('ru-RU') : 'Не указан'}</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="window.toggleTaskStatus(${task.id}, '${task.status}')" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">
+                            ${task.status === 'done' ? 'Вернуть в работу' : 'Выполнено'}
+                        </button>
+                        <button onclick="window.deleteTask(${task.id})" style="padding: 14px 20px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.innerHTML = html;
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${err.message}</div>`;
+    }
+};
+
+window.toggleTaskStatus = async function(id, currentStatus) {
+    const newStatus = currentStatus === 'done' ? 'active' : 'done';
+    try {
+        const { error } = await db.from('tasks').update({ status: newStatus }).eq('id', id);
+        if (error) throw error;
+        window.openTaskDetail(id);
+    } catch (err) {
+        alert('Ошибка обновления статуса: ' + err.message);
+    }
+};
