@@ -288,7 +288,6 @@ window.openTaskDetail = async function(id) {
                     <div>
                         <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Фотографии (${photos ? photos.length : 0})</label>
                         <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
-                            ${photos && photos.length > 0 ? photos.map(p => `
                                 <div style="position: relative; flex-shrink: 0; width: 120px;">
                                     <img src="${p.photo_url}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
                                     <div style="font-size: 10px; color: var(--fg-dim); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.title || 'Без названия'}</div>
