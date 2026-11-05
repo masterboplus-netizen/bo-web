@@ -24,8 +24,7 @@ export async function renderTasks() {
         tasks.forEach(task => {
             let statusColor = task.status === 'done' ? 'var(--fg-dim)' : 'var(--accent)';
             let statusText = task.status === 'done' ? 'Выполнена' : 'В работе';
-            
-            // Фото в списке НЕ выводим (только в карточке задачи)
+
             html += `
                 <div onclick="window.openTaskDetail(${task.id})" style="background: var(--bg2); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--bg3); cursor: pointer;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -37,7 +36,7 @@ export async function renderTasks() {
                         <span>ID: ${task.id}</span>
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <span>${new Date(task.created_at).toLocaleDateString('ru-RU')}</span>
-                            <button onclick="window.deleteTask(${task.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; font-size: 16px;">🗑️</button>
+                            <button onclick="event.stopPropagation(); window.deleteTask(${task.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; font-size: 16px;">🗑️</button>
                         </div>
                     </div>
                 </div>
@@ -59,7 +58,7 @@ export function openNewTask() {
     container.innerHTML = `
         <div style="padding: 20px; max-width: 500px; margin: 0 auto;">
             <h2 style="color: var(--fg); margin-bottom: 20px;">Новая задача</h2>
-            
+
             <div style="margin-bottom: 15px;">
                 <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Название *</label>
                 <input type="text" id="new-task-title" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;" placeholder="Например: Приклеить плитку">
@@ -146,14 +145,14 @@ export async function saveNewTask() {
     const desc = document.getElementById('new-task-desc').value.trim();
     const priority = document.getElementById('new-task-priority').value;
     const dateStart = document.getElementById('new-task-deadline-start').value;
-    
+
     let photoUrl = null;
     const photoInput = document.getElementById('new-task-photo');
 
     if (photoInput && photoInput.files && photoInput.files[0]) {
         const file = photoInput.files[0];
         const fileName = `task_${Date.now()}_${file.name.replace(/\s/g, '_')}`;
-        
+
         try {
             const { data, error } = await db.storage.from('photos').upload(fileName, file);
             if (error) {
@@ -213,33 +212,51 @@ window.openTaskDetail = async function(id) {
         let html = `
             <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
                 <button onclick="window.openTasks()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад к списку</button>
-                
-                <div style="background: transparent; border-radius: 0; padding: 0; border: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                        <h2 style="color: var(--fg); margin: 0; font-size: 22px; word-break: break-word;">${escapeHtml(task.title || 'Без названия')}</h2>
-                        <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px; white-space: nowrap; margin-left: 10px;">${statusText}</span>
+
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Название</label>
+                        <input type="text" id="edit-task-title" value="${escapeHtml(task.title || '')}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; font-size: 16px;">
                     </div>
 
-                    ${task.description ? `<div style="color: var(--fg-dim); margin-bottom: 15px; font-size: 15px; white-space: pre-wrap;">${escapeHtml(task.description)}</div>` : ''}
-
-                    ${task.photo_url ? `<img src="${task.photo_url}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; margin-bottom: 15px;">` : ''}
-
-                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; font-size: 14px; color: var(--fg-dim);">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Приоритет:</span>
-                            <span style="color: var(--fg);">${task.priority || 'Не указан'}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Срок:</span>
-                            <span style="color: var(--fg);">${task.deadline_start ? new Date(task.deadline_start).toLocaleDateString('ru-RU') : 'Не указан'}</span>
-                        </div>
+                    <div>
+                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Описание</label>
+                        <textarea id="edit-task-desc" rows="3" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; resize: vertical;">${escapeHtml(task.description || '')}</textarea>
                     </div>
 
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button onclick="window.toggleTaskStatus(${task.id}, '${task.status}')" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">
-                            ${task.status === 'done' ? 'Вернуть в работу' : 'Выполнено'}
+                    <div>
+                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Приоритет</label>
+                        <select id="edit-task-priority" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
+                            <option value="low" ${task.priority === 'low' ? 'selected' : ''}>Низкий</option>
+                            <option value="medium" ${task.priority === 'medium' ? 'selected' : ''}>Средний</option>
+                            <option value="high" ${task.priority === 'high' ? 'selected' : ''}>Высокий</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Срок</label>
+                        <input type="date" id="edit-task-deadline" value="${task.deadline_start || ''}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    </div>
+
+                    <div>
+                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Статус</label>
+                        <select id="edit-task-status" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
+                            <option value="active" ${task.status === 'active' ? 'selected' : ''}>В работе</option>
+                            <option value="done" ${task.status === 'done' ? 'selected' : ''}>Выполнена</option>
+                        </select>
+                    </div>
+
+                    ${task.photo_url ? `
+                    <div>
+                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Фото</label>
+                        <img src="${task.photo_url}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px;">
+                    </div>` : ''}
+
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button onclick="window.saveTaskChanges(${task.id})" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                            Сохранить
                         </button>
-                        <button onclick="window.deleteTask(${task.id})" style="padding: 14px 20px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">
+                        <button onclick="window.deleteTask(${task.id})" style="padding: 14px 20px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer;">
                             Удалить
                         </button>
                     </div>
@@ -251,6 +268,31 @@ window.openTaskDetail = async function(id) {
     } catch (err) {
         console.error(err);
         container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${err.message}</div>`;
+    }
+};
+
+window.saveTaskChanges = async function(id) {
+    const title = document.getElementById('edit-task-title').value.trim();
+    const desc = document.getElementById('edit-task-desc').value.trim();
+    const priority = document.getElementById('edit-task-priority').value;
+    const deadline = document.getElementById('edit-task-deadline').value;
+    const status = document.getElementById('edit-task-status').value;
+
+    if (!title) return alert('Название не может быть пустым!');
+
+    try {
+        const { error } = await db.from('tasks').update({
+            title: title,
+            description: desc || null,
+            priority: priority,
+            deadline_start: deadline || null,
+            status: status
+        }).eq('id', id);
+
+        if (error) throw error;
+        window.openTaskDetail(id); // Перезагружаем карточку
+    } catch (err) {
+        alert('Ошибка сохранения: ' + err.message);
     }
 };
 
