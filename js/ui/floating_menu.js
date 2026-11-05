@@ -13,6 +13,7 @@ export function initFloatingMenu() {
 
   // ПЕРЕТАСКИВАНИЕ (ТАЧ)
   wrapper.addEventListener('touchstart', (e) => {
+    if (isCollapsed) return; // Запрещаем таскать, если свернуто
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
     startY = e.touches[0].clientY;
@@ -21,7 +22,7 @@ export function initFloatingMenu() {
   }, { passive: false });
 
   wrapper.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
+    if (!isDragging || isCollapsed) return;
     e.preventDefault();
     const deltaY = e.touches[0].clientY - startY;
     const newTop = currentTop + deltaY;
@@ -40,6 +41,7 @@ export function initFloatingMenu() {
 
   // ПЕРЕТАСКИВАНИЕ (МЫШКА)
   wrapper.addEventListener('mousedown', (e) => {
+    if (isCollapsed) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
     startY = e.clientY;
@@ -48,7 +50,7 @@ export function initFloatingMenu() {
   });
 
   window.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
+    if (!isDragging || isCollapsed) return;
     const deltaY = e.clientY - startY;
     const newTop = currentTop + deltaY;
     if (newTop > 70 && newTop < window.innerHeight - wrapper.offsetHeight - 90) {
@@ -70,9 +72,13 @@ export function initFloatingMenu() {
     if (isCollapsed) {
       capsule.style.transform = 'translateX(100%)'; // Уезжает вправо
       toggleIcon.style.transform = 'rotate(180deg)';
+      wrapper.style.width = '30px'; // Сжимаем контейнер до ширины стрелки
+      wrapper.style.overflow = 'hidden'; // Прячем всё, что вылезает
     } else {
       capsule.style.transform = 'translateX(0)';
       toggleIcon.style.transform = 'rotate(0deg)';
+      wrapper.style.width = 'auto'; // Возвращаем ширину
+      wrapper.style.overflow = 'visible';
     }
   }
 
