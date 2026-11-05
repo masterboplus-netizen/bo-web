@@ -47,3 +47,4 @@ export async function openObject(objectId) {
         document.getElementById('app-content').innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${e.message}</div>`;
     }
 }
+window.openObject = openObject;
