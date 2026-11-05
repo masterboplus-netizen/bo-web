@@ -11,9 +11,8 @@ export function initFloatingMenu() {
   let currentTop = wrapper.getBoundingClientRect().top;
   let isCollapsed = false;
 
-  // ПЕРЕТАСКИВАНИЕ (ТАЧ) за саму капсулу
+  // ПЕРЕТАСКИВАНИЕ (ТАЧ)
   wrapper.addEventListener('touchstart', (e) => {
-    if (e.target.closest('button')) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
     startY = e.touches[0].clientY;
@@ -39,9 +38,8 @@ export function initFloatingMenu() {
     }
   });
 
-  // ПЕРЕТАСКИВАНИЕ (МЫШКА) за саму капсулу
+  // ПЕРЕТАСКИВАНИЕ (МЫШКА)
   wrapper.addEventListener('mousedown', (e) => {
-    if (e.target.closest('button')) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
     startY = e.clientY;
@@ -66,31 +64,18 @@ export function initFloatingMenu() {
     }
   });
 
-  // СТРЕЛКА (только сворачивание, без перетаскивания)
-    function toggleCollapse() {
+  // СТРЕЛКА
+  function toggleCollapse() {
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      capsule.style.transform = 'translateX(calc(100% - 36px))';
+      capsule.style.transform = 'translateX(100%)'; // Уезжает вправо
       toggleIcon.style.transform = 'rotate(180deg)';
+      toggleBtn.style.left = '-36px'; // Стрелка остается на месте
     } else {
       capsule.style.transform = 'translateX(0)';
       toggleIcon.style.transform = 'rotate(0deg)';
     }
   }
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
 
   toggleBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -98,7 +83,6 @@ export function initFloatingMenu() {
     toggleCollapse();
   });
 
-  // Для тача — тоже просто клик
   toggleBtn.addEventListener('touchend', (e) => {
     e.preventDefault();
     toggleCollapse();

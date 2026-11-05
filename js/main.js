@@ -64,4 +64,3 @@ document.addEventListener('DOMContentLoaded', () => {
     window.renderMainMenu();
     initAudioButton();
 });
-import { openObject } from './screens/objectDetail.js'; window.openObject = openObject;
