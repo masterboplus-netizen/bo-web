@@ -91,7 +91,7 @@ window.setNavActive = setNavActive;
 
 
 
-window.openMenu = function() {
+window.openMenu = function() { setNavActive('menu');
     saveCurrentScreen('menu');
     const container = document.getElementById('app-content');
     
