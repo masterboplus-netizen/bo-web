@@ -214,7 +214,7 @@ window.openTaskDetail = async function(id) {
             <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
                 <button onclick="window.openTasks()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад к списку</button>
                 
-                <div style="background: var(--bg2); border-radius: 16px; padding: 20px; border: 1px solid var(--bg3);">
+                <div style="background: transparent; border-radius: 0; padding: 0; border: none;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                         <h2 style="color: var(--fg); margin: 0; font-size: 22px; word-break: break-word;">${escapeHtml(task.title || 'Без названия')}</h2>
                         <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px; white-space: nowrap; margin-left: 10px;">${statusText}</span>
