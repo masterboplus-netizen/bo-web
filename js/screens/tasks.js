@@ -252,8 +252,10 @@ window.openTaskDetail = async function(id) {
                         <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Фотографии (${photos ? photos.length : 0})</label>
                         <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
                             ${photos && photos.length > 0 ? photos.map(p => `
-                                <div style="position: relative; flex-shrink: 0;">
+                                <div style="position: relative; flex-shrink: 0; width: 120px;">
                                     <img src="${p.photo_url}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+                                    <div style="font-size: 10px; color: var(--fg-dim); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.title || 'Без названия'}</div>
+                                    <div style="font-size: 9px; color: var(--fg-dim);">${new Date(p.created_at).toLocaleDateString('ru-RU')}</div>
                                     <button onclick="window.deleteTaskPhoto(${p.id}, ${task.id})" style="position: absolute; top: 5px; right: 5px; background: rgba(255,0,0,0.7); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
                                 </div>
                             `).join('') : '<div style="color: var(--fg-dim); font-size: 12px;">Нет фото</div>'}
@@ -295,9 +297,12 @@ window.uploadTaskPhoto = async function(taskId, input) {
         
         const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
         
+        const title = prompt('Введите название фото (необязательно):');
+        
         const { error: dbError } = await db.from('task_photos').insert([{
             task_id: taskId,
-            photo_url: urlData.publicUrl
+            photo_url: urlData.publicUrl,
+            title: title || null
         }]);
         if (dbError) throw dbError;
         
