@@ -70,3 +70,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 window.openCalendar = renderCalendar;
 window.openDiary = renderDiary;
+window.setNavActive = setNavActive;
