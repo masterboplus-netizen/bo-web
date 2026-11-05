@@ -13,7 +13,7 @@ export async function openObject(objectId) {
 
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
-        let address = obj.address || 'Адрес не указан';
+let address = obj.address || obj.addres || 'Адрес не указан';
         let yandexLink = 'https://yandex.ru/maps/?text=' + encodeURIComponent(address);
         let gisLink = 'https://2gis.ru/search/' + encodeURIComponent(address);
 
@@ -25,7 +25,6 @@ export async function openObject(objectId) {
                             <h2 style="margin: 0; font-size: 22px; color: var(--fg);">${escapeHtml(obj.name)}</h2>
                             <span class="badge" style="background: ${statusColor}; margin-top: 8px; display: inline-block;">${statusText}</span>
                         </div>
-                        <button onclick="window.openEditObject(${obj.id})" style="background: var(--bg3); border: none; border-radius: 8px; padding: 10px; cursor: pointer; color: var(--fg);">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                         </button>
                     </div>
