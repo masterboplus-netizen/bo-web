@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MasterBoss 7.1</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007aff">
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* Подсветка активной кнопки в виджете (капсуле) */
+        #floating-capsule .nav-item.active {
+            background: rgba(0, 122, 255, 0.15) !important;
+            border-radius: 8px;
+        }
+        #floating-capsule .nav-item.active svg {
+            stroke: #007aff !important;
+        }
+        #floating-capsule .nav-item.active span {
+            color: #007aff !important;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body style="user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
+    <script>
+    window.onerror = function(msg, url, line) {
+        document.body.innerHTML += '<div style="position:fixed; top:0; left:0; right:0; background:red; color:white; padding:10px; z-index:999999; font-size:12px;">ОШИБКА: ' + msg + ' (строка ' + line + ')</div>';
+    };
+    </script>
+    <div id="app-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="icon-192.png" onclick="window.renderMainMenu()" style="width: 36px; height: 36px; border-radius: 8px; cursor: pointer;">
+            <h2 style="margin: 0; font-size: 18px; cursor: pointer;" onclick="window.renderMainMenu()">MasterBoss</h2>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <div onclick="window.showStub('🔒 Блокировка', 'main')" style="border: 1px solid #30363d; border-radius: 8px; padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #161b22;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9d1d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <div onclick="location.reload()" style="border: 1px solid #30363d; border-radius: 8px; padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #161b22;" title="Обновить">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9d1d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            </div>
+            <div onclick="window.openSettings()" style="border: 1px solid #30363d; border-radius: 8px; padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #161b22;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9d1d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </div>
+            <div onclick="window.showStub('👤 Личный кабинет', 'main')" style="border: 1px solid #30363d; border-radius: 8px; padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #161b22;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9d1d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Контейнер для капсул -->
+    
+    <!-- Скроллируемый контент -->
+    <div id="app-content">Загрузка...</div>
+
+    
+
+
+    
+    
+
+
+
+<!-- Плавающее меню -->
+
+
+  </div>
+</div>
+<!-- КОНЕЦ ПЛАВАЮЩЕГО МЕНЮ -->
+
+
+
+
+    </div>
+
+    
+    
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="js/main.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("sw.js?v=119
+        }
+    </script>
+
+
+
+
+<nav style="position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 10px 0; background: var(--bg2); border-top: 1px solid var(--border); z-index: 10001;">
+    <div onclick="window.openCameraModal()" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; color: var(--fg);">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    </div>
+    <div onclick="window.openAddMenu()" style="width: 56px; height: 56px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,122,255,0.4); margin-bottom: 10px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+    <div id="main-mic-btn" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; color: var(--fg); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </div>
+</nav>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+<div id="floating-capsule-wrapper" style="position: fixed; right: 0; bottom: 90px; z-index: 10000; display: flex;">
+    
+    <div id="floating-capsule" style="position: relative; display: flex; flex-direction: row; align-items: center; padding: 6px 6px 6px 44px; gap: 2px; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.3s ease; z-index: 10000;">
+      
+      <!-- Стрелка: жесткий размер 36x40, прижата к низу -->
+      <div id="toggle-capsule" style="position: absolute; left: 0; bottom: 6px; width: 36px; height: 40px; min-height: 40px; max-height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); background: transparent; z-index: 10002;">
+        <svg id="toggle-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <div style="display: flex; flex-direction: column;"><div style="display: flex; flex-direction: column;"><div style="display: flex; flex-direction: column;">
+<div class="nav-item" id="nav-personal" onclick="window.showStub('Личные', 'personal')" style="display: flex; align-items: center; width: 100%; padding: 6px 8px; cursor: pointer; gap: 8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+      <span style="font-size: 11px;">Личные</span>
+    </div>
+    <div class="nav-item" id="nav-objects" onclick="window.openObjects()" style="display: flex; align-items: center; width: 100%; padding: 6px 8px; cursor: pointer; gap: 8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+      <span style="font-size: 11px;">Объекты</span>
+    </div>
+    <div class="nav-item" id="nav-finance" onclick="window.showStub('Финансы', 'finance')" style="display: flex; align-items: center; width: 100%; padding: 6px 8px; cursor: pointer; gap: 8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span style="font-size: 11px;">Финансы</span>
+    </div>
+    <div class="nav-item" id="nav-tasks" onclick="window.openTasks()" style="display: flex; align-items: center; width: 100%; padding: 6px 8px; cursor: pointer; gap: 8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span style="font-size: 11px;">Задачи</span>
+    </div>
+    <div class="nav-item" id="nav-diary" onclick="window.showStub('Дневник', 'diary')" style="display: flex; align-items: center; width: 100%; padding: 6px 8px; cursor: pointer; gap: 8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span style="font-size: 11px;">Дневник</span>
+    </div>
+    <div class="nav-item" id="nav-reports" onclick="window.showStub('Отчёты', 'reports')" style="display: flex; align-items: center; width: 100%; padding: 6px 8px; cursor: pointer; gap: 8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span style="font-size: 11px;">Отчёты</span>
+    </div>
+    <div class="nav-item" id="nav-kpi" onclick="window.showStub('KPI', 'kpi')" style="display: flex; align-items: center; width: 100%; padding: 6px 8px; cursor: pointer; gap: 8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+      <span style="font-size: 11px;">KPI</span>
+    </div>
+    <div class="nav-item" id="nav-crm" onclick="window.showStub('CRM', 'crm')" style="display: flex; align-items: center; width: 100%; padding: 6px 8px; cursor: pointer; gap: 8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span style="font-size: 11px;">CRM</span>
+    </div>
+  </div>
+    </div>
+  </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
