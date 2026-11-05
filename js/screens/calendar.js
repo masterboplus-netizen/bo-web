@@ -1,3 +1,4 @@
+import { renderCalendarWidget } from '../ui/calendar_widget.js';
 import { db } from '../api/supabase.js';
 
 export async function renderCalendar() {
@@ -6,63 +7,50 @@ export async function renderCalendar() {
     container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка календаря...</div>';
 
     try {
-        // Получаем все задачи с датой
-        const { data: tasks, error } = await db.from('tasks').select('*').not('deadline_start', 'is', null);
+        const { data: objects, error } = await db.from('objects').select('*');
         if (error) throw error;
-
-        const today = new Date();
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
-
-        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay(); // 0 = Sunday
-        const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1; // Сдвигаем, чтобы неделя начиналась с Понедельника
-
-        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
 
         let html = `
             <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: var(--fg); text-align: center; margin-bottom: 20px;">${monthNames[currentMonth]} ${currentYear}</h2>
+                <h2 style="color: var(--fg); margin-bottom: 15px;">Календарь</h2>
                 
-                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 12px; color: var(--fg-dim); margin-bottom: 10px;">
-                    <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px;">
+                    <button onclick="window.loadCalendarTab(null, 'Общий')" id="cal-tab-general" style="padding: 8px 16px; border-radius: 20px; background: var(--accent); color: white; border: none; cursor: pointer; white-space: nowrap; font-weight: bold;">Общий календарь</button>
         `;
 
-        // Пустые ячейки до начала месяца
-        for (let i = 0; i < startDay; i++) {
-            html += `<div></div>`;
-        }
+        objects.forEach(obj => {
+            html += `<button onclick="window.loadCalendarTab(${obj.id}, '${obj.name}')" id="cal-tab-${obj.id}" style="padding: 8px 16px; border-radius: 20px; background: var(--bg2); color: var(--fg); border: 1px solid var(--bg3); cursor: pointer; white-space: nowrap;">${obj.name}</button>`;
+        });
 
-        // Дни месяца
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const tasksForDay = tasks.filter(t => t.deadline_start === dateStr);
-            const hasTasks = tasksForDay.length > 0;
-
-            html += `
-                <div onclick="window.showTasksForDate('${dateStr}')" style="padding: 10px 5px; border-radius: 8px; background: ${hasTasks ? 'var(--accent)' : 'var(--bg2)'}; color: ${hasTasks ? 'white' : 'var(--fg)'}; cursor: pointer; border: 1px solid var(--bg3); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 40px;">
-                    <span style="font-weight: ${hasTasks ? 'bold' : 'normal'};">${day}</span>
-                    ${hasTasks ? `<span style="font-size: 10px; opacity: 0.8;">${tasksForDay.length}</span>` : ''}
-                </div>
-            `;
-        }
-
-        html += `
-                </div>
-            </div>
-        `;
+        html += `</div><div id="calendar-container"></div></div>`;
         container.innerHTML = html;
+
+        window.loadCalendarTab = function(objectId, objName) {
+            // Сброс стилей кнопок
+            document.querySelectorAll('[id^="cal-tab-"]').forEach(btn => {
+                btn.style.background = 'var(--bg2)';
+                btn.style.color = 'var(--fg)';
+                btn.style.fontWeight = 'normal';
+            });
+            const activeBtn = document.getElementById(objectId ? `cal-tab-${objectId}` : 'cal-tab-general');
+            if (activeBtn) {
+                activeBtn.style.background = 'var(--accent)';
+                activeBtn.style.color = 'white';
+                activeBtn.style.fontWeight = 'bold';
+            }
+
+            renderCalendarWidget('calendar-container', objectId);
+        };
+
+        // По умолчанию грузим общий календарь
+        window.loadCalendarTab(null, 'Общий');
 
     } catch (err) {
         console.error(err);
-        container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка загрузки: ${err.message}</div>`;
+        container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${err.message}</div>`;
     }
 }
 
-// Функция для показа задач на конкретный день
 window.showTasksForDate = async function(dateStr) {
     const container = document.getElementById('app-content');
     container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка задач...</div>';
@@ -73,7 +61,7 @@ window.showTasksForDate = async function(dateStr) {
 
         let html = `
             <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
-                <button onclick="window.openCalendar()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад к календарю</button>
+                <button onclick="window.renderCalendar()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад к календарю</button>
                 <h2 style="color: var(--fg); margin-bottom: 20px;">Задачи на ${new Date(dateStr).toLocaleDateString('ru-RU')}</h2>
         `;
 
@@ -89,10 +77,8 @@ window.showTasksForDate = async function(dateStr) {
                 `;
             });
         }
-
         html += `</div>`;
         container.innerHTML = html;
-
     } catch (err) {
         console.error(err);
         container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${err.message}</div>`;
