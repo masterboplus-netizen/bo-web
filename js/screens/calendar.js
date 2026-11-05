@@ -5,35 +5,30 @@ export function renderCalendar() {
     const today = new Date();
     let currentMonth = today.getMonth();
     let currentYear = today.getFullYear();
-    let currentView = 'month'; // 'month', 'year', '30days'
+    let currentView = 'month';
 
     function render() {
         let html = `
             <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
                 
-                <!-- Переключатель режимов -->
                 <div style="display: flex; background: var(--bg2); border-radius: 20px; padding: 4px; margin-bottom: 20px;">
                     <button onclick="window.switchCalView('month')" id="cal-btn-month" style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer;">Месяц</button>
                     <button onclick="window.switchCalView('year')" id="cal-btn-year" style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: transparent; color: var(--fg-dim); cursor: pointer;">Год</button>
                     <button onclick="window.switchCalView('30days')" id="cal-btn-30days" style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: transparent; color: var(--fg-dim); cursor: pointer;">30 дней</button>
                 </div>
 
-                <!-- Заголовок -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 10px;">
                     <button onclick="window.changeMonth(-1)" style="background: transparent; border: none; color: var(--fg); font-size: 20px; cursor: pointer;">&lt;</button>
                     <h2 id="cal-title" style="color: var(--fg); margin: 0; font-size: 18px;"></h2>
                     <button onclick="window.changeMonth(1)" style="background: transparent; border: none; color: var(--fg); font-size: 20px; cursor: pointer;">&gt;</button>
                 </div>
 
-                <!-- Сетка -->
                 <div id="cal-grid"></div>
 
-                <!-- Детали дня -->
                 <div id="cal-day-details" style="margin-top: 20px; display: none;">
                     <h3 id="cal-day-title" style="color: var(--fg-dim); font-size: 14px; margin-bottom: 10px;"></h3>
                     <div id="cal-day-events" style="color: var(--fg-dim); font-size: 14px;">Событий пока нет.</div>
                 </div>
-
             </div>
         `;
         container.innerHTML = html;
@@ -44,7 +39,6 @@ export function renderCalendar() {
         const grid = document.getElementById('cal-grid');
         const title = document.getElementById('cal-title');
 
-        // Сбрасываем подсветку кнопок
         document.querySelectorAll('[id^="cal-btn-"]').forEach(btn => {
             btn.style.background = 'transparent';
             btn.style.color = 'var(--fg-dim)';
@@ -81,27 +75,23 @@ export function renderCalendar() {
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isToday = dateStr === new Date().toISOString().split('T')[0];
-
             html += `
-                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="padding: 10px 5px; border-radius: 50%; background: ${isToday ? 'var(--bg3)' : 'transparent'}; color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1; transition: background 0.2s;">
+                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="padding: 10px 5px; border-radius: 50%; background: ${isToday ? 'var(--bg3)' : 'transparent'}; color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
                     <span style="font-size: 14px; font-weight: ${isToday ? 'bold' : 'normal'};">${day}</span>
                 </div>
             `;
         }
-
         html += `</div>`;
         return html;
     }
 
-    
     function renderYearGrid(year) {
         let html = `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px 0;">`;
-        
         for (let m = 0; m < 12; m++) {
             const daysInMonth = new Date(year, m + 1, 0).getDate();
             const firstDayIndex = new Date(year, m, 1).getDay();
             const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-            const monthName = getMonthName(m).substring(0, 3); // Берем первые 3 буквы
+            const monthName = getMonthName(m).substring(0, 3);
 
             let monthHtml = `
                 <div style="background: var(--bg2); border-radius: 12px; padding: 10px; border: 1px solid var(--bg3);">
@@ -111,25 +101,19 @@ export function renderCalendar() {
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; font-size: 9px; color: var(--fg); margin-top: 4px;">
             `;
-
             for (let i = 0; i < startDay; i++) monthHtml += `<div></div>`;
-
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const isToday = dateStr === new Date().toISOString().split('T')[0];
                 monthHtml += `<div style="padding: 2px 0; ${isToday ? 'background: var(--accent); color: white; border-radius: 50%;' : ''}">${day}</div>`;
             }
-
             monthHtml += `</div></div>`;
             html += monthHtml;
         }
-
         html += `</div>`;
         return html;
     }
 
-
-    
     function render30DaysGrid() {
         const start = new Date();
         const days = [];
@@ -139,7 +123,6 @@ export function renderCalendar() {
             days.push(d);
         }
 
-        // Сетка (как в месяце)
         let html = `
             <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 12px; color: var(--fg-dim); margin-bottom: 10px;">
                 <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
@@ -147,19 +130,15 @@ export function renderCalendar() {
             <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
         `;
 
-        // Вычисляем, с какого дня недели начинается первый день
         const firstDayIndex = days[0].getDay();
         const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
 
-        for (let i = 0; i < startDay; i++) {
-            html += `<div></div>`;
-        }
+        for (let i = 0; i < startDay; i++) html += `<div></div>`;
 
         days.forEach(d => {
             const dateStr = d.toISOString().split('T')[0];
             const isToday = dateStr === new Date().toISOString().split('T')[0];
             const dayNum = d.getDate();
-
             html += `
                 <div onclick="window.showDay('${dateStr}', '${dayNum} ${getMonthName(d.getMonth())} ${d.getFullYear()}')" style="padding: 10px 5px; border-radius: 50%; background: ${isToday ? 'var(--bg3)' : 'transparent'}; color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
                     <span style="font-size: 14px; font-weight: ${isToday ? 'bold' : 'normal'};">${dayNum}</span>
@@ -168,30 +147,14 @@ export function renderCalendar() {
         });
 
         html += `</div>`;
-
-        // Блок "Сессии" (заглушка)
-        html += `
-            <div style="margin-top: 20px;">
-                <div style="display: flex; background: var(--bg2); border-radius: 20px; padding: 4px; margin-bottom: 15px;">
-                    <button style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer;">Сессии</button>
-                    <button style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: transparent; color: var(--fg-dim); cursor: pointer;">24ч</button>
-                </div>
-                <div id="30days-details" style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
-                    <div style="color: var(--fg-dim); font-size: 14px;">Выберите день, чтобы увидеть события.</div>
-                </div>
-            </div>
-        `;
-
         return html;
     }
-
 
     function getMonthName(monthIndex) {
         const months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
         return months[monthIndex];
     }
 
-    // Глобальные функции для кнопок
     window.switchCalView = function(view) {
         currentView = view;
         renderGrid();
@@ -204,18 +167,11 @@ export function renderCalendar() {
         renderGrid();
     };
 
-    window.selectYearMonth = function(m) {
-        currentMonth = m;
-        window.switchCalView('month');
-    };
-
     window.showDay = function(dateStr, displayDate) {
         const details = document.getElementById('cal-day-details');
         document.getElementById('cal-day-title').textContent = displayDate;
         document.getElementById('cal-day-events').innerHTML = 'Событий пока нет.';
         details.style.display = 'block';
-        
-        // Прокрутка к деталям
         details.scrollIntoView({ behavior: 'smooth', block: 'end' });
     };
 
