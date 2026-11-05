@@ -210,7 +210,7 @@ window.openTaskDetail = async function(id) {
         let statusColor = task.status === 'done' ? 'var(--fg-dim)' : 'var(--accent)';
 
         let html = `
-            <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
+            <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
                 <button onclick="window.openTasks()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад к списку</button>
 
                 <div style="display: flex; flex-direction: column; gap: 15px;">
