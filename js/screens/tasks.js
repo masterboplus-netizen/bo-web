@@ -24,6 +24,14 @@ export async function renderTasks() {
         tasks.forEach(task => {
             let statusColor = task.status === 'done' ? 'var(--fg-dim)' : 'var(--accent)';
             let statusText = task.status === 'done' ? 'Выполнена' : 'В работе';
+            
+            let deadlineDisplay = '';
+            if (task.deadline_start) {
+                deadlineDisplay = new Date(task.deadline_start).toLocaleDateString('ru-RU');
+                if (task.deadline_end) {
+                    deadlineDisplay += ` — ${new Date(task.deadline_end).toLocaleDateString('ru-RU')}`;
+                }
+            }
 
             html += `
                 <div onclick="window.openTaskDetail(${task.id})" style="background: var(--bg2); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--bg3); cursor: pointer;">
@@ -32,6 +40,7 @@ export async function renderTasks() {
                         <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; white-space: nowrap; margin-left: 10px;">${statusText}</span>
                     </div>
                     ${task.description ? `<div style="font-size: 14px; color: var(--fg-dim); word-break: break-word;">${escapeHtml(task.description)}</div>` : ''}
+                    ${deadlineDisplay ? `<div style="font-size: 12px; color: var(--fg-dim);">Срок: ${deadlineDisplay}</div>` : ''}
                     <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--fg-dim); margin-top: 5px;">
                         <span>ID: ${task.id}</span>
                         <div style="display: flex; gap: 10px; align-items: center;">
@@ -89,6 +98,7 @@ export function openNewTask() {
                         <option value="today">Сегодня</option>
                         <option value="tomorrow">Завтра</option>
                         <option value="plus3">+3 дня</option>
+                        <option value="plus7">+7 дней</option>
                     </select>
                 </div>
             </div>
@@ -115,6 +125,7 @@ window.applyQuickDate = function(val) {
     const d = new Date();
     if (val === 'tomorrow') { d.setDate(d.getDate() + 1); }
     else if (val === 'plus3') { d.setDate(d.getDate() + 3); }
+    else if (val === 'plus7') { d.setDate(d.getDate() + 7); }
     document.getElementById('new-task-deadline-start').value = d.toISOString().split('T')[0];
     document.getElementById('new-task-quick-date').value = '';
 };
@@ -211,6 +222,8 @@ window.openTaskDetail = async function(id) {
         const { data: photos, error: photosError } = await db.from('task_photos').select('*').eq('task_id', id).order('created_at', { ascending: false });
         if (photosError) throw photosError;
 
+        const hasDeadlineEnd = task.deadline_end !== null;
+
         let html = `
             <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
                 <button onclick="window.openTasks()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад к списку</button>
@@ -236,8 +249,32 @@ window.openTaskDetail = async function(id) {
                     </div>
 
                     <div>
-                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Срок</label>
-                        <input type="date" id="edit-task-deadline" value="${task.deadline_start || ''}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <label style="color: var(--fg-dim);">Срок</label>
+                            <div style="display: flex; background: var(--bg2); border-radius: 12px; padding: 2px;">
+                                <button onclick="window.toggleDeadlineType('single')" id="btn-single" style="padding: 4px 10px; border-radius: 10px; border: none; background: ${!hasDeadlineEnd ? 'var(--accent)' : 'transparent'}; color: ${!hasDeadlineEnd ? 'white' : 'var(--fg-dim)'}; font-size: 12px; cursor: pointer;">Одна дата</button>
+                                <button onclick="window.toggleDeadlineType('range')" id="btn-range" style="padding: 4px 10px; border-radius: 10px; border: none; background: ${hasDeadlineEnd ? 'var(--accent)' : 'transparent'}; color: ${hasDeadlineEnd ? 'white' : 'var(--fg-dim)'}; font-size: 12px; cursor: pointer;">Диапазон</button>
+                            </div>
+                        </div>
+
+                        <div id="deadline-single" style="display: ${!hasDeadlineEnd ? 'block' : 'none'};">
+                            <input type="date" id="edit-task-deadline-start" value="${task.deadline_start || ''}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        </div>
+
+                        <div id="deadline-range" style="display: ${hasDeadlineEnd ? 'block' : 'none'};">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="date" id="edit-task-deadline-start-range" value="${task.deadline_start || ''}" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                                <span style="color: var(--fg-dim);">—</span>
+                                <input type="date" id="edit-task-deadline-end" value="${task.deadline_end || ''}" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+                            <button onclick="window.setQuickDate('today')" style="padding: 6px 12px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Сегодня</button>
+                            <button onclick="window.setQuickDate('tomorrow')" style="padding: 6px 12px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Завтра</button>
+                            <button onclick="window.setQuickDate('plus3')" style="padding: 6px 12px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">+3 дня</button>
+                            <button onclick="window.setQuickDate('plus7')" style="padding: 6px 12px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">+7 дней</button>
+                        </div>
                     </div>
 
                     <div>
@@ -286,6 +323,93 @@ window.openTaskDetail = async function(id) {
     }
 };
 
+window.toggleDeadlineType = function(type) {
+    if (type === 'single') {
+        document.getElementById('deadline-single').style.display = 'block';
+        document.getElementById('deadline-range').style.display = 'none';
+        document.getElementById('btn-single').style.background = 'var(--accent)';
+        document.getElementById('btn-single').style.color = 'white';
+        document.getElementById('btn-range').style.background = 'transparent';
+        document.getElementById('btn-range').style.color = 'var(--fg-dim)';
+    } else {
+        document.getElementById('deadline-single').style.display = 'none';
+        document.getElementById('deadline-range').style.display = 'block';
+        document.getElementById('btn-range').style.background = 'var(--accent)';
+        document.getElementById('btn-range').style.color = 'white';
+        document.getElementById('btn-single').style.background = 'transparent';
+        document.getElementById('btn-single').style.color = 'var(--fg-dim)';
+    }
+};
+
+window.setQuickDate = function(type) {
+    const today = new Date();
+    let targetDate = new Date(today);
+
+    if (type === 'tomorrow') targetDate.setDate(today.getDate() + 1);
+    else if (type === 'plus3') targetDate.setDate(today.getDate() + 3);
+    else if (type === 'plus7') targetDate.setDate(today.getDate() + 7);
+
+    const dateStr = targetDate.toISOString().split('T')[0];
+
+    const singleInput = document.getElementById('edit-task-deadline-start');
+    const rangeStart = document.getElementById('edit-task-deadline-start-range');
+    const rangeEnd = document.getElementById('edit-task-deadline-end');
+
+    if (singleInput && singleInput.offsetParent !== null) {
+        singleInput.value = dateStr;
+    } else if (rangeStart && rangeEnd && rangeStart.offsetParent !== null) {
+        if (!rangeStart.value) rangeStart.value = dateStr;
+        else rangeEnd.value = dateStr;
+    }
+};
+
+window.saveTaskChanges = async function(id) {
+    const title = document.getElementById('edit-task-title').value.trim();
+    const desc = document.getElementById('edit-task-desc').value.trim();
+    const priority = document.getElementById('edit-task-priority').value;
+    const status = document.getElementById('edit-task-status').value;
+
+    let deadlineStart = null;
+    let deadlineEnd = null;
+
+    const isSingle = document.getElementById('deadline-single').style.display !== 'none';
+    if (isSingle) {
+        deadlineStart = document.getElementById('edit-task-deadline-start').value || null;
+    } else {
+        deadlineStart = document.getElementById('edit-task-deadline-start-range').value || null;
+        deadlineEnd = document.getElementById('edit-task-deadline-end').value || null;
+    }
+
+    if (!title) return alert('Название не может быть пустым!');
+
+    try {
+        const { error } = await db.from('tasks').update({
+            title: title,
+            description: desc || null,
+            priority: priority,
+            deadline_start: deadlineStart,
+            deadline_end: deadlineEnd,
+            status: status
+        }).eq('id', id);
+
+        if (error) throw error;
+        window.openTaskDetail(id);
+    } catch (err) {
+        alert('Ошибка сохранения: ' + err.message);
+    }
+};
+
+window.toggleTaskStatus = async function(id, currentStatus) {
+    const newStatus = currentStatus === 'done' ? 'active' : 'done';
+    try {
+        const { error } = await db.from('tasks').update({ status: newStatus }).eq('id', id);
+        if (error) throw error;
+        window.openTaskDetail(id);
+    } catch (err) {
+        alert('Ошибка обновления статуса: ' + err.message);
+    }
+};
+
 window.uploadTaskPhoto = async function(taskId, input) {
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
@@ -320,41 +444,5 @@ window.deleteTaskPhoto = async function(photoId, taskId) {
         window.openTaskDetail(taskId);
     } catch (err) {
         alert('Ошибка удаления: ' + err.message);
-    }
-};
-
-window.saveTaskChanges = async function(id) {
-    const title = document.getElementById('edit-task-title').value.trim();
-    const desc = document.getElementById('edit-task-desc').value.trim();
-    const priority = document.getElementById('edit-task-priority').value;
-    const deadline = document.getElementById('edit-task-deadline').value;
-    const status = document.getElementById('edit-task-status').value;
-
-    if (!title) return alert('Название не может быть пустым!');
-
-    try {
-        const { error } = await db.from('tasks').update({
-            title: title,
-            description: desc || null,
-            priority: priority,
-            deadline_start: deadline || null,
-            status: status
-        }).eq('id', id);
-
-        if (error) throw error;
-        window.openTaskDetail(id);
-    } catch (err) {
-        alert('Ошибка сохранения: ' + err.message);
-    }
-};
-
-window.toggleTaskStatus = async function(id, currentStatus) {
-    const newStatus = currentStatus === 'done' ? 'active' : 'done';
-    try {
-        const { error } = await db.from('tasks').update({ status: newStatus }).eq('id', id);
-        if (error) throw error;
-        window.openTaskDetail(id);
-    } catch (err) {
-        alert('Ошибка обновления статуса: ' + err.message);
     }
 };
