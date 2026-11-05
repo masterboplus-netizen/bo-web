@@ -1,3 +1,4 @@
+import { renderCalendar } from './screens/calendar.js';
 import { renderObjects } from './screens/objects.js';
 import { initFloatingMenu } from './ui/floating_menu.js';
 import { fetchObjects } from './api/objects.js';
@@ -66,3 +67,4 @@ document.addEventListener('DOMContentLoaded', () => {
     window.renderMainMenu();
     initAudioButton();
 });
+window.openCalendar = renderCalendar;
