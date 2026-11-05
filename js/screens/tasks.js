@@ -402,15 +402,15 @@ window.openTaskDetail = async function(id) {
                             </button>
                         </div>
                         <div id="task-logs-container-${task.id}">
-                            ${logs && logs.length > 0 ? logs.map(log => `
-                                <div style="background: var(--bg2); padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid var(--accent);">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                        <span style="font-size: 12px; color: var(--fg-dim);">${new Date(log.created_at).toLocaleString('ru-RU')}</span>
-                                        <span style="font-size: 12px; color: var(--accent); font-weight: bold;">${log.hours ? log.hours + ' ч.' : ''} ${log.qty ? log.qty + ' ' + (log.unit || '') : ''}</span>
-                                    </div>
-                                    <div style="color: var(--fg); font-size: 14px; white-space: pre-wrap;">${log.description || 'Без описания'}</div>
-                                </div>
-                            `).join('') : '<div style="color: var(--fg-dim); font-size: 14px;">Записей пока нет.</div>'}
+                            ${logs && logs.length > 0 ? logs.map(function(log) { 
+                                return '<div style="background: var(--bg2); padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid var(--accent);">' +
+                                    '<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">' +
+                                        '<span style="font-size: 12px; color: var(--fg-dim);">' + new Date(log.created_at).toLocaleString('ru-RU') + '</span>' +
+                                        '<span style="font-size: 12px; color: var(--accent); font-weight: bold;">' + (log.hours ? log.hours + ' ч.' : '') + ' ' + (log.qty ? log.qty + ' ' + (log.unit || '') : '') + '</span>' +
+                                    '</div>' +
+                                    '<div style="color: var(--fg); font-size: 14px; white-space: pre-wrap;">' + (log.description || 'Без описания') + '</div>' +
+                                '</div>';
+                            }).join('') : '<div style="color: var(--fg-dim); font-size: 14px;">Записей пока нет.</div>'}
                         </div>
                     </div>
 
