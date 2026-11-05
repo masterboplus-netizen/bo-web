@@ -234,10 +234,12 @@ window.openTaskDetail = async function(id) {
                         <input type="text" id="edit-task-title" value="${escapeHtml(task.title || '')}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; font-size: 16px;">
                     </div>
 
+                    ${task.description ? `
                     <div>
                         <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Описание</label>
-                        <textarea id="edit-task-desc" rows="3" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; resize: vertical;">${escapeHtml(task.description || '')}</textarea>
+                        <textarea id="edit-task-desc" rows="3" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; resize: vertical;">${escapeHtml(task.description)}</textarea>
                     </div>
+                    ` : ''}
 
                     <div>
                         <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Приоритет</label>
