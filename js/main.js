@@ -73,6 +73,7 @@ window.openDiary = renderDiary;
 window.setNavActive = setNavActive;
 window.setNavActive = setNavActive;
 
+
 window.openMenu = function() {
     const container = document.getElementById('app-content');
     
@@ -82,6 +83,23 @@ window.openMenu = function() {
             <h2 style="color: var(--fg); margin-bottom: 20px;">Меню</h2>
 
             <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div onclick="window.openObjects()" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">🏢</span>
+                    <span style="color: var(--fg);">Объекты</span>
+                </div>
+                <div onclick="window.openTasks()" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">📋</span>
+                    <span style="color: var(--fg);">Задачи</span>
+                </div>
+                <div onclick="window.openCalendar()" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">📅</span>
+                    <span style="color: var(--fg);">Календарь</span>
+                </div>
+                <div onclick="window.openDiary()" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">📔</span>
+                    <span style="color: var(--fg);">Дневник</span>
+                </div>
+
                 <div onclick="window.showStub('KPI', 'kpi')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
                     <span style="font-size: 20px;">📊</span>
                     <span style="color: var(--fg);">KPI</span>
