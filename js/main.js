@@ -72,3 +72,75 @@ window.openCalendar = renderCalendar;
 window.openDiary = renderDiary;
 window.setNavActive = setNavActive;
 window.setNavActive = setNavActive;
+
+window.openMenu = function() {
+    const container = document.getElementById('app-content');
+    
+    let html = `
+        <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
+            <button onclick="window.renderMainMenu()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад</button>
+            <h2 style="color: var(--fg); margin-bottom: 20px;">Меню</h2>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div onclick="window.showStub('KPI', 'kpi')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">📊</span>
+                    <span style="color: var(--fg);">KPI</span>
+                </div>
+                <div onclick="window.showStub('CRM', 'crm')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">👥</span>
+                    <span style="color: var(--fg);">CRM</span>
+                </div>
+                <div onclick="window.showStub('Финансы', 'finance')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">💵</span>
+                    <span style="color: var(--fg);">Финансы</span>
+                </div>
+                <div onclick="window.showStub('Отчёты', 'reports')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">📄</span>
+                    <span style="color: var(--fg);">Отчёты</span>
+                </div>
+                <div onclick="window.showStub('Личные', 'personal')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">👤</span>
+                    <span style="color: var(--fg);">Личные</span>
+                </div>
+                <div onclick="window.showStub('Диктофон', 'dictaphone')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">🎤</span>
+                    <span style="color: var(--fg);">Диктофон</span>
+                </div>
+                <div onclick="window.showStub('Блокнот', 'notepad')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">📝</span>
+                    <span style="color: var(--fg);">Блокнот</span>
+                </div>
+                <div onclick="window.showStub('Документы', 'documents')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">📁</span>
+                    <span style="color: var(--fg);">Документы</span>
+                </div>
+                <div onclick="window.showStub('Материалы', 'materials')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">📦</span>
+                    <span style="color: var(--fg);">Материалы</span>
+                </div>
+                <div onclick="window.showStub('Комплектация', 'equipment')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">🧰</span>
+                    <span style="color: var(--fg);">Комплектация</span>
+                </div>
+                <div onclick="window.showStub('Работы', 'works')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">🔨</span>
+                    <span style="color: var(--fg);">Работы</span>
+                </div>
+                <div onclick="window.showStub('Маркетинг', 'marketing')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">📢</span>
+                    <span style="color: var(--fg);">Маркетинг</span>
+                </div>
+                <div onclick="window.showStub('Персонал', 'personnel')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">👥</span>
+                    <span style="color: var(--fg);">Персонал</span>
+                </div>
+                <div onclick="window.showStub('База знаний', 'knowledge')" style="background: var(--bg2); padding: 15px; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">📚</span>
+                    <span style="color: var(--fg);">База знаний</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = html;
+};
