@@ -36,7 +36,7 @@ export async function renderTasks() {
                         <span>ID: ${task.id}</span>
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <span>${new Date(task.created_at).toLocaleDateString('ru-RU')}</span>
-                            <button onclick="event.stopPropagation(); window.deleteTask(${task.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; font-size: 16px;">🗑️</button>
+                            <button onclick="event.stopPropagation(); window.deleteTask(${task.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; font-size: 16px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
                         </div>
                     </div>
                 </div>
@@ -95,7 +95,7 @@ export function openNewTask() {
                 <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Фото</label>
                 <input type="file" id="new-task-photo" accept="image/*" style="display: none;" onchange="window.handlePhotoAttach(this)">
                 <button type="button" onclick="document.getElementById('new-task-photo').click()" style="padding: 10px 15px; border-radius: 8px; border: 1px dashed var(--fg-dim); background: transparent; color: var(--fg); cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    📷 Прикрепить фото
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>Прикрепить фото
                 </button>
                 <div id="photo-preview" style="margin-top: 10px; display: none;">
                     <img id="photo-img" style="max-width: 100px; border-radius: 8px;">
