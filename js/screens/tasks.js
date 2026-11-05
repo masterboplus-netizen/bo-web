@@ -264,12 +264,12 @@ window.openTaskDetail = async function(id) {
                         <div id="deadline-range" style="display: ${hasDeadlineEnd ? 'block' : 'none'};">
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <input type="date" id="edit-task-deadline-start-range" value="${task.deadline_start || ''}" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                                <span style="color: var(--fg-dim);">—</span>
+                                <span style="color: var(--fg-dim); margin: 0 2px;">—</span>
                                 <input type="date" id="edit-task-deadline-end" value="${task.deadline_end || ''}" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+                        <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
                             <button onclick="window.setQuickDate('today')" style="padding: 6px 12px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Сегодня</button>
                             <button onclick="window.setQuickDate('tomorrow')" style="padding: 6px 12px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Завтра</button>
                             <button onclick="window.setQuickDate('plus3')" style="padding: 6px 12px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">+3 дня</button>
@@ -355,12 +355,22 @@ window.setQuickDate = function(type) {
     const rangeStart = document.getElementById('edit-task-deadline-start-range');
     const rangeEnd = document.getElementById('edit-task-deadline-end');
 
-    // Если видно поле для одной даты
+    // Подсветка нажатой кнопки
+    const btn = document.querySelector(`button[onclick="window.setQuickDate('${type}')"]`);
+    if (btn) {
+        const originalBg = btn.style.background;
+        const originalColor = btn.style.color;
+        btn.style.background = 'var(--accent)';
+        btn.style.color = 'white';
+        setTimeout(() => {
+            btn.style.background = originalBg;
+            btn.style.color = originalColor;
+        }, 300);
+    }
+
     if (singleInput && singleInput.offsetParent !== null) {
         singleInput.value = dateStr;
-    } 
-    // Если видно поле для диапазона
-    else if (rangeStart && rangeEnd) {
+    } else if (rangeStart && rangeEnd) {
         if (!rangeStart.value) {
             rangeStart.value = dateStr;
         } else {
