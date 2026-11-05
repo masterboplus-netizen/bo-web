@@ -75,7 +75,7 @@ export async function renderCalendar() {
         };
 
         // Функция отрисовки сетки месяца
-        window.renderMonthGrid = function(year, month, tasks) {
+        window.renderMonthGrid = function(year, month, tasks) { window.renderMonthGrid = window.renderMonthGrid;
             const grid = document.getElementById('calendar-grid-container');
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const firstDayIndex = new Date(year, month, 1).getDay();
