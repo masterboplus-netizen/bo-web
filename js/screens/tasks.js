@@ -211,6 +211,7 @@ window.deleteTask = async function(id) {
     }
 };
 
+
 window.openTaskDetail = async function(id) {
     const container = document.getElementById('app-content');
     container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка...</div>';
@@ -222,13 +223,17 @@ window.openTaskDetail = async function(id) {
         const { data: photos, error: photosError } = await db.from('task_photos').select('*').eq('task_id', id).order('created_at', { ascending: false });
         if (photosError) throw photosError;
 
+        const { data: logs, error: logsError } = await db.from('task_progress').select('*').eq('task_id', id).order('created_at', { ascending: false });
+        if (logsError) throw logsError;
+
         const hasDeadlineEnd = task.deadline_end !== null;
 
         let html = `
-            <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
+            <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 120px;">
                 <button onclick="window.openTasks()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад к списку</button>
 
                 <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- ОСНОВНАЯ ИНФОРМАЦИЯ -->
                     <div>
                         <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Название</label>
                         <input type="text" id="edit-task-title" value="${escapeHtml(task.title || '')}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; font-size: 16px;">
@@ -241,18 +246,37 @@ window.openTaskDetail = async function(id) {
                     </div>
                     ` : ''}
 
-                    <div>
-                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Приоритет</label>
-                        <select id="edit-task-priority" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
-                            <option value="low" ${task.priority === 'low' ? 'selected' : ''}>Низкий</option>
-                            <option value="medium" ${task.priority === 'medium' ? 'selected' : ''}>Средний</option>
-                            <option value="high" ${task.priority === 'high' ? 'selected' : ''}>Высокий</option>
-                        </select>
+                    <!-- ИНФОРМАЦИЯ ПО ОБЪЕКТУ (ЗАГЛУШКА) -->
+                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--fg);">Объект</span>
+                            <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                        </div>
+                        <div style="color: var(--fg-dim); font-size: 14px;">Адрес, парковка, как пройти — будут подтягиваться из объекта.</div>
                     </div>
 
+                    <!-- ИСПОЛНИТЕЛИ (ЗАГЛУШКА) -->
+                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--fg);">Исполнители</span>
+                            <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                        </div>
+                        <div style="color: var(--fg-dim); font-size: 14px;">Кто отвечает за задачу — будет здесь.</div>
+                    </div>
+
+                    <!-- ДАТЫ РЕАЛЬНОГО ИСПОЛНЕНИЯ (ЗАГЛУШКА) -->
+                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--fg);">Реальное исполнение</span>
+                            <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                        </div>
+                        <div style="color: var(--fg-dim); font-size: 14px;">Фактические даты начала и окончания работ.</div>
+                    </div>
+
+                    <!-- СРОК -->
                     <div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                            <label style="color: var(--fg-dim);">Срок</label>
+                            <label style="color: var(--fg-dim);">Плановый срок</label>
                             <div style="display: flex; background: var(--bg2); border-radius: 12px; padding: 2px;">
                                 <button onclick="window.toggleDeadlineType('single')" id="btn-single" style="padding: 4px 10px; border-radius: 10px; border: none; background: ${!hasDeadlineEnd ? 'var(--accent)' : 'transparent'}; color: ${!hasDeadlineEnd ? 'white' : 'var(--fg-dim)'}; font-size: 12px; cursor: pointer;">Одна дата</button>
                                 <button onclick="window.toggleDeadlineType('range')" id="btn-range" style="padding: 4px 10px; border-radius: 10px; border: none; background: ${hasDeadlineEnd ? 'var(--accent)' : 'transparent'}; color: ${hasDeadlineEnd ? 'white' : 'var(--fg-dim)'}; font-size: 12px; cursor: pointer;">Диапазон</button>
@@ -279,17 +303,30 @@ window.openTaskDetail = async function(id) {
                         </div>
                     </div>
 
-                    <div>
-                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Статус</label>
-                        <select id="edit-task-status" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
-                            <option value="active" ${task.status === 'active' ? 'selected' : ''}>В работе</option>
-                            <option value="done" ${task.status === 'done' ? 'selected' : ''}>Выполнена</option>
-                        </select>
+                    <!-- СТАТУС И ПРИОРИТЕТ -->
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Приоритет</label>
+                            <select id="edit-task-priority" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
+                                <option value="low" ${task.priority === 'low' ? 'selected' : ''}>Низкий</option>
+                                <option value="medium" ${task.priority === 'medium' ? 'selected' : ''}>Средний</option>
+                                <option value="high" ${task.priority === 'high' ? 'selected' : ''}>Высокий</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Статус</label>
+                            <select id="edit-task-status" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
+                                <option value="active" ${task.status === 'active' ? 'selected' : ''}>В работе</option>
+                                <option value="done" ${task.status === 'done' ? 'selected' : ''}>Выполнена</option>
+                            </select>
+                        </div>
                     </div>
 
+                    <!-- ФОТОГРАФИИ -->
                     <div>
                         <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Фотографии (${photos ? photos.length : 0})</label>
-                        <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; padding-bottom: 10px;">
+                            ${photos && photos.length > 0 ? photos.map(p => `
                                 <div style="position: relative; flex-shrink: 0; width: 120px;">
                                     <img src="${p.photo_url}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
                                     <div style="font-size: 10px; color: var(--fg-dim); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.title || 'Без названия'}</div>
@@ -297,9 +334,7 @@ window.openTaskDetail = async function(id) {
                                     <button onclick="window.deleteTaskPhoto(${p.id}, ${task.id})" style="position: absolute; top: 5px; right: 5px; background: rgba(255,0,0,0.7); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
                                 </div>
                             `).join('') : '<div style="color: var(--fg-dim); font-size: 12px;">Нет фото</div>'}
-                        
-                    </div>
-
+                        </div>
                         <div style="display: flex; gap: 10px; margin-top: 10px;">
                             <input type="file" id="task-photo-upload" accept="image/*" style="display: none;" onchange="window.uploadTaskPhoto(${task.id}, this)">
                             <button type="button" onclick="document.getElementById('task-photo-upload').click()" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px;">
@@ -311,6 +346,75 @@ window.openTaskDetail = async function(id) {
                                 Сфотографировать
                             </button>
                         </div>
+                    </div>
+
+                    <!-- БЛОКНОТ (ЗАГЛУШКА) -->
+                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--fg);">Блокнот</span>
+                            <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                        </div>
+                        <div style="color: var(--fg-dim); font-size: 14px;">Текстовые заметки — будут здесь.</div>
+                    </div>
+
+                    <!-- ДОКУМЕНТЫ (ЗАГЛУШКА) -->
+                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--fg);">Документы</span>
+                            <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                        </div>
+                        <div style="color: var(--fg-dim); font-size: 14px;">PDF, чертежи, сметы — будут здесь.</div>
+                    </div>
+
+                    <!-- ЗАПИСИ ДИКТОФОНА (ЗАГЛУШКА) -->
+                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--fg);">Записи диктофона</span>
+                            <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                        </div>
+                        <div style="color: var(--fg-dim); font-size: 14px;">Аудиозаметки — будут здесь.</div>
+                    </div>
+
+                    <!-- СВЯЗИ (ЗАГЛУШКА) -->
+                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--fg);">Связи</span>
+                            <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                        </div>
+                        <div style="color: var(--fg-dim); font-size: 14px;">Связанные задачи и блокировки — будут здесь.</div>
+                    </div>
+
+                    <!-- ОТЧЕТЫ (ЗАГЛУШКА) -->
+                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--fg);">Отчеты</span>
+                            <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                        </div>
+                        <div style="color: var(--fg-dim); font-size: 14px;">Генерация PDF/Excel — будет здесь.</div>
+                    </div>
+
+                    <!-- ДНЕВНИК РАБОТ -->
+                    <div style="margin-top: 10px; border-top: 1px solid var(--bg3); padding-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="color: var(--fg); margin: 0; font-size: 18px;">Дневник работ</h3>
+                            <button onclick="window.addTaskLog(${task.id})" style="background: var(--accent); color: white; border: none; border-radius: 20px; padding: 8px 16px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                🎤 Записать
+                            </button>
+                        </div>
+                        <div id="task-logs-container-${task.id}">
+                            ${logs && logs.length > 0 ? logs.map(log => `
+                                <div style="background: var(--bg2); padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid var(--accent);">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-size: 12px; color: var(--fg-dim);">${new Date(log.created_at).toLocaleString('ru-RU')}</span>
+                                        <span style="font-size: 12px; color: var(--accent); font-weight: bold;">${log.hours ? log.hours + ' ч.' : ''} ${log.qty ? log.qty + ' ' + (log.unit || '') : ''}</span>
+                                    </div>
+                                    <div style="color: var(--fg); font-size: 14px; white-space: pre-wrap;">${log.description || 'Без описания'}</div>
+                                </div>
+                            `).join('') : '<div style="color: var(--fg-dim); font-size: 14px;">Записей пока нет.</div>'}
+                        </div>
+                    </div>
+
+                    <!-- КНОПКИ ДЕЙСТВИЙ -->
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
                         <button onclick="window.saveTaskChanges(${task.id})" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;">
                             Сохранить
