@@ -187,3 +187,8 @@ export function renderCalendar() {
 
     render();
 }
+
+window.selectYearMonth = function(m) {
+    currentMonth = m;
+    window.switchCalView('month');
+};
