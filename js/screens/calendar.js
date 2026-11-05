@@ -121,14 +121,15 @@ export function renderCalendar() {
     }
 
 
+    
     function render30DaysGrid() {
-        const start = new Date();
-        const days = [];
-        for (let i = 0; i < 30; i++) {
-            const d = new Date(start);
-            d.setDate(start.getDate() + i);
-            days.push(d);
-        }
+        // Берем текущий месяц и год, чтобы отрисовать его сетку
+        const year = currentYear;
+        const month = currentMonth;
+        
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
 
         let html = `
             <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 12px; color: var(--fg-dim); margin-bottom: 10px;">
@@ -137,25 +138,23 @@ export function renderCalendar() {
             <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
         `;
 
-        const firstDayIndex = days[0].getDay();
-        const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-
         for (let i = 0; i < startDay; i++) html += `<div></div>`;
 
-        days.forEach(d => {
-            const dateStr = d.toISOString().split('T')[0];
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isToday = dateStr === new Date().toISOString().split('T')[0];
-            const dayNum = d.getDate();
+            
             html += `
-                <div onclick="window.showDay('${dateStr}', '${dayNum} ${getMonthName(d.getMonth())} ${d.getFullYear()}')" style="padding: 10px 5px; border-radius: 50%; background: ${isToday ? 'var(--bg3)' : 'transparent'}; color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
-                    <span style="font-size: 14px; font-weight: ${isToday ? 'bold' : 'normal'};">${dayNum}</span>
+                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="padding: 10px 5px; border-radius: 50%; background: ${isToday ? 'var(--bg3)' : 'transparent'}; color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
+                    <span style="font-size: 14px; font-weight: ${isToday ? 'bold' : 'normal'};">${day}</span>
                 </div>
             `;
-        });
+        }
 
         html += `</div>`;
         return html;
     }
+
 
     function getMonthName(monthIndex) {
         const months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
