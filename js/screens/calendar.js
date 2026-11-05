@@ -93,18 +93,41 @@ export function renderCalendar() {
         return html;
     }
 
+    
     function renderYearGrid(year) {
-        let html = `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">`;
+        let html = `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px 0;">`;
+        
         for (let m = 0; m < 12; m++) {
-            html += `
-                <div style="background: var(--bg2); border-radius: 12px; padding: 15px; text-align: center; border: 1px solid var(--bg3); cursor: pointer; transition: background 0.2s;" onclick="window.selectYearMonth(${m})">
-                    <div style="color: var(--fg); font-weight: bold;">${getMonthName(m)}</div>
-                </div>
+            const daysInMonth = new Date(year, m + 1, 0).getDate();
+            const firstDayIndex = new Date(year, m, 1).getDay();
+            const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+            const monthName = getMonthName(m).substring(0, 3); // Берем первые 3 буквы
+
+            let monthHtml = `
+                <div style="background: var(--bg2); border-radius: 12px; padding: 10px; border: 1px solid var(--bg3);">
+                    <div style="text-align: center; color: var(--fg); font-size: 12px; font-weight: bold; margin-bottom: 8px;">${monthName}</div>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; font-size: 8px; color: var(--fg-dim);">
+                        <div>П</div><div>В</div><div>С</div><div>Ч</div><div>П</div><div>С</div><div>В</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; font-size: 9px; color: var(--fg); margin-top: 4px;">
             `;
+
+            for (let i = 0; i < startDay; i++) monthHtml += `<div></div>`;
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isToday = dateStr === new Date().toISOString().split('T')[0];
+                monthHtml += `<div style="padding: 2px 0; ${isToday ? 'background: var(--accent); color: white; border-radius: 50%;' : ''}">${day}</div>`;
+            }
+
+            monthHtml += `</div></div>`;
+            html += monthHtml;
         }
+
         html += `</div>`;
         return html;
     }
+
 
     function render30DaysGrid() {
         const days = [];
