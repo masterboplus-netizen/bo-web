@@ -70,7 +70,6 @@ export function initFloatingMenu() {
     if (isCollapsed) {
       capsule.style.transform = 'translateX(100%)'; // Уезжает вправо
       toggleIcon.style.transform = 'rotate(180deg)';
-      toggleBtn.style.left = '-36px'; // Стрелка остается на месте
     } else {
       capsule.style.transform = 'translateX(0)';
       toggleIcon.style.transform = 'rotate(0deg)';
