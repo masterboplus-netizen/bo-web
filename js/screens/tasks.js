@@ -36,7 +36,9 @@ export async function renderTasks() {
                         <span>ID: ${task.id}</span>
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <span>${new Date(task.created_at).toLocaleDateString('ru-RU')}</span>
-                            <button onclick="event.stopPropagation(); window.deleteTask(${task.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; font-size: 16px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                            <button onclick="event.stopPropagation(); window.deleteTask(${task.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; font-size: 16px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -206,8 +208,8 @@ window.openTaskDetail = async function(id) {
         const { data: task, error } = await db.from('tasks').select('*').eq('id', id).single();
         if (error) throw error;
 
-        let statusText = task.status === 'done' ? 'Выполнена' : 'В работе';
-        let statusColor = task.status === 'done' ? 'var(--fg-dim)' : 'var(--accent)';
+        const { data: photos, error: photosError } = await db.from('task_photos').select('*').eq('task_id', id).order('created_at', { ascending: false });
+        if (photosError) throw photosError;
 
         let html = `
             <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
@@ -246,11 +248,22 @@ window.openTaskDetail = async function(id) {
                         </select>
                     </div>
 
-                    ${task.photo_url ? `
                     <div>
-                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Фото</label>
-                        <img src="${task.photo_url}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px;">
-                    </div>` : ''}
+                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Фотографии (${photos ? photos.length : 0})</label>
+                        <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
+                            ${photos && photos.length > 0 ? photos.map(p => `
+                                <div style="position: relative; flex-shrink: 0;">
+                                    <img src="${p.photo_url}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+                                    <button onclick="window.deleteTaskPhoto(${p.id}, ${task.id})" style="position: absolute; top: 5px; right: 5px; background: rgba(255,0,0,0.7); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+                                </div>
+                            `).join('') : '<div style="color: var(--fg-dim); font-size: 12px;">Нет фото</div>'}
+                            <div onclick="document.getElementById('task-photo-upload').click()" style="width: 120px; height: 120px; border: 2px dashed var(--bg3); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; color: var(--fg-dim);">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                <span style="font-size: 10px; margin-top: 5px;">Добавить</span>
+                            </div>
+                        </div>
+                        <input type="file" id="task-photo-upload" accept="image/*" style="display: none;" onchange="window.uploadTaskPhoto(${task.id}, this)">
+                    </div>
 
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
                         <button onclick="window.saveTaskChanges(${task.id})" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;">
@@ -268,6 +281,40 @@ window.openTaskDetail = async function(id) {
     } catch (err) {
         console.error(err);
         container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${err.message}</div>`;
+    }
+};
+
+window.uploadTaskPhoto = async function(taskId, input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    
+    try {
+        const fileName = `task_${taskId}_${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+        const { error: uploadError } = await db.storage.from('photos').upload(fileName, file);
+        if (uploadError) throw uploadError;
+        
+        const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
+        
+        const { error: dbError } = await db.from('task_photos').insert([{
+            task_id: taskId,
+            photo_url: urlData.publicUrl
+        }]);
+        if (dbError) throw dbError;
+        
+        window.openTaskDetail(taskId);
+    } catch (err) {
+        alert('Ошибка загрузки фото: ' + err.message);
+    }
+};
+
+window.deleteTaskPhoto = async function(photoId, taskId) {
+    if (!confirm('Удалить фото?')) return;
+    try {
+        const { error } = await db.from('task_photos').delete().eq('id', photoId);
+        if (error) throw error;
+        window.openTaskDetail(taskId);
+    } catch (err) {
+        alert('Ошибка удаления: ' + err.message);
     }
 };
 
@@ -290,7 +337,7 @@ window.saveTaskChanges = async function(id) {
         }).eq('id', id);
 
         if (error) throw error;
-        window.openTaskDetail(id); // Перезагружаем карточку
+        window.openTaskDetail(id);
     } catch (err) {
         alert('Ошибка сохранения: ' + err.message);
     }
