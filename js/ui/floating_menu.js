@@ -11,9 +11,9 @@ export function initFloatingMenu() {
   let currentTop = wrapper.getBoundingClientRect().top;
   let isCollapsed = false;
 
-  // ПЕРЕТАСКИВАНИЕ (ТАЧ)
+  // ПЕРЕТАСКИВАНИЕ (ТАЧ) за саму капсулу
   wrapper.addEventListener('touchstart', (e) => {
-    if (isCollapsed) return;
+    if (e.target.closest('button')) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
     startY = e.touches[0].clientY;
@@ -22,7 +22,7 @@ export function initFloatingMenu() {
   }, { passive: false });
 
   wrapper.addEventListener('touchmove', (e) => {
-    if (!isDragging || isCollapsed) return;
+    if (!isDragging) return;
     e.preventDefault();
     const deltaY = e.touches[0].clientY - startY;
     const newTop = currentTop + deltaY;
@@ -39,9 +39,9 @@ export function initFloatingMenu() {
     }
   });
 
-  // ПЕРЕТАСКИВАНИЕ (МЫШКА)
+  // ПЕРЕТАСКИВАНИЕ (МЫШКА) за саму капсулу
   wrapper.addEventListener('mousedown', (e) => {
-    if (isCollapsed) return;
+    if (e.target.closest('button')) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
     startY = e.clientY;
@@ -50,7 +50,7 @@ export function initFloatingMenu() {
   });
 
   window.addEventListener('mousemove', (e) => {
-    if (!isDragging || isCollapsed) return;
+    if (!isDragging) return;
     const deltaY = e.clientY - startY;
     const newTop = currentTop + deltaY;
     if (newTop > 70 && newTop < window.innerHeight - wrapper.offsetHeight - 90) {
@@ -66,17 +66,14 @@ export function initFloatingMenu() {
     }
   });
 
-  // СТРЕЛКА (сворачивание/разворачивание)
+  // СТРЕЛКА (только сворачивание, без перетаскивания)
   function toggleCollapse() {
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      // Вместо уезжания вправо просто скрываем капсулу
-      capsule.style.opacity = '0';
-      capsule.style.pointerEvents = 'none';
+      capsule.style.transform = 'translateX(100%)';
       toggleIcon.style.transform = 'rotate(180deg)';
     } else {
-      capsule.style.opacity = '1';
-      capsule.style.pointerEvents = 'auto';
+      capsule.style.transform = 'translateX(0)';
       toggleIcon.style.transform = 'rotate(0deg)';
     }
   }
@@ -87,6 +84,7 @@ export function initFloatingMenu() {
     toggleCollapse();
   });
 
+  // Для тача — тоже просто клик
   toggleBtn.addEventListener('touchend', (e) => {
     e.preventDefault();
     toggleCollapse();
