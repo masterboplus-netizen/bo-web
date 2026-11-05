@@ -211,22 +211,3 @@ window.openWidgetSettings = function() {
 // При загрузке страницы проверяем сохраненную вкладку и открываем её
 
 // Восстанавливаем последнюю открытую вкладку при загрузке
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        const reloadScreen = localStorage.getItem('reloadScreen');
-        
-        // Если это было обновление страницы (reloadScreen === 'true') — открываем сохраненную вкладку
-        if (reloadScreen) {
-            localStorage.removeItem('reloadScreen');
-            if (reloadScreen === 'objects') window.openObjects();
-            else if (reloadScreen === 'tasks') window.openTasks();
-            else if (reloadScreen === 'calendar') window.openCalendar();
-            else if (reloadScreen === 'diary') window.openDiary();
-            else if (reloadScreen === 'menu') window.openMenu();
-            else window.renderMainMenu();
-        } else {
-            // Если это новый вход — показываем главный экран
-            window.renderMainMenu();
-        }
-    }, 200);
-});
