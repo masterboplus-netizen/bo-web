@@ -122,8 +122,9 @@ export function renderCalendar() {
 
 
     
+    
     function render30DaysGrid() {
-        // Берем текущий месяц и год, чтобы отрисовать его сетку
+        // Используем текущий месяц и год
         const year = currentYear;
         const month = currentMonth;
         
@@ -154,6 +155,7 @@ export function renderCalendar() {
         html += `</div>`;
         return html;
     }
+
 
 
     function getMonthName(monthIndex) {
