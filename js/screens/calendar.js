@@ -93,7 +93,7 @@ export function renderCalendar() {
             }
 
             html += `
-                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="padding: 10px 5px; border-radius: 50%; background: ${bgStyle}; border: ${borderStyle}; color: ${textColor}; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
+                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="border-radius: 50%; background: ${bgStyle}; border: ${borderStyle}; color: ${textColor}; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 1; box-sizing: border-box;">
                     <span style="font-size: 14px; font-weight: ${isToday || isSelected ? 'bold' : 'normal'};">${day}</span>
                 </div>
             `;
@@ -171,7 +171,7 @@ export function renderCalendar() {
             }
 
             html += `
-                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="padding: 10px 5px; border-radius: 50%; background: ${bgStyle}; border: ${borderStyle}; color: ${textColor}; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
+                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="border-radius: 50%; background: ${bgStyle}; border: ${borderStyle}; color: ${textColor}; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 1; box-sizing: border-box;">
                     <span style="font-size: 14px; font-weight: ${isToday || isSelected ? 'bold' : 'normal'};">${day}</span>
                 </div>
             `;
