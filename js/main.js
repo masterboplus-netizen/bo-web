@@ -213,17 +213,16 @@ window.openWidgetSettings = function() {
 // Восстанавливаем последнюю открытую вкладку при загрузке
 window.addEventListener('load', () => {
     setTimeout(() => {
-        const isReload = localStorage.getItem('isReload');
-        const savedScreen = localStorage.getItem('currentScreen');
+        const reloadScreen = localStorage.getItem('reloadScreen');
         
-        // Если это было обновление страницы (isReload === 'true') — открываем сохраненную вкладку
-        if (isReload === 'true') {
-            localStorage.removeItem('isReload');
-            if (savedScreen === 'objects') window.openObjects();
-            else if (savedScreen === 'tasks') window.openTasks();
-            else if (savedScreen === 'calendar') window.openCalendar();
-            else if (savedScreen === 'diary') window.openDiary();
-            else if (savedScreen === 'menu') window.openMenu();
+        // Если это было обновление страницы (reloadScreen === 'true') — открываем сохраненную вкладку
+        if (reloadScreen) {
+            localStorage.removeItem('reloadScreen');
+            if (reloadScreen === 'objects') window.openObjects();
+            else if (reloadScreen === 'tasks') window.openTasks();
+            else if (reloadScreen === 'calendar') window.openCalendar();
+            else if (reloadScreen === 'diary') window.openDiary();
+            else if (reloadScreen === 'menu') window.openMenu();
             else window.renderMainMenu();
         } else {
             // Если это новый вход — показываем главный экран
