@@ -129,32 +129,62 @@ export function renderCalendar() {
     }
 
 
+    
     function render30DaysGrid() {
-        const days = [];
         const start = new Date();
+        const days = [];
         for (let i = 0; i < 30; i++) {
             const d = new Date(start);
             d.setDate(start.getDate() + i);
             days.push(d);
         }
 
-        let html = `<div style="display: flex; flex-direction: column; gap: 10px;">`;
+        // Сетка (как в месяце)
+        let html = `
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 12px; color: var(--fg-dim); margin-bottom: 10px;">
+                <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
+        `;
+
+        // Вычисляем, с какого дня недели начинается первый день
+        const firstDayIndex = days[0].getDay();
+        const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+
+        for (let i = 0; i < startDay; i++) {
+            html += `<div></div>`;
+        }
+
         days.forEach(d => {
             const dateStr = d.toISOString().split('T')[0];
-            const displayDate = `${d.getDate()} ${getMonthName(d.getMonth())} ${d.getFullYear()}`;
-            const dayName = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'][d.getDay()];
             const isToday = dateStr === new Date().toISOString().split('T')[0];
+            const dayNum = d.getDate();
 
             html += `
-                <div onclick="window.showDay('${dateStr}', '${displayDate}')" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; background: ${isToday ? 'var(--bg3)' : 'var(--bg2)'}; border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer;">
-                    <div style="color: var(--fg); font-weight: ${isToday ? 'bold' : 'normal'};">${displayDate}</div>
-                    <div style="color: var(--fg-dim); font-size: 12px;">${dayName}</div>
+                <div onclick="window.showDay('${dateStr}', '${dayNum} ${getMonthName(d.getMonth())} ${d.getFullYear()}')" style="padding: 10px 5px; border-radius: 50%; background: ${isToday ? 'var(--bg3)' : 'transparent'}; color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
+                    <span style="font-size: 14px; font-weight: ${isToday ? 'bold' : 'normal'};">${dayNum}</span>
                 </div>
             `;
         });
+
         html += `</div>`;
+
+        // Блок "Сессии" (заглушка)
+        html += `
+            <div style="margin-top: 20px;">
+                <div style="display: flex; background: var(--bg2); border-radius: 20px; padding: 4px; margin-bottom: 15px;">
+                    <button style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer;">Сессии</button>
+                    <button style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: transparent; color: var(--fg-dim); cursor: pointer;">24ч</button>
+                </div>
+                <div id="30days-details" style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                    <div style="color: var(--fg-dim); font-size: 14px;">Выберите день, чтобы увидеть события.</div>
+                </div>
+            </div>
+        `;
+
         return html;
     }
+
 
     function getMonthName(monthIndex) {
         const months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
