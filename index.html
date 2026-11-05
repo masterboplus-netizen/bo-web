@@ -59,49 +59,12 @@
     <div id="floating-capsule-wrapper" style="position: fixed; right: 0; bottom: 90px; z-index: 10000; display: flex;">
         <div id="floating-capsule" style="position: relative; display: flex; flex-direction: row; align-items: center; padding: 8px; gap: 2px; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.3s ease; z-index: 10000;">
             
+            
             <!-- ИЗОЛИРОВАННАЯ СТРЕЛКА -->
-            <div id="toggle-capsule" style="position: absolute; left: -30px; bottom: 30px; width: 30px; height: 140px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); background: var(--bg2); border: 1px solid var(--bg3); border-right: none; border-radius: 20px 0 0 20px; box-shadow: none; z-index: 10002;">
+            <div id="toggle-capsule" style="position: absolute; left: -30px; top: 50%; transform: translateY(-50%); width: 30px; height: 80px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); background: var(--bg2); border: 1px solid var(--bg3); border-right: none; border-radius: 20px 0 0 20px; z-index: 10002;">
                 <svg id="toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M9 18l6-6-6-6"/></svg>
             </div>
 
-            <div style="display: flex; flex-direction: column;">
-                <div class="nav-item" id="nav-personal" onclick="window.showStub('Личные', 'personal')" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-                    <span style="font-size: 11px;">Личные</span>
-                </div>
-                <div class="nav-item" id="nav-objects" onclick="window.openObjects()" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
-                    <span style="font-size: 11px;">Объекты</span>
-                </div>
-                <div class="nav-item" id="nav-finance" onclick="window.showStub('Финансы', 'finance')" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    <span style="font-size: 11px;">Финансы</span>
-                </div>
-                <div class="nav-item" id="nav-tasks" onclick="window.openTasks()" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                    <span style="font-size: 11px;">Задачи</span>
-                </div>
-                <div class="nav-item" id="nav-diary" onclick="window.openDiary()" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                    <span style="font-size: 11px;">Дневник</span>
-                </div>
-                <div class="nav-item" id="nav-reports" onclick="window.showStub('Отчёты', 'reports')" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                    <span style="font-size: 11px;">Отчёты</span>
-                </div>
-                <div class="nav-item" id="nav-kpi" onclick="window.showStub('KPI', 'kpi')" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-                    <span style="font-size: 11px;">KPI</span>
-                </div>
-                <div class="nav-item" id="nav-calendar" onclick="window.openCalendar()" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    <span style="font-size: 11px;">Календарь</span>
-                </div>
-                <div class="nav-item" id="nav-crm" onclick="window.showStub('CRM', 'crm')" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <span style="font-size: 11px;">CRM</span>
-                </div>
-            </div>
         </div>
     </div>
     
