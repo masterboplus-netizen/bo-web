@@ -55,11 +55,15 @@
         </div>
     </nav>
 
+    
     <div id="floating-capsule-wrapper" style="position: fixed; right: 0; bottom: 90px; z-index: 10000; display: flex;">
         <div id="floating-capsule" style="position: relative; display: flex; flex-direction: row; align-items: center; padding: 8px; gap: 2px; background: var(--bg2); border: 1px solid var(--bg3); border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.3s ease; z-index: 10000;">
-            <div id="toggle-capsule" style="position: absolute; left: -15px; bottom: 20px; width: 15px; height: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); background: var(--bg2); border: 1px solid var(--bg3); border-right: none; border-radius: 20px 0 0 20px; box-shadow: none; z-index: 10002;">
+            
+            <!-- ИЗОЛИРОВАННАЯ СТРЕЛКА -->
+            <div id="toggle-capsule" style="position: absolute; left: -30px; bottom: 30px; width: 30px; height: 140px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); background: var(--bg2); border: 1px solid var(--bg3); border-right: none; border-radius: 20px 0 0 20px; box-shadow: none; z-index: 10002;">
                 <svg id="toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease;"><path d="M9 18l6-6-6-6"/></svg>
             </div>
+
             <div style="display: flex; flex-direction: column;">
                 <div class="nav-item" id="nav-personal" onclick="window.showStub('Личные', 'personal')" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
@@ -89,12 +93,18 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
                     <span style="font-size: 11px;">KPI</span>
                 </div>
-                <div class="nav-item" id="nav-calendar" onclick="window.openCalendar()" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span style="font-size: 11px;">Календарь</span></div><div class="nav-item" id="nav-crm" onclick="window.showStub('CRM', 'crm')" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
+                <div class="nav-item" id="nav-calendar" onclick="window.openCalendar()" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span style="font-size: 11px;">Календарь</span>
+                </div>
+                <div class="nav-item" id="nav-crm" onclick="window.showStub('CRM', 'crm')" style="display: flex; align-items: center; justify-content: center; width: auto; padding: 6px 8px; cursor: pointer; gap: 8px;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     <span style="font-size: 11px;">CRM</span>
                 </div>
             </div>
         </div>
+    </div>
+    
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
