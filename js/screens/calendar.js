@@ -86,6 +86,7 @@ export function renderCalendar() {
     }
 
     
+    
     function renderYearGrid(year) {
         let html = `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 5px 0;">`;
         
@@ -96,7 +97,7 @@ export function renderCalendar() {
             const monthName = getMonthName(m).substring(0, 3);
 
             let monthHtml = `
-                <div style="background: var(--bg2); border-radius: 8px; padding: 6px; border: 1px solid var(--bg3);">
+                <div onclick="window.selectYearMonth(${m})" style="background: var(--bg2); border-radius: 8px; padding: 6px; border: 1px solid var(--bg3); cursor: pointer; transition: background 0.2s;">
                     <div style="text-align: center; color: var(--fg); font-size: 11px; font-weight: bold; margin-bottom: 4px;">${monthName}</div>
                     <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; text-align: center; font-size: 7px; color: var(--fg-dim);">
                         <div>П</div><div>В</div><div>С</div><div>Ч</div><div>П</div><div>С</div><div>В</div>
@@ -119,6 +120,7 @@ export function renderCalendar() {
         html += `</div>`;
         return html;
     }
+
 
 
     
