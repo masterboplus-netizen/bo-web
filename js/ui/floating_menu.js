@@ -13,7 +13,7 @@ export function initFloatingMenu() {
 
   // ПЕРЕТАСКИВАНИЕ (ТАЧ)
   wrapper.addEventListener('touchstart', (e) => {
-    if (isCollapsed) return; // Запрещаем таскать, если свернуто
+    if (isCollapsed) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
     startY = e.touches[0].clientY;
@@ -66,19 +66,18 @@ export function initFloatingMenu() {
     }
   });
 
-  // СТРЕЛКА
+  // СТРЕЛКА (сворачивание/разворачивание)
   function toggleCollapse() {
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
-      capsule.style.transform = 'translateX(100%)'; // Уезжает вправо
+      // Вместо уезжания вправо просто скрываем капсулу
+      capsule.style.opacity = '0';
+      capsule.style.pointerEvents = 'none';
       toggleIcon.style.transform = 'rotate(180deg)';
-      wrapper.style.width = '30px'; // Сжимаем контейнер до ширины стрелки
-      wrapper.style.overflow = 'hidden'; // Прячем всё, что вылезает
     } else {
-      capsule.style.transform = 'translateX(0)';
+      capsule.style.opacity = '1';
+      capsule.style.pointerEvents = 'auto';
       toggleIcon.style.transform = 'rotate(0deg)';
-      wrapper.style.width = 'auto'; // Возвращаем ширину
-      wrapper.style.overflow = 'visible';
     }
   }
 
