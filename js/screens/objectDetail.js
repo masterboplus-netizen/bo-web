@@ -18,7 +18,7 @@ let address = obj.address || obj.addres || 'Адрес не указан';
         let gisLink = 'https://2gis.ru/search/' + encodeURIComponent(address);
 
         let html = `
-            <div style="padding-top: 10px;">
+            <div style="padding-top: 10px; max-width: 600px; margin: 0 auto;">
                 <div style="background: var(--bg2); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                         <div>
