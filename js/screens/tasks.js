@@ -212,7 +212,7 @@ window.deleteTask = async function(id) {
 };
 
 
-window.openTaskDetail = async function(id) {
+window.openTaskDetail = async function(id) { localStorage.setItem('currentTaskId', id);
     const container = document.getElementById('app-content');
     container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка...</div>';
 

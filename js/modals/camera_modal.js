@@ -10,7 +10,7 @@ export function openCameraModal() {
       <video id="camera-stream" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
       <canvas id="camera-canvas" style="display: none;"></canvas>
       <img id="camera-preview" style="display: none; width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0;">
-      
+
       <div id="camera-loading" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; font-size: 18px;">Загрузка...</div>
 
       <div style="position: absolute; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; gap: 20px; align-items: center;">
@@ -33,6 +33,11 @@ export function openCameraModal() {
 
   let stream = null;
   let photoData = null;
+  let currentTaskId = null;
+
+  // Получаем текущую задачу из localStorage (если мы в карточке задачи)
+  const savedTask = localStorage.getItem('currentTaskId');
+  if (savedTask) currentTaskId = parseInt(savedTask);
 
   async function startCamera() {
     try {
@@ -51,7 +56,6 @@ export function openCameraModal() {
   function closeModal() {
     stopCamera();
     modal.remove();
-    // Возвращаем виджет на место, если он был свернут
     const wrapper = document.getElementById('floating-capsule-wrapper');
     if (wrapper) wrapper.style.right = '8px';
   }
@@ -62,44 +66,46 @@ export function openCameraModal() {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     photoData = canvas.toDataURL('image/jpeg', 0.8);
-    
+
     video.style.display = 'none';
     preview.src = photoData;
     preview.style.display = 'block';
-    
+
     shootBtn.style.display = 'none';
     saveBtn.style.display = 'block';
   });
 
-  // СОХРАНЕНИЕ В SUPABASE STORAGE
   saveBtn.addEventListener('click', async () => {
     if (!photoData) return;
     loading.style.display = 'flex';
 
     try {
-      // Конвертируем Base64 в Blob
       const res = await fetch(photoData);
       const blob = await res.blob();
-      
-      // Генерируем уникальное имя файла
       const fileName = `photo_${Date.now()}.jpg`;
-      
-      // Загружаем в бакет 'photos'
-      const { data, error } = await db.storage
-        .from('photos')
-        .upload(fileName, blob, { contentType: 'image/jpeg' });
 
+      const { data, error } = await db.storage.from('photos').upload(fileName, blob, { contentType: 'image/jpeg' });
       if (error) throw error;
 
-      // Получаем публичную ссылку
       const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
       
-      console.log('Фото загружено! Ссылка:', urlData.publicUrl);
-      
-      // Тут потом можно сохранить urlData.publicUrl в таблицу базы данных
-      
-      alert('Фото успешно загружено в облако!');
-      closeModal();
+      // Если мы в карточке задачи — сохраняем фото в task_photos
+      if (currentTaskId) {
+        await db.from('task_photos').insert([{
+          task_id: currentTaskId,
+          photo_url: urlData.publicUrl,
+          title: 'Фото от ' + new Date().toLocaleDateString('ru-RU')
+        }]);
+        
+        alert('Фото сохранено в задачу!');
+        closeModal();
+        // Перезагружаем карточку задачи
+        window.openTaskDetail(currentTaskId);
+        localStorage.removeItem('currentTaskId');
+      } else {
+        alert('Фото успешно загружено в облако!');
+        closeModal();
+      }
     } catch (err) {
       console.error(err);
       alert('Ошибка загрузки: ' + err.message);
@@ -111,6 +117,5 @@ export function openCameraModal() {
   closeBtn.addEventListener('click', closeModal);
   startCamera();
 }
-
 
 window.openCameraModal = openCameraModal;
