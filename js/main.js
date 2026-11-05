@@ -19,7 +19,7 @@ window.renderMainMenu = function() {
     setNavActive('main');
 };
 
-window.openObjects = async function() {
+window.openObjects = async function() { saveCurrentScreen('objects');
     document.getElementById('app-content').innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);"></div>';
     try {
         const objects = await fetchObjects();
@@ -30,7 +30,7 @@ window.openObjects = async function() {
     setNavActive('objects');
 };
 
-window.openTasks = renderTasks;
+window.openTasks = function() { saveCurrentScreen('tasks'); renderTasks(); };
 window.openNewTask = openNewTask;
 window.saveNewTask = saveNewTask;
 window.openAddMenu = openAddMenu;
@@ -72,20 +72,20 @@ export function setNavActive(tabId) {
     if (el) el.classList.add('active');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => { const savedScreen = localStorage.getItem('currentScreen');
     setTimeout(() => initFloatingMenu(), 100);
     window.renderMainMenu();
     initAudioButton();
 });
-window.openCalendar = renderCalendar;
-window.openDiary = renderDiary;
+window.openCalendar = function() { saveCurrentScreen('calendar'); renderCalendar(); };
+window.openDiary = function() { saveCurrentScreen('diary'); renderDiary(); };
 window.setNavActive = setNavActive;
 window.setNavActive = setNavActive;
 
 
 
 
-window.openMenu = function() {
+window.openMenu = function() { saveCurrentScreen('menu');
     const container = document.getElementById('app-content');
     
     let html = `
@@ -203,3 +203,14 @@ window.openWidgetSettings = function() {
         </div>
     `;
 };
+
+// При загрузке страницы проверяем сохраненную вкладку и открываем её
+setTimeout(() => {
+    const savedScreen = localStorage.getItem('currentScreen');
+    if (savedScreen === 'objects') window.openObjects();
+    else if (savedScreen === 'tasks') window.openTasks();
+    else if (savedScreen === 'calendar') window.openCalendar();
+    else if (savedScreen === 'diary') window.openDiary();
+    else if (savedScreen === 'menu') window.openMenu();
+    else window.renderMainMenu();
+}, 100);
