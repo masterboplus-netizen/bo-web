@@ -205,12 +205,3 @@ window.openWidgetSettings = function() {
 };
 
 // При загрузке страницы проверяем сохраненную вкладку и открываем её
-setTimeout(() => {
-    const savedScreen = localStorage.getItem('currentScreen');
-    if (savedScreen === 'objects') window.openObjects();
-    else if (savedScreen === 'tasks') window.openTasks();
-    else if (savedScreen === 'calendar') window.openCalendar();
-    else if (savedScreen === 'diary') window.openDiary();
-    else if (savedScreen === 'menu') window.openMenu();
-    else window.renderMainMenu();
-}, 100);
