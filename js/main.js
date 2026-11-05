@@ -213,12 +213,21 @@ window.openWidgetSettings = function() {
 // Восстанавливаем последнюю открытую вкладку при загрузке
 window.addEventListener('load', () => {
     setTimeout(() => {
+        const isReload = localStorage.getItem('isReload');
         const savedScreen = localStorage.getItem('currentScreen');
-        if (savedScreen === 'objects') window.openObjects();
-        else if (savedScreen === 'tasks') window.openTasks();
-        else if (savedScreen === 'calendar') window.openCalendar();
-        else if (savedScreen === 'diary') window.openDiary();
-        else if (savedScreen === 'menu') window.openMenu();
-        else window.renderMainMenu();
+        
+        // Если это было обновление страницы (isReload === 'true') — открываем сохраненную вкладку
+        if (isReload === 'true') {
+            localStorage.removeItem('isReload');
+            if (savedScreen === 'objects') window.openObjects();
+            else if (savedScreen === 'tasks') window.openTasks();
+            else if (savedScreen === 'calendar') window.openCalendar();
+            else if (savedScreen === 'diary') window.openDiary();
+            else if (savedScreen === 'menu') window.openMenu();
+            else window.renderMainMenu();
+        } else {
+            // Если это новый вход — показываем главный экран
+            window.renderMainMenu();
+        }
     }, 200);
 });
