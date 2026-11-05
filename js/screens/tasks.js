@@ -355,11 +355,17 @@ window.setQuickDate = function(type) {
     const rangeStart = document.getElementById('edit-task-deadline-start-range');
     const rangeEnd = document.getElementById('edit-task-deadline-end');
 
+    // Если видно поле для одной даты
     if (singleInput && singleInput.offsetParent !== null) {
         singleInput.value = dateStr;
-    } else if (rangeStart && rangeEnd && rangeStart.offsetParent !== null) {
-        if (!rangeStart.value) rangeStart.value = dateStr;
-        else rangeEnd.value = dateStr;
+    } 
+    // Если видно поле для диапазона
+    else if (rangeStart && rangeEnd) {
+        if (!rangeStart.value) {
+            rangeStart.value = dateStr;
+        } else {
+            rangeEnd.value = dateStr;
+        }
     }
 };
 
