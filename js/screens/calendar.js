@@ -6,6 +6,7 @@ export function renderCalendar() {
     let currentMonth = today.getMonth();
     let currentYear = today.getFullYear();
     let currentView = 'month';
+    let selectedDate = null; // Дата, на которую нажали
 
     function render() {
         let html = `
@@ -75,9 +76,25 @@ export function renderCalendar() {
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isToday = dateStr === new Date().toISOString().split('T')[0];
+            const isSelected = dateStr === selectedDate;
+
+            let bgStyle = 'transparent';
+            let textColor = 'var(--fg)';
+            let borderStyle = 'none';
+
+            if (isToday) {
+                bgStyle = 'var(--bg3)';
+                textColor = 'var(--fg)';
+            }
+            if (isSelected) {
+                bgStyle = 'transparent';
+                borderStyle = '2px solid var(--accent)';
+                textColor = 'var(--accent)';
+            }
+
             html += `
-                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="padding: 10px 5px; border-radius: 50%; background: ${isToday ? 'var(--bg3)' : 'transparent'}; color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
-                    <span style="font-size: 14px; font-weight: ${isToday ? 'bold' : 'normal'};">${day}</span>
+                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="padding: 10px 5px; border-radius: 50%; background: ${bgStyle}; border: ${borderStyle}; color: ${textColor}; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
+                    <span style="font-size: 14px; font-weight: ${isToday || isSelected ? 'bold' : 'normal'};">${day}</span>
                 </div>
             `;
         }
@@ -85,11 +102,8 @@ export function renderCalendar() {
         return html;
     }
 
-    
-    
     function renderYearGrid(year) {
         let html = `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 5px 0;">`;
-        
         for (let m = 0; m < 12; m++) {
             const daysInMonth = new Date(year, m + 1, 0).getDate();
             const firstDayIndex = new Date(year, m, 1).getDay();
@@ -116,17 +130,11 @@ export function renderCalendar() {
             monthHtml += `</div></div>`;
             html += monthHtml;
         }
-
         html += `</div>`;
         return html;
     }
 
-
-
-    
-    
     function render30DaysGrid() {
-        // Используем текущий месяц и год
         const year = currentYear;
         const month = currentMonth;
         
@@ -146,27 +154,42 @@ export function renderCalendar() {
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isToday = dateStr === new Date().toISOString().split('T')[0];
-            
+            const isSelected = dateStr === selectedDate;
+
+            let bgStyle = 'transparent';
+            let textColor = 'var(--fg)';
+            let borderStyle = 'none';
+
+            if (isToday) {
+                bgStyle = 'var(--bg3)';
+                textColor = 'var(--fg)';
+            }
+            if (isSelected) {
+                bgStyle = 'transparent';
+                borderStyle = '2px solid var(--accent)';
+                textColor = 'var(--accent)';
+            }
+
             html += `
-                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="padding: 10px 5px; border-radius: 50%; background: ${isToday ? 'var(--bg3)' : 'transparent'}; color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
-                    <span style="font-size: 14px; font-weight: ${isToday ? 'bold' : 'normal'};">${day}</span>
+                <div onclick="window.showDay('${dateStr}', '${day} ${getMonthName(month)} ${year}')" style="padding: 10px 5px; border-radius: 50%; background: ${bgStyle}; border: ${borderStyle}; color: ${textColor}; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 40px; aspect-ratio: 1;">
+                    <span style="font-size: 14px; font-weight: ${isToday || isSelected ? 'bold' : 'normal'};">${day}</span>
                 </div>
             `;
         }
-
         html += `</div>`;
         return html;
     }
-
-
 
     function getMonthName(monthIndex) {
         const months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
         return months[monthIndex];
     }
 
+    // Глобальные функции
     window.switchCalView = function(view) {
         currentView = view;
+        selectedDate = null; // Сбрасываем выделение при смене вида
+        document.getElementById('cal-day-details').style.display = 'none';
         renderGrid();
     };
 
@@ -174,10 +197,20 @@ export function renderCalendar() {
         currentMonth += delta;
         if (currentMonth < 0) { currentMonth = 11; currentYear--; }
         if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        selectedDate = null;
+        document.getElementById('cal-day-details').style.display = 'none';
         renderGrid();
     };
 
+    window.selectYearMonth = function(m) {
+        currentMonth = m;
+        window.switchCalView('month');
+    };
+
     window.showDay = function(dateStr, displayDate) {
+        selectedDate = dateStr;
+        renderGrid(); // Перерисовываем сетку, чтобы появилось кольцо
+
         const details = document.getElementById('cal-day-details');
         document.getElementById('cal-day-title').textContent = displayDate;
         document.getElementById('cal-day-events').innerHTML = 'Событий пока нет.';
@@ -187,8 +220,3 @@ export function renderCalendar() {
 
     render();
 }
-
-window.selectYearMonth = function(m) {
-    currentMonth = m;
-    window.switchCalView('month');
-};
