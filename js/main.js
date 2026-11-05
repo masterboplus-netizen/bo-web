@@ -58,7 +58,7 @@ window.showStub = function(title, tabId) {
 };
 
 export function setNavActive(tabId) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
     const el = document.getElementById('nav-' + tabId);
     if (el) el.classList.add('active');
 }
