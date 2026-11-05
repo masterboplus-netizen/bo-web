@@ -72,9 +72,12 @@ export function initFloatingMenu() {
     if (isCollapsed) {
       capsule.style.transform = 'translateX(100%)';
       toggleIcon.style.transform = 'rotate(180deg)';
+      wrapper.style.pointerEvents = 'none';
+      toggleBtn.style.pointerEvents = 'auto';
     } else {
       capsule.style.transform = 'translateX(0)';
       toggleIcon.style.transform = 'rotate(0deg)';
+      wrapper.style.pointerEvents = 'auto';
     }
   }
 
