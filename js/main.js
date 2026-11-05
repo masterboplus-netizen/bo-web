@@ -35,12 +35,21 @@ window.openNewTask = openNewTask;
 window.saveNewTask = saveNewTask;
 window.openAddMenu = openAddMenu;
 
+
 window.openSettings = function() {
     document.getElementById('app-content').innerHTML = `
-        <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 10px;">
-                <span>Версия приложения</span>
-                <span style="color: var(--fg-dim);">7.1</span>
+        <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
+            <h2 style="color: var(--fg); margin-bottom: 20px;">Настройки</h2>
+
+            <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div onclick="window.openMenuSettings()" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--bg3);">
+                    <span style="color: var(--fg);">Настройка меню</span>
+                    <span style="color: var(--fg-dim);">Настроить →</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--fg);">Версия приложения</span>
+                    <span style="color: var(--fg-dim);">7.1</span>
+                </div>
             </div>
         </div>
     `;
@@ -161,4 +170,34 @@ window.openMenu = function() {
     `;
 
     container.innerHTML = html;
+};
+
+window.openMenuSettings = function() {
+    const container = document.getElementById('app-content');
+    container.innerHTML = `
+        <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
+            <button onclick="window.openSettings()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад в настройки</button>
+            <h2 style="color: var(--fg); margin-bottom: 20px;">Настройка меню</h2>
+
+            <div style="background: var(--bg2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div onclick="window.openWidgetSettings()" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                    <span style="color: var(--fg);">Виджет</span>
+                    <span style="color: var(--fg-dim);">Настроить →</span>
+                </div>
+            </div>
+        </div>
+    `;
+};
+
+window.openWidgetSettings = function() {
+    const container = document.getElementById('app-content');
+    container.innerHTML = `
+        <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
+            <button onclick="window.openMenuSettings()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад в настройки меню</button>
+            <h2 style="color: var(--fg); margin-bottom: 20px;">Настройка виджета</h2>
+            <p style="color: var(--fg-dim); font-size: 14px; margin-bottom: 20px;">Выберите от 2 до 7 кнопок, которые будут отображаться в капсуле.</p>
+
+            <div style="color: var(--fg-dim); font-size: 14px; text-align: center; padding: 20px;">В разработке</div>
+        </div>
+    `;
 };
