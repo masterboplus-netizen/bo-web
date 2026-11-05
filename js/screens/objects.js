@@ -6,7 +6,7 @@ function escapeHtml(text) {
 
 export function renderObjects(objects) {
     let html = `<div class="object-list" style="padding-top: 10px;">`;
-    
+
     if (!objects || objects.length === 0) {
         html += `<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Объектов пока нет. Создайте первый!</div>`;
     } else {
