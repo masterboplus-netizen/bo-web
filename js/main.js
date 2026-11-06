@@ -202,13 +202,11 @@ window.openMenuSettings = function() {
 
 
 
+
 window.openWidgetSettings = function() {
     const container = document.getElementById('app-content');
-    
-    // Получаем сохраненный конфиг
     let savedConfig = JSON.parse(localStorage.getItem('widget_config')) || [];
     
-    // Если конфиг пустой (первый заход), ставим дефолт
     if (savedConfig.length === 0) {
         savedConfig = [
             { id: 'nav-personal', enabled: true },
@@ -221,43 +219,21 @@ window.openWidgetSettings = function() {
         localStorage.setItem('widget_config', JSON.stringify(savedConfig));
     }
 
-    // Формируем ПОЛНЫЙ список: сначала включенные (в порядке конфига), потом выключенные
-    const activeItems = [];
-    const inactiveItems = [];
-
-    // 1. Сначала добавляем активные в том порядке, в котором они в конфиге
-    savedConfig.forEach(cfg => {
-        if (cfg.enabled) {
-            const item = CAPSULE_ITEMS.find(i => i.id === cfg.id);
-            if (item) activeItems.push({ ...item, enabled: true });
-        }
-    });
-
-    // 2. Потом добавляем неактивные (все, которых нет в активных)
-    CAPSULE_ITEMS.forEach(item => {
-        const isActive = savedConfig.find(c => c.id === item.id && c.enabled);
-        if (!isActive) {
-            inactiveItems.push({ ...item, enabled: false });
-        }
-    });
-
-    const allItems = [...activeItems, ...inactiveItems];
-
     let listHtml = '';
-    allItems.forEach((item, index) => {
-        const isActive = item.enabled;
-        // Ручку для перетаскивания даем только активным
-        const dragHandle = isActive ? '<div class="drag-handle" style="cursor: grab; color: var(--fg-dim); font-size: 20px;">≡</div>' : '';
-        
+    CAPSULE_ITEMS.forEach(item => {
+        const cfgItem = savedConfig.find(c => c.id === item.id);
+        const isActive = cfgItem ? cfgItem.enabled : false;
+        const bgColor = isActive ? 'var(--accent)' : 'var(--bg3)';
+        const circlePos = isActive ? 'left: 24px;' : 'left: 2px;';
+
         listHtml += `
-            <div class="widget-item" data-id="${item.id}" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg2); padding: 12px; margin-bottom: 8px; border-radius: 8px; border: 1px solid var(--bg3); opacity: ${isActive ? '1' : '0.6'};">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="color: var(--fg); display: flex; align-items: center;">${item.icon}</div>
-                    <span style="color: var(--fg); font-size: 14px;">${item.title}</span>
+            <div class="widget-item" data-id="${item.id}" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg2); padding: 12px 15px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--bg3);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="color: var(--fg); display: flex; align-items: center; width: 24px; justify-content: center;">${item.icon}</div>
+                    <span style="color: var(--fg); font-size: 15px;">${item.title}</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" class="widget-toggle" data-id="${item.id}" ${isActive ? 'checked' : ''} style="width: 20px; height: 20px; cursor: pointer;">
-                    ${dragHandle}
+                <div class="widget-toggle-btn" data-id="${item.id}" style="position: relative; width: 48px; height: 28px; border-radius: 14px; background: ${bgColor}; cursor: pointer; transition: background 0.3s;">
+                    <div style="position: absolute; top: 2px; ${circlePos} width: 24px; height: 24px; border-radius: 50%; background: white; transition: left 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
                 </div>
             </div>
         `;
@@ -268,6 +244,7 @@ window.openWidgetSettings = function() {
             <button onclick="window.openMenuSettings()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад в настройки меню</button>
             <h2 style="color: var(--fg); margin-bottom: 10px;">Настройка виджета</h2>
             <p style="color: var(--fg-dim); font-size: 13px; margin-bottom: 20px;">Выберите до 6 кнопок (плюс кнопка «Меню» всегда первая).</p>
+            <p style="color: var(--fg-dim); font-size: 13px; margin-bottom: 20px;">Для изменения порядка зажмите кнопку в самой капсуле на 1.5 секунды.</p>
             
             <div id="sortable-list">
                 ${listHtml}
@@ -275,78 +252,36 @@ window.openWidgetSettings = function() {
         </div>
     `;
 
-    // Логика переключения
-    document.querySelectorAll('.widget-toggle').forEach(checkbox => {
-        checkbox.addEventListener('change', (e) => {
-            const id = e.target.dataset.id;
+    document.querySelectorAll('.widget-toggle-btn').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const id = toggle.dataset.id;
             let cfg = JSON.parse(localStorage.getItem('widget_config')) || [];
-            
-            // Считаем активные (только те, что в конфиге)
             const activeCount = cfg.filter(c => c.enabled).length;
+            const existing = cfg.find(c => c.id === id);
+            const isCurrentlyActive = existing ? existing.enabled : false;
 
-            if (e.target.checked && activeCount >= 6) {
+            if (!isCurrentlyActive && activeCount >= 6) {
                 alert('Максимум 6 кнопок в настройках (плюс Меню = 7 в виджете).');
-                e.target.checked = false;
                 return;
             }
 
-            if (e.target.checked) {
-                // Добавляем или включаем
-                const existing = cfg.find(c => c.id === id);
-                if (existing) {
-                    existing.enabled = true;
-                } else {
-                    cfg.push({ id: id, enabled: true });
-                }
+            if (existing) {
+                existing.enabled = !existing.enabled;
             } else {
-                // Выключаем
-                const existing = cfg.find(c => c.id === id);
-                if (existing) existing.enabled = false;
+                cfg.push({ id: id, enabled: true });
             }
 
-            // Сохраняем и перерисовываем (чтобы кнопка перелетела вверх/вниз)
             localStorage.setItem('widget_config', JSON.stringify(cfg));
-            window.openWidgetSettings(); 
+            
+            const newState = !isCurrentlyActive;
+            toggle.style.background = newState ? 'var(--accent)' : 'var(--bg3)';
+            toggle.querySelector('div').style.left = newState ? '24px' : '2px';
+
             renderCapsule();
         });
     });
-
-    // Инициализация Sortable для активных элементов
-    if (typeof Sortable !== 'undefined') {
-        const list = document.getElementById('sortable-list');
-        new Sortable(list, {
-            handle: '.drag-handle',
-            animation: 150,
-            filter: '.widget-item', 
-            onMove: function(evt) {
-                // Запрещаем перетаскивать элементы без ручки (неактивные)
-                if (!evt.related.querySelector('.drag-handle')) {
-                    return false;
-                }
-            },
-            onEnd: function() {
-                const newOrder = [];
-                list.querySelectorAll('.widget-item').forEach(el => {
-                    const id = el.dataset.id;
-                    const isChecked = el.querySelector('input[type="checkbox"]').checked;
-                    if (isChecked) {
-                        newOrder.push({ id: id, enabled: true });
-                    }
-                });
-                // Добавляем выключенные в конец
-                list.querySelectorAll('.widget-item').forEach(el => {
-                    const id = el.dataset.id;
-                    const isChecked = el.querySelector('input[type="checkbox"]').checked;
-                    if (!isChecked) {
-                        newOrder.push({ id: id, enabled: false });
-                    }
-                });
-                localStorage.setItem('widget_config', JSON.stringify(newOrder));
-                renderCapsule();
-            }
-        });
-    }
 };
+
 
 
 
