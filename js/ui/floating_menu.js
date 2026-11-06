@@ -100,7 +100,7 @@ export function initFloatingMenu() {
         
         capsule.classList.remove('capsule-shaking');
         
-        // ТОЧЕЧНАЯ ОЧИСТКА СТИЛЕЙ (только то, что навесил Sortable)
+        // ТОТАЛЬНАЯ ОЧИСТКА КЛАССОВ И СТИЛЕЙ SORTABLE
         setTimeout(() => {
           container.querySelectorAll('.nav-item').forEach(el => {
             el.style.transform = '';
@@ -108,7 +108,8 @@ export function initFloatingMenu() {
             el.style.boxShadow = '';
             el.style.borderRadius = '';
             el.style.background = '';
-            el.classList.remove('sortable-ghost', 'sortable-drag');
+            el.style.opacity = ''; // Сбрасываем прозрачность
+            el.classList.remove('sortable-ghost', 'sortable-drag', 'sortable-chosen', 'sortable-fallback');
           });
         }, 50);
 
