@@ -54,9 +54,6 @@ export function renderCapsule() {
   container.innerHTML = html;
 }
 
-let isCapsuleEditing = false;
-
-
 export function initFloatingMenu() {
   const wrapper = document.getElementById('floating-capsule-wrapper');
   const capsule = document.getElementById('floating-capsule');
@@ -70,9 +67,8 @@ export function initFloatingMenu() {
   renderCapsule();
 
   // 2. Потом создаем Sortable (он уже видит все кнопки)
-  let sortableInstance = null;
   if (typeof Sortable !== 'undefined') {
-    sortableInstance = new Sortable(container, {
+    new Sortable(container, {
       animation: 200,
       delay: 1500,
       delayOnTouchOnly: true,
@@ -80,7 +76,6 @@ export function initFloatingMenu() {
       dragClass: 'sortable-drag',
       
       onChoose: function(evt) {
-        // Тут включаем вибрацию и дрожание
         capsule.classList.add('capsule-shaking');
         if (navigator.vibrate) navigator.vibrate(50);
         
@@ -92,7 +87,6 @@ export function initFloatingMenu() {
       },
       
       onUnchoose: function(evt) {
-        // Если отпустили раньше, чем 1.5 сек - просто убираем дрожание
         if (!evt.item.classList.contains('sortable-drag')) {
           capsule.classList.remove('capsule-shaking');
         }
