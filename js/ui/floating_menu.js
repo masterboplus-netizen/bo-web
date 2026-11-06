@@ -150,6 +150,7 @@ export function initFloatingMenu() {
 
 
 
+
 export function initCapsuleEditing() {
   const container = document.getElementById('capsule-dynamic-items');
   const wrapper = document.getElementById('floating-capsule');
@@ -184,7 +185,22 @@ export function initCapsuleEditing() {
           animation: 200,
           ghostClass: 'sortable-ghost',
           dragClass: 'sortable-drag',
-          onEnd: function() {
+          onStart: function(evt) {
+            // Увеличиваем кнопку и добавляем тень при захвате
+            evt.item.style.transform = 'scale(1.15)';
+            evt.item.style.zIndex = '1000';
+            evt.item.style.boxShadow = '0 8px 24px rgba(0,0,0,0.6)';
+            evt.item.style.borderRadius = '12px';
+            evt.item.style.background = 'var(--bg2)';
+          },
+          onEnd: function(evt) {
+            // Возвращаем стили при отпускании
+            evt.item.style.transform = '';
+            evt.item.style.zIndex = '';
+            evt.item.style.boxShadow = '';
+            evt.item.style.borderRadius = '';
+            evt.item.style.background = '';
+            
             const newOrder = [];
             container.querySelectorAll('.nav-item').forEach(el => {
               newOrder.push({ id: el.id, enabled: true });
@@ -197,7 +213,8 @@ export function initCapsuleEditing() {
             });
             localStorage.setItem('widget_config', JSON.stringify(newOrder));
             
-            setTimeout(exitEditMode, 300); 
+            // МГНОВЕННЫЙ ВЫХОД ПОСЛЕ ОТПУСКАНИЯ
+            exitEditMode(); 
           }
         });
       }
