@@ -72,10 +72,13 @@ export function initFloatingMenu() {
       animation: 200,
       delay: 1500,
       delayOnTouchOnly: true,
+      fallbackOnBody: true, // Перетаскиваемый элемент выносится поверх всего
+      forceFallback: true, // Принудительно используем fallback (лучше для мобилок)
       ghostClass: 'sortable-ghost',
       dragClass: 'sortable-drag',
       
       onChoose: function(evt) {
+        document.body.style.overflow = 'hidden'; // Блокируем скролл страницы
         capsule.classList.add('capsule-shaking');
         if (navigator.vibrate) navigator.vibrate(50);
         
@@ -93,6 +96,9 @@ export function initFloatingMenu() {
       },
 
       onEnd: function(evt) {
+        document.body.style.overflow = ''; // Возвращаем скролл
+        evt.item.onclick = (e) => { e.preventDefault(); e.stopPropagation(); }; // Отменяем клик
+        setTimeout(() => { evt.item.onclick = null; }, 100); // Возвращаем клик через 100мс
         capsule.classList.remove('capsule-shaking');
         evt.item.style.transform = '';
         evt.item.style.zIndex = '';
