@@ -100,11 +100,13 @@ export function initFloatingMenu() {
         
         capsule.classList.remove('capsule-shaking');
         
-        // ПРИНУДИТЕЛЬНАЯ ОЧИСТКА ВСЕХ КНОПОК
-        container.querySelectorAll('.nav-item').forEach(el => {
-          el.style.cssText = ''; // Сбрасываем ВСЕ инлайн-стили
-          el.classList.remove('sortable-ghost', 'sortable-drag');
-        });
+        // ПРИНУДИТЕЛЬНАЯ ОЧИСТКА ВСЕХ КНОПОК (с задержкой для десктопа)
+        setTimeout(() => {
+          container.querySelectorAll('.nav-item').forEach(el => {
+            el.style.cssText = ''; // Сбрасываем ВСЕ инлайн-стили
+            el.classList.remove('sortable-ghost', 'sortable-drag');
+          });
+        }, 50);
 
         const newOrder = [];
         container.querySelectorAll('.nav-item').forEach(el => {
