@@ -148,31 +148,32 @@ export function initFloatingMenu() {
   toggleBtn.addEventListener('touchend', (e) => { e.preventDefault(); toggleCollapse(); });
 }
 
+
 export function initCapsuleEditing() {
   const container = document.getElementById('capsule-dynamic-items');
-  if (!container) return;
+  const wrapper = document.getElementById('floating-capsule');
+  if (!container || !wrapper) return;
 
-  if (!document.getElementById('capsule-shake-style')) {
-    const style = document.createElement('style');
-    style.id = 'capsule-shake-style';
-    style.innerHTML = `
-      @keyframes shake {
-        0% { transform: rotate(0deg); }
-        25% { transform: rotate(2deg); }
-        50% { transform: rotate(0deg); }
-        75% { transform: rotate(-2deg); }
-        100% { transform: rotate(0deg); }
-      }
-      .capsule-shaking .nav-item { animation: shake 0.3s infinite; }
-      .capsule-shaking .nav-item * { pointer-events: none; }
-      .sortable-ghost { opacity: 0.3; background: var(--accent) !important; border-radius: 8px; }
-      .sortable-drag { opacity: 1; background: var(--bg2) !important; border: 1px solid var(--accent) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.5); border-radius: 8px; }
-    `;
-    document.head.appendChild(style);
+  if (!document.getElementById('capsule-done-btn')) {
+    const doneBtn = document.createElement('button');
+    doneBtn.id = 'capsule-done-btn';
+    doneBtn.innerText = 'Готово';
+    doneBtn.onclick = (e) => { e.stopPropagation(); exitEditMode(); };
+    wrapper.appendChild(doneBtn);
   }
 
   let pressTimer;
   let sortableInstance = null;
+
+  function exitEditMode() {
+    isCapsuleEditing = false;
+    wrapper.classList.remove('capsule-shaking');
+    if (sortableInstance) {
+      sortableInstance.destroy();
+      sortableInstance = null;
+    }
+    renderCapsule();
+  }
 
   container.addEventListener('touchstart', (e) => {
     if (isCapsuleEditing) return;
@@ -181,13 +182,22 @@ export function initCapsuleEditing() {
 
     pressTimer = setTimeout(() => {
       isCapsuleEditing = true;
-      document.getElementById('floating-capsule').classList.add('capsule-shaking');
+      wrapper.classList.add('capsule-shaking');
       if (navigator.vibrate) navigator.vibrate(50);
 
       if (typeof Sortable !== 'undefined' && !sortableInstance) {
         sortableInstance = new Sortable(container, {
-          animation: 150,
-          onEnd: function() {
+          animation: 250, // ПЛАВНОСТЬ
+          delay: 0,
+          delayOnTouchOnly: true,
+          onStart: function(evt) {
+            evt.item.style.zIndex = '1000';
+            evt.item.style.transform = 'scale(1.1)'; // Чуть увеличиваем при захвате
+          },
+          onEnd: function(evt) {
+            evt.item.style.zIndex = '';
+            evt.item.style.transform = '';
+            
             const newOrder = [];
             container.querySelectorAll('.nav-item').forEach(el => {
               newOrder.push({ id: el.id, enabled: true });
@@ -199,6 +209,8 @@ export function initCapsuleEditing() {
               }
             });
             localStorage.setItem('widget_config', JSON.stringify(newOrder));
+            
+            setTimeout(exitEditMode, 300); // Выход через 0.3 сек после отпускания
           }
         });
       }
@@ -211,14 +223,8 @@ export function initCapsuleEditing() {
   });
 
   document.addEventListener('click', (e) => {
-    if (isCapsuleEditing && !e.target.closest('#floating-capsule')) {
-      isCapsuleEditing = false;
-      document.getElementById('floating-capsule').classList.remove('capsule-shaking');
-      if (sortableInstance) {
-        sortableInstance.destroy();
-        sortableInstance = null;
-      }
-      renderCapsule();
+    if (isCapsuleEditing && !e.target.closest('#floating-capsule') && e.target.id !== 'capsule-done-btn') {
+      exitEditMode();
     }
   });
 }
