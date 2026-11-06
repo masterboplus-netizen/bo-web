@@ -101,17 +101,17 @@ export function initFloatingMenu() {
         });
         localStorage.setItem('widget_config', JSON.stringify(newOrder));
 
-        exitEditMode();
+        exitEditMode(false);
       }
     });
   }
 
   let pressTimer;
-  function exitEditMode() {
+  function exitEditMode(shouldRerender = true) {
     isCapsuleEditing = false;
     capsule.classList.remove('capsule-shaking');
     if (sortableInstance) sortableInstance.option('disabled', true);
-    renderCapsule();
+    if (shouldRerender) renderCapsule();
   }
 
   container.addEventListener('touchstart', (e) => {
@@ -134,7 +134,7 @@ export function initFloatingMenu() {
 
   document.addEventListener('click', (e) => {
     if (isCapsuleEditing && !e.target.closest('#floating-capsule')) {
-      exitEditMode();
+      exitEditMode(false);
     }
   });
 
