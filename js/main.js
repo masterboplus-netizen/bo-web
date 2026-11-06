@@ -201,32 +201,63 @@ window.openMenuSettings = function() {
 };
 
 
+
 window.openWidgetSettings = function() {
     const container = document.getElementById('app-content');
     
-    let config = JSON.parse(localStorage.getItem('widget_config'));
-    if (!config) {
-        config = [{"id": "nav-personal", "enabled": true}, {"id": "nav-finance", "enabled": true}, {"id": "nav-diary", "enabled": true}, {"id": "nav-calendar", "enabled": true}, {"id": "nav-tasks", "enabled": true}, {"id": "nav-objects", "enabled": true}];
-        localStorage.setItem('widget_config', JSON.stringify(config));
+    // Получаем сохраненный конфиг
+    let savedConfig = JSON.parse(localStorage.getItem('widget_config')) || [];
+    
+    // Если конфиг пустой (первый заход), ставим дефолт
+    if (savedConfig.length === 0) {
+        savedConfig = [
+            { id: 'nav-personal', enabled: true },
+            { id: 'nav-finance', enabled: true },
+            { id: 'nav-diary', enabled: true },
+            { id: 'nav-calendar', enabled: true },
+            { id: 'nav-tasks', enabled: true },
+            { id: 'nav-objects', enabled: true }
+        ];
+        localStorage.setItem('widget_config', JSON.stringify(savedConfig));
     }
 
-    // Сортируем конфиг в соответствии с текущим порядком
-    const sortedConfig = config.map(cfg => {
-        const item = CAPSULE_ITEMS.find(i => i.id === cfg.id);
-        return { ...cfg, title: item.title, icon: item.icon };
+    // Формируем ПОЛНЫЙ список: сначала включенные (в порядке конфига), потом выключенные
+    const activeItems = [];
+    const inactiveItems = [];
+
+    // 1. Сначала добавляем активные в том порядке, в котором они в конфиге
+    savedConfig.forEach(cfg => {
+        if (cfg.enabled) {
+            const item = CAPSULE_ITEMS.find(i => i.id === cfg.id);
+            if (item) activeItems.push({ ...item, enabled: true });
+        }
     });
 
+    // 2. Потом добавляем неактивные (все, которых нет в активных)
+    CAPSULE_ITEMS.forEach(item => {
+        const isActive = savedConfig.find(c => c.id === item.id && c.enabled);
+        if (!isActive) {
+            inactiveItems.push({ ...item, enabled: false });
+        }
+    });
+
+    const allItems = [...activeItems, ...inactiveItems];
+
     let listHtml = '';
-    sortedConfig.forEach(cfg => {
+    allItems.forEach((item, index) => {
+        const isActive = item.enabled;
+        // Ручку для перетаскивания даем только активным
+        const dragHandle = isActive ? '<div class="drag-handle" style="cursor: grab; color: var(--fg-dim); font-size: 20px;">≡</div>' : '';
+        
         listHtml += `
-            <div class="widget-item" data-id="${cfg.id}" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg2); padding: 12px; margin-bottom: 8px; border-radius: 8px; border: 1px solid var(--bg3);">
+            <div class="widget-item" data-id="${item.id}" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg2); padding: 12px; margin-bottom: 8px; border-radius: 8px; border: 1px solid var(--bg3); opacity: ${isActive ? '1' : '0.6'};">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="color: var(--fg); display: flex; align-items: center;">${cfg.icon}</div>
-                    <span style="color: var(--fg); font-size: 14px;">${cfg.title}</span>
+                    <div style="color: var(--fg); display: flex; align-items: center;">${item.icon}</div>
+                    <span style="color: var(--fg); font-size: 14px;">${item.title}</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" class="widget-toggle" data-id="${cfg.id}" ${cfg.enabled ? 'checked' : ''} style="width: 20px; height: 20px; cursor: pointer;">
-                    <div class="drag-handle" style="cursor: grab; color: var(--fg-dim); font-size: 20px;">≡</div>
+                    <input type="checkbox" class="widget-toggle" data-id="${item.id}" ${isActive ? 'checked' : ''} style="width: 20px; height: 20px; cursor: pointer;">
+                    ${dragHandle}
                 </div>
             </div>
         `;
@@ -236,7 +267,7 @@ window.openWidgetSettings = function() {
         <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
             <button onclick="window.openMenuSettings()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад в настройки меню</button>
             <h2 style="color: var(--fg); margin-bottom: 10px;">Настройка виджета</h2>
-            <p style="color: var(--fg-dim); font-size: 13px; margin-bottom: 20px;">Выберите до 6 кнопок (плюс кнопка «Меню», которая всегда первая = макс. 7 в виджете).</p>
+            <p style="color: var(--fg-dim); font-size: 13px; margin-bottom: 20px;">Выберите до 6 кнопок (плюс кнопка «Меню» всегда первая).</p>
             
             <div id="sortable-list">
                 ${listHtml}
@@ -248,47 +279,75 @@ window.openWidgetSettings = function() {
     document.querySelectorAll('.widget-toggle').forEach(checkbox => {
         checkbox.addEventListener('change', (e) => {
             const id = e.target.dataset.id;
-            let cfg = JSON.parse(localStorage.getItem('widget_config'));
-            const enabledCount = cfg.filter(c => c.enabled).length;
+            let cfg = JSON.parse(localStorage.getItem('widget_config')) || [];
             
-            if (!e.target.checked && enabledCount <= 2) {
-                alert('Должно быть включено минимум 2 кнопки (включая Меню).');
-                e.target.checked = true;
-                return;
-            }
-            if (e.target.checked && enabledCount >= 6) {
+            // Считаем активные (только те, что в конфиге)
+            const activeCount = cfg.filter(c => c.enabled).length;
+
+            if (e.target.checked && activeCount >= 6) {
                 alert('Максимум 6 кнопок в настройках (плюс Меню = 7 в виджете).');
                 e.target.checked = false;
                 return;
             }
 
-            cfg = cfg.map(c => c.id === id ? { ...c, enabled: e.target.checked } : c);
+            if (e.target.checked) {
+                // Добавляем или включаем
+                const existing = cfg.find(c => c.id === id);
+                if (existing) {
+                    existing.enabled = true;
+                } else {
+                    cfg.push({ id: id, enabled: true });
+                }
+            } else {
+                // Выключаем
+                const existing = cfg.find(c => c.id === id);
+                if (existing) existing.enabled = false;
+            }
+
+            // Сохраняем и перерисовываем (чтобы кнопка перелетела вверх/вниз)
             localStorage.setItem('widget_config', JSON.stringify(cfg));
+            window.openWidgetSettings(); 
             renderCapsule();
         });
     });
 
-    // Логика Drag-and-Drop
+    // Инициализация Sortable для активных элементов
     if (typeof Sortable !== 'undefined') {
         const list = document.getElementById('sortable-list');
         new Sortable(list, {
             handle: '.drag-handle',
             animation: 150,
+            filter: '.widget-item', 
+            onMove: function(evt) {
+                // Запрещаем перетаскивать элементы без ручки (неактивные)
+                if (!evt.related.querySelector('.drag-handle')) {
+                    return false;
+                }
+            },
             onEnd: function() {
                 const newOrder = [];
                 list.querySelectorAll('.widget-item').forEach(el => {
                     const id = el.dataset.id;
-                    const checked = el.querySelector('input[type="checkbox"]').checked;
-                    newOrder.push({ id: id, enabled: checked });
+                    const isChecked = el.querySelector('input[type="checkbox"]').checked;
+                    if (isChecked) {
+                        newOrder.push({ id: id, enabled: true });
+                    }
+                });
+                // Добавляем выключенные в конец
+                list.querySelectorAll('.widget-item').forEach(el => {
+                    const id = el.dataset.id;
+                    const isChecked = el.querySelector('input[type="checkbox"]').checked;
+                    if (!isChecked) {
+                        newOrder.push({ id: id, enabled: false });
+                    }
                 });
                 localStorage.setItem('widget_config', JSON.stringify(newOrder));
                 renderCapsule();
             }
         });
-    } else {
-        console.error("SortableJS не загружен");
     }
 };
+
 
 
 // При загрузке страницы проверяем сохраненную вкладку и открываем её
