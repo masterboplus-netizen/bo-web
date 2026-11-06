@@ -1,4 +1,5 @@
 import { renderDiary } from './screens/diary.js';
+import { renderNotepad } from './screens/notepad.js';
 import { renderCalendar } from './screens/calendar.js';
 import { renderObjects } from './screens/objects.js';
 import { initFloatingMenu, renderCapsule, CAPSULE_ITEMS } from './ui/floating_menu.js';
@@ -84,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => { const savedScreen = localS
 });
 window.openCalendar = function() { saveCurrentScreen('calendar'); renderCalendar(); };
 window.openDiary = function() { saveCurrentScreen('diary'); renderDiary(); };
+window.openNotepad = function() { saveCurrentScreen('notepad'); renderNotepad(); };
 window.setNavActive = setNavActive;
 window.setNavActive = setNavActive;
 
@@ -140,7 +142,7 @@ window.openMenu = function() { setNavActive('menu');
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                     <span style="color: var(--fg); font-size: 10px; text-align: center;">Диктофон</span>
                 </div>
-                <div onclick="window.showStub('Блокнот', 'notepad')" style="background: var(--bg2); border-radius: 12px; border: 1px solid var(--bg3); padding: 12px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                <div onclick="window.openNotepad()" style="background: var(--bg2); border-radius: 12px; border: 1px solid var(--bg3); padding: 12px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     <span style="color: var(--fg); font-size: 10px; text-align: center;">Блокнот</span>
                 </div>
