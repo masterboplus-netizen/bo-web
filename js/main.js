@@ -1,7 +1,7 @@
 import { renderDiary } from './screens/diary.js';
 import { renderCalendar } from './screens/calendar.js';
 import { renderObjects } from './screens/objects.js';
-import { initFloatingMenu } from './ui/floating_menu.js';
+import { initFloatingMenu, renderCapsule, CAPSULE_ITEMS } from './ui/floating_menu.js';
 import { fetchObjects } from './api/objects.js';
 import { openAddMenu } from './modals/add_menu.js';
 import { initAudioButton } from './modals/audio_modal.js';
@@ -200,18 +200,96 @@ window.openMenuSettings = function() {
     `;
 };
 
+
 window.openWidgetSettings = function() {
     const container = document.getElementById('app-content');
+    
+    let config = JSON.parse(localStorage.getItem('widget_config'));
+    if (!config) {
+        config = CAPSULE_ITEMS.map(item => ({ id: item.id, enabled: true }));
+        localStorage.setItem('widget_config', JSON.stringify(config));
+    }
+
+    // Сортируем конфиг в соответствии с текущим порядком
+    const sortedConfig = config.map(cfg => {
+        const item = CAPSULE_ITEMS.find(i => i.id === cfg.id);
+        return { ...cfg, title: item.title, icon: item.icon };
+    });
+
+    let listHtml = '';
+    sortedConfig.forEach(cfg => {
+        listHtml += `
+            <div class="widget-item" data-id="${cfg.id}" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg2); padding: 12px; margin-bottom: 8px; border-radius: 8px; border: 1px solid var(--bg3);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="color: var(--fg); display: flex; align-items: center;">${cfg.icon}</div>
+                    <span style="color: var(--fg); font-size: 14px;">${cfg.title}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" class="widget-toggle" data-id="${cfg.id}" ${cfg.enabled ? 'checked' : ''} style="width: 20px; height: 20px; cursor: pointer;">
+                    <div class="drag-handle" style="cursor: grab; color: var(--fg-dim); font-size: 20px;">≡</div>
+                </div>
+            </div>
+        `;
+    });
+
     container.innerHTML = `
         <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
             <button onclick="window.openMenuSettings()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад в настройки меню</button>
-            <h2 style="color: var(--fg); margin-bottom: 20px;">Настройка виджета</h2>
-            <p style="color: var(--fg-dim); font-size: 14px; margin-bottom: 20px;">Выберите от 2 до 7 кнопок, которые будут отображаться в капсуле.</p>
-
-            <div style="color: var(--fg-dim); font-size: 14px; text-align: center; padding: 20px;">В разработке</div>
+            <h2 style="color: var(--fg); margin-bottom: 10px;">Настройка виджета</h2>
+            <p style="color: var(--fg-dim); font-size: 13px; margin-bottom: 20px;">Выберите от 2 до 7 кнопок. Кнопка «Меню» всегда первая и не подлежит изменению.</p>
+            
+            <div id="sortable-list">
+                ${listHtml}
+            </div>
         </div>
     `;
+
+    // Логика переключения
+    document.querySelectorAll('.widget-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            const id = e.target.dataset.id;
+            let cfg = JSON.parse(localStorage.getItem('widget_config'));
+            const enabledCount = cfg.filter(c => c.enabled).length;
+            
+            if (!e.target.checked && enabledCount <= 2) {
+                alert('Должно быть включено минимум 2 кнопки (включая Меню).');
+                e.target.checked = true;
+                return;
+            }
+            if (e.target.checked && enabledCount >= 7) {
+                alert('Максимум 7 кнопок в виджете (включая Меню).');
+                e.target.checked = false;
+                return;
+            }
+
+            cfg = cfg.map(c => c.id === id ? { ...c, enabled: e.target.checked } : c);
+            localStorage.setItem('widget_config', JSON.stringify(cfg));
+            renderCapsule();
+        });
+    });
+
+    // Логика Drag-and-Drop
+    if (typeof Sortable !== 'undefined') {
+        const list = document.getElementById('sortable-list');
+        new Sortable(list, {
+            handle: '.drag-handle',
+            animation: 150,
+            onEnd: function() {
+                const newOrder = [];
+                list.querySelectorAll('.widget-item').forEach(el => {
+                    const id = el.dataset.id;
+                    const checked = el.querySelector('input[type="checkbox"]').checked;
+                    newOrder.push({ id: id, enabled: checked });
+                });
+                localStorage.setItem('widget_config', JSON.stringify(newOrder));
+                renderCapsule();
+            }
+        });
+    } else {
+        console.error("SortableJS не загружен");
+    }
 };
+
 
 // При загрузке страницы проверяем сохраненную вкладку и открываем её
 
