@@ -72,8 +72,6 @@ export function initFloatingMenu() {
       animation: 200,
       delay: 1500,
       delayOnTouchOnly: true,
-      fallbackOnBody: true, // Перетаскиваемый элемент выносится поверх всего
-      forceFallback: true, // Принудительно используем fallback (лучше для мобилок)
       ghostClass: 'sortable-ghost',
       dragClass: 'sortable-drag',
       
