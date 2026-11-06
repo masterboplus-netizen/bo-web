@@ -48,6 +48,8 @@ export function renderCapsule() {
   container.innerHTML = html;
 }
 
+let isCapsuleEditing = false;
+
 export function initFloatingMenu() {
   const wrapper = document.getElementById('floating-capsule-wrapper');
   const capsule = document.getElementById('floating-capsule');
@@ -65,6 +67,7 @@ export function initFloatingMenu() {
 
   // ПЕРЕТАСКИВАНИЕ (ТАЧ) за саму капсулу
   wrapper.addEventListener('touchstart', (e) => {
+    if (isCapsuleEditing) return;
     if (e.target.closest('button')) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
@@ -74,6 +77,7 @@ export function initFloatingMenu() {
   }, { passive: false });
 
   wrapper.addEventListener('touchmove', (e) => {
+    if (isCapsuleEditing) return;
     if (!isDragging) return;
     e.preventDefault();
     const deltaY = e.touches[0].clientY - startY;
@@ -93,6 +97,7 @@ export function initFloatingMenu() {
 
   // ПЕРЕТАСКИВАНИЕ (МЫШКА) за саму капсулу
   wrapper.addEventListener('mousedown', (e) => {
+    if (isCapsuleEditing) return;
     if (e.target.closest('button')) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
@@ -102,6 +107,7 @@ export function initFloatingMenu() {
   });
 
   window.addEventListener('mousemove', (e) => {
+    if (isCapsuleEditing) return;
     if (!isDragging) return;
     const deltaY = e.clientY - startY;
     const newTop = currentTop + deltaY;
@@ -174,16 +180,16 @@ export function initCapsuleEditing() {
   }
 
   let pressTimer;
-  let isEditing = false;
+
 
   // Долгое нажатие на капсулу
   container.addEventListener('touchstart', (e) => {
-    if (isEditing) return;
+    if (isCapsuleEditing) return;
     const item = e.target.closest('.nav-item');
     if (!item) return;
 
     pressTimer = setTimeout(() => {
-      isEditing = true;
+      isCapsuleEditing = true;
       document.getElementById('floating-capsule').classList.add('capsule-shaking');
       
       // Вибрация (если поддерживается)
@@ -220,8 +226,8 @@ export function initCapsuleEditing() {
 
   // Выход из режима редактирования по клику вне капсулы
   document.addEventListener('click', (e) => {
-    if (isEditing && !e.target.closest('#floating-capsule')) {
-      isEditing = false;
+    if (isCapsuleEditing && !e.target.closest('#floating-capsule')) {
+      isCapsuleEditing = false;
       document.getElementById('floating-capsule').classList.remove('capsule-shaking');
       // Перерисовываем капсулу для сброса Sortable
       renderCapsule();
