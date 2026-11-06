@@ -96,16 +96,13 @@ export function initFloatingMenu() {
       onEnd: function(evt) {
         document.body.style.overflow = ''; // Возвращаем скролл
         evt.item.onclick = (e) => { e.preventDefault(); e.stopPropagation(); }; // Отменяем клик
-        setTimeout(() => { evt.item.onclick = null; }, 100); // Возвращаем клик через 100мс
+        setTimeout(() => { evt.item.onclick = null; }, 100);
+        
         capsule.classList.remove('capsule-shaking');
         
-        // ТОТАЛЬНЫЙ СБРОС СТИЛЕЙ ДЛЯ ВСЕХ КНОПОК
+        // ПРИНУДИТЕЛЬНАЯ ОЧИСТКА ВСЕХ КНОПОК
         container.querySelectorAll('.nav-item').forEach(el => {
-          el.style.transform = '';
-          el.style.zIndex = '';
-          el.style.boxShadow = '';
-          el.style.borderRadius = '';
-          el.style.background = '';
+          el.style.cssText = ''; // Сбрасываем ВСЕ инлайн-стили
           el.classList.remove('sortable-ghost', 'sortable-drag');
         });
 
