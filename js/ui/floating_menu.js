@@ -55,6 +55,7 @@ export function renderCapsule() {
 }
 
 let isCapsuleEditing = false;
+let sortableInstance = null;
 
 export function initFloatingMenu() {
   const wrapper = document.getElementById('floating-capsule-wrapper');
@@ -63,19 +64,96 @@ export function initFloatingMenu() {
   const toggleIcon = document.getElementById('toggle-icon');
 
   if (!wrapper || !capsule || !toggleBtn) return;
-  
-  renderCapsule();
-  setTimeout(() => initCapsuleEditing(), 500);
 
+  renderCapsule();
+  
+  // Инициализируем Sortable СРАЗУ, но выключенным
+  const container = document.getElementById('capsule-dynamic-items');
+  if (container && typeof Sortable !== 'undefined') {
+    sortableInstance = new Sortable(container, {
+      disabled: true, // ВЫКЛЮЧЕН
+      animation: 200,
+      ghostClass: 'sortable-ghost',
+      dragClass: 'sortable-drag',
+      onChoose: function(evt) {
+        evt.item.style.transform = 'scale(1.15)';
+        evt.item.style.zIndex = '1000';
+        evt.item.style.boxShadow = '0 8px 24px rgba(0,0,0,0.6)';
+        evt.item.style.borderRadius = '12px';
+        evt.item.style.background = 'var(--bg2)';
+      },
+      onUnchoose: function(evt) {
+        evt.item.style.transform = '';
+        evt.item.style.zIndex = '';
+        evt.item.style.boxShadow = '';
+        evt.item.style.borderRadius = '';
+        evt.item.style.background = '';
+      },
+      onEnd: function(evt) {
+        evt.item.style.transform = '';
+        evt.item.style.zIndex = '';
+        evt.item.style.boxShadow = '';
+        evt.item.style.borderRadius = '';
+        evt.item.style.background = '';
+
+        const newOrder = [];
+        container.querySelectorAll('.nav-item').forEach(el => {
+          newOrder.push({ id: el.id, enabled: true });
+        });
+        const savedConfig = JSON.parse(localStorage.getItem('widget_config')) || [];
+        savedConfig.forEach(c => {
+          if (!newOrder.find(n => n.id === c.id) && !c.enabled) {
+            newOrder.push({ id: c.id, enabled: false });
+          }
+        });
+        localStorage.setItem('widget_config', JSON.stringify(newOrder));
+        
+        exitEditMode();
+      }
+    });
+  }
+
+  function exitEditMode() {
+    isCapsuleEditing = false;
+    capsule.classList.remove('capsule-shaking');
+    if (sortableInstance) sortableInstance.option('disabled', true);
+    renderCapsule();
+  }
+
+  let pressTimer;
+  container.addEventListener('touchstart', (e) => {
+    if (isCapsuleEditing) return;
+    const item = e.target.closest('.nav-item');
+    if (!item || item.id === 'nav-menu') return;
+
+    pressTimer = setTimeout(() => {
+      isCapsuleEditing = true;
+      capsule.classList.add('capsule-shaking');
+      if (navigator.vibrate) navigator.vibrate(50);
+      if (sortableInstance) sortableInstance.option('disabled', false); // ВКЛЮЧАЕМ
+    }, 1500);
+  }, { passive: true });
+
+  container.addEventListener('touchend', () => clearTimeout(pressTimer));
+  container.addEventListener('touchmove', () => {
+    if (!isCapsuleEditing) clearTimeout(pressTimer);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (isCapsuleEditing && !e.target.closest('#floating-capsule')) {
+      exitEditMode();
+    }
+  });
+
+  // Старое перетаскивание капсулы (оставляем, но блокируем при редактировании)
   let isDragging = false;
   let startY = 0;
   let currentTop = wrapper.getBoundingClientRect().top;
   let isCollapsed = false;
 
-  // ПЕРЕТАСКИВАНИЕ КАПСУЛЫ (ТАЧ)
   wrapper.addEventListener('touchstart', (e) => {
-    if (isCapsuleEditing) return; // Блокируем, если в режиме редактирования
-    if (e.target.closest('.nav-item')) return; // Не таскаем за кнопки
+    if (isCapsuleEditing) return;
+    if (e.target.closest('.nav-item')) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
     startY = e.touches[0].clientY;
@@ -101,7 +179,6 @@ export function initFloatingMenu() {
     }
   });
 
-  // ПЕРЕТАСКИВАНИЕ КАПСУЛЫ (МЫШКА)
   wrapper.addEventListener('mousedown', (e) => {
     if (isCapsuleEditing) return;
     if (e.target.closest('.nav-item')) return;
@@ -129,7 +206,6 @@ export function initFloatingMenu() {
     }
   });
 
-  // СТРЕЛКА
   function toggleCollapse() {
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
@@ -148,88 +224,5 @@ export function initFloatingMenu() {
   toggleBtn.addEventListener('touchend', (e) => { e.preventDefault(); toggleCollapse(); });
 }
 
-
-
-
-export function initCapsuleEditing() {
-  const container = document.getElementById('capsule-dynamic-items');
-  const wrapper = document.getElementById('floating-capsule');
-  if (!container || !wrapper) return;
-
-  let pressTimer;
-  let sortableInstance = null;
-
-  function exitEditMode() {
-    isCapsuleEditing = false;
-    wrapper.classList.remove('capsule-shaking');
-    if (sortableInstance) {
-      sortableInstance.destroy();
-      sortableInstance = null;
-    }
-    renderCapsule();
-  }
-
-  container.addEventListener('touchstart', (e) => {
-    if (isCapsuleEditing) return;
-    const item = e.target.closest('.nav-item');
-    if (!item || item.id === 'nav-menu') return;
-
-    pressTimer = setTimeout(() => {
-      isCapsuleEditing = true;
-      wrapper.classList.add('capsule-shaking');
-      
-      if (navigator.vibrate) navigator.vibrate(50);
-
-      if (typeof Sortable !== 'undefined' && !sortableInstance) {
-        sortableInstance = new Sortable(container, {
-          animation: 200,
-          ghostClass: 'sortable-ghost',
-          dragClass: 'sortable-drag',
-          onStart: function(evt) {
-            // Увеличиваем кнопку и добавляем тень при захвате
-            evt.item.style.transform = 'scale(1.15)';
-            evt.item.style.zIndex = '1000';
-            evt.item.style.boxShadow = '0 8px 24px rgba(0,0,0,0.6)';
-            evt.item.style.borderRadius = '12px';
-            evt.item.style.background = 'var(--bg2)';
-          },
-          onEnd: function(evt) {
-            // Возвращаем стили при отпускании
-            evt.item.style.transform = '';
-            evt.item.style.zIndex = '';
-            evt.item.style.boxShadow = '';
-            evt.item.style.borderRadius = '';
-            evt.item.style.background = '';
-            
-            const newOrder = [];
-            container.querySelectorAll('.nav-item').forEach(el => {
-              newOrder.push({ id: el.id, enabled: true });
-            });
-            const savedConfig = JSON.parse(localStorage.getItem('widget_config')) || [];
-            savedConfig.forEach(c => {
-              if (!newOrder.find(n => n.id === c.id) && !c.enabled) {
-                newOrder.push({ id: c.id, enabled: false });
-              }
-            });
-            localStorage.setItem('widget_config', JSON.stringify(newOrder));
-            
-            // МГНОВЕННЫЙ ВЫХОД ПОСЛЕ ОТПУСКАНИЯ
-            exitEditMode(); 
-          }
-        });
-      }
-    }, 1500);
-  }, { passive: true });
-
-  container.addEventListener('touchend', () => clearTimeout(pressTimer));
-  container.addEventListener('touchmove', () => {
-    if (!isCapsuleEditing) clearTimeout(pressTimer);
-  });
-
-  // Выход по тапу на экран
-  document.addEventListener('click', (e) => {
-    if (isCapsuleEditing && !e.target.closest('#floating-capsule')) {
-      exitEditMode();
-    }
-  });
-}
+// Заглушка для initCapsuleEditing, так как мы всё перенесли в initFloatingMenu
+export function initCapsuleEditing() {}
