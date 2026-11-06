@@ -27,7 +27,7 @@ export function renderCapsule() {
 
   let config = localStorage.getItem('widget_config');
   if (!config) {
-    config = CAPSULE_ITEMS.map(item => ({ id: item.id, enabled: true })); // По умолчанию все включены
+    config = [{"id": "nav-personal", "enabled": true}, {"id": "nav-finance", "enabled": true}, {"id": "nav-diary", "enabled": true}, {"id": "nav-calendar", "enabled": true}, {"id": "nav-tasks", "enabled": true}, {"id": "nav-objects", "enabled": true}];
     localStorage.setItem('widget_config', JSON.stringify(config));
   } else {
     config = JSON.parse(config);

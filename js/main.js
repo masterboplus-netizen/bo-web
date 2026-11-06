@@ -206,7 +206,7 @@ window.openWidgetSettings = function() {
     
     let config = JSON.parse(localStorage.getItem('widget_config'));
     if (!config) {
-        config = CAPSULE_ITEMS.map(item => ({ id: item.id, enabled: true }));
+        config = [{"id": "nav-personal", "enabled": true}, {"id": "nav-finance", "enabled": true}, {"id": "nav-diary", "enabled": true}, {"id": "nav-calendar", "enabled": true}, {"id": "nav-tasks", "enabled": true}, {"id": "nav-objects", "enabled": true}];
         localStorage.setItem('widget_config', JSON.stringify(config));
     }
 
@@ -236,7 +236,7 @@ window.openWidgetSettings = function() {
         <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
             <button onclick="window.openMenuSettings()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад в настройки меню</button>
             <h2 style="color: var(--fg); margin-bottom: 10px;">Настройка виджета</h2>
-            <p style="color: var(--fg-dim); font-size: 13px; margin-bottom: 20px;">Выберите от 2 до 7 кнопок. Кнопка «Меню» всегда первая и не подлежит изменению.</p>
+            <p style="color: var(--fg-dim); font-size: 13px; margin-bottom: 20px;">Выберите до 6 кнопок (плюс кнопка «Меню», которая всегда первая = макс. 7 в виджете).</p>
             
             <div id="sortable-list">
                 ${listHtml}
@@ -256,8 +256,8 @@ window.openWidgetSettings = function() {
                 e.target.checked = true;
                 return;
             }
-            if (e.target.checked && enabledCount >= 7) {
-                alert('Максимум 7 кнопок в виджете (включая Меню).');
+            if (e.target.checked && enabledCount >= 6) {
+                alert('Максимум 6 кнопок в настройках (плюс Меню = 7 в виджете).');
                 e.target.checked = false;
                 return;
             }
