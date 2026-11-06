@@ -100,10 +100,14 @@ export function initFloatingMenu() {
         
         capsule.classList.remove('capsule-shaking');
         
-        // ПРИНУДИТЕЛЬНАЯ ОЧИСТКА ВСЕХ КНОПОК (с задержкой для десктопа)
+        // ТОЧЕЧНАЯ ОЧИСТКА СТИЛЕЙ (только то, что навесил Sortable)
         setTimeout(() => {
           container.querySelectorAll('.nav-item').forEach(el => {
-            el.style.cssText = ''; // Сбрасываем ВСЕ инлайн-стили
+            el.style.transform = '';
+            el.style.zIndex = '';
+            el.style.boxShadow = '';
+            el.style.borderRadius = '';
+            el.style.background = '';
             el.classList.remove('sortable-ghost', 'sortable-drag');
           });
         }, 50);
