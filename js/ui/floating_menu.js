@@ -1,4 +1,3 @@
-
 export const CAPSULE_ITEMS = [
   { id: 'nav-kpi', title: 'KPI', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>', action: "window.showStub('KPI', 'kpi')" },
   { id: 'nav-crm', title: 'CRM', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>', action: "window.showStub('CRM', 'crm')" },
@@ -27,7 +26,14 @@ export function renderCapsule() {
 
   let config = localStorage.getItem('widget_config');
   if (!config) {
-    config = [{"id": "nav-personal", "enabled": true}, {"id": "nav-finance", "enabled": true}, {"id": "nav-diary", "enabled": true}, {"id": "nav-calendar", "enabled": true}, {"id": "nav-tasks", "enabled": true}, {"id": "nav-objects", "enabled": true}];
+    config = [
+      { id: 'nav-personal', enabled: true },
+      { id: 'nav-finance', enabled: true },
+      { id: 'nav-diary', enabled: true },
+      { id: 'nav-calendar', enabled: true },
+      { id: 'nav-tasks', enabled: true },
+      { id: 'nav-objects', enabled: true }
+    ];
     localStorage.setItem('widget_config', JSON.stringify(config));
   } else {
     config = JSON.parse(config);
@@ -57,6 +63,7 @@ export function initFloatingMenu() {
   const toggleIcon = document.getElementById('toggle-icon');
 
   if (!wrapper || !capsule || !toggleBtn) return;
+  
   renderCapsule();
   setTimeout(() => initCapsuleEditing(), 500);
 
@@ -65,9 +72,64 @@ export function initFloatingMenu() {
   let currentTop = wrapper.getBoundingClientRect().top;
   let isCollapsed = false;
 
-  // Старое перетаскивание капсулы ОТКЛЮЧЕНО. Теперь работает только режим редактирования (долгое нажатие).
-  
-  // СТРЕЛКА (только сворачивание, без перетаскивания)
+  // ПЕРЕТАСКИВАНИЕ КАПСУЛЫ (ТАЧ)
+  wrapper.addEventListener('touchstart', (e) => {
+    if (isCapsuleEditing) return; // Блокируем, если в режиме редактирования
+    if (e.target.closest('.nav-item')) return; // Не таскаем за кнопки
+    if (e.target.closest('#toggle-capsule')) return;
+    isDragging = true;
+    startY = e.touches[0].clientY;
+    currentTop = wrapper.getBoundingClientRect().top;
+    wrapper.style.transition = 'none';
+  }, { passive: false });
+
+  wrapper.addEventListener('touchmove', (e) => {
+    if (!isDragging || isCapsuleEditing) return;
+    e.preventDefault();
+    const deltaY = e.touches[0].clientY - startY;
+    const newTop = currentTop + deltaY;
+    if (newTop > 70 && newTop < window.innerHeight - wrapper.offsetHeight - 90) {
+      wrapper.style.bottom = 'auto';
+      wrapper.style.top = newTop + 'px';
+    }
+  }, { passive: false });
+
+  wrapper.addEventListener('touchend', () => {
+    if (isDragging) {
+      isDragging = false;
+      wrapper.style.transition = 'transform 0.3s ease';
+    }
+  });
+
+  // ПЕРЕТАСКИВАНИЕ КАПСУЛЫ (МЫШКА)
+  wrapper.addEventListener('mousedown', (e) => {
+    if (isCapsuleEditing) return;
+    if (e.target.closest('.nav-item')) return;
+    if (e.target.closest('#toggle-capsule')) return;
+    isDragging = true;
+    startY = e.clientY;
+    currentTop = wrapper.getBoundingClientRect().top;
+    wrapper.style.transition = 'none';
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging || isCapsuleEditing) return;
+    const deltaY = e.clientY - startY;
+    const newTop = currentTop + deltaY;
+    if (newTop > 70 && newTop < window.innerHeight - wrapper.offsetHeight - 90) {
+      wrapper.style.bottom = 'auto';
+      wrapper.style.top = newTop + 'px';
+    }
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      wrapper.style.transition = 'transform 0.3s ease';
+    }
+  });
+
+  // СТРЕЛКА
   function toggleCollapse() {
     isCollapsed = !isCollapsed;
     if (isCollapsed) {
@@ -82,25 +144,14 @@ export function initFloatingMenu() {
     }
   }
 
-  toggleBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    toggleCollapse();
-  });
-
-  // Для тача — тоже просто клик
-  toggleBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    toggleCollapse();
-  });
+  toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); toggleCollapse(); });
+  toggleBtn.addEventListener('touchend', (e) => { e.preventDefault(); toggleCollapse(); });
 }
-
 
 export function initCapsuleEditing() {
   const container = document.getElementById('capsule-dynamic-items');
   if (!container) return;
 
-  // Добавляем стили (один раз)
   if (!document.getElementById('capsule-shake-style')) {
     const style = document.createElement('style');
     style.id = 'capsule-shake-style';
@@ -112,45 +163,35 @@ export function initCapsuleEditing() {
         75% { transform: rotate(-2deg); }
         100% { transform: rotate(0deg); }
       }
-      .capsule-shaking .nav-item {
-        animation: shake 0.3s infinite;
-      }
-      .capsule-shaking .nav-item * {
-        pointer-events: none;
-      }
+      .capsule-shaking .nav-item { animation: shake 0.3s infinite; }
+      .capsule-shaking .nav-item * { pointer-events: none; }
+      .sortable-ghost { opacity: 0.3; background: var(--accent) !important; border-radius: 8px; }
+      .sortable-drag { opacity: 1; background: var(--bg2) !important; border: 1px solid var(--accent) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.5); border-radius: 8px; }
     `;
     document.head.appendChild(style);
   }
 
   let pressTimer;
+  let sortableInstance = null;
 
-
-  // Долгое нажатие на капсулу
   container.addEventListener('touchstart', (e) => {
     if (isCapsuleEditing) return;
     const item = e.target.closest('.nav-item');
-    if (!item) return;
+    if (!item || item.id === 'nav-menu') return;
 
     pressTimer = setTimeout(() => {
       isCapsuleEditing = true;
-      isDragging = false;
       document.getElementById('floating-capsule').classList.add('capsule-shaking');
-      
-      // Вибрация (если поддерживается)
       if (navigator.vibrate) navigator.vibrate(50);
 
-      // Инициализация Sortable
-      if (typeof Sortable !== 'undefined') {
-        new Sortable(container, {
+      if (typeof Sortable !== 'undefined' && !sortableInstance) {
+        sortableInstance = new Sortable(container, {
           animation: 150,
-          ghostClass: 'sortable-ghost',
           onEnd: function() {
-            // Сохраняем новый порядок
             const newOrder = [];
             container.querySelectorAll('.nav-item').forEach(el => {
               newOrder.push({ id: el.id, enabled: true });
             });
-            // Добавляем выключенные в конец (чтобы не потерялись)
             const savedConfig = JSON.parse(localStorage.getItem('widget_config')) || [];
             savedConfig.forEach(c => {
               if (!newOrder.find(n => n.id === c.id) && !c.enabled) {
@@ -164,18 +205,20 @@ export function initCapsuleEditing() {
     }, 1500);
   }, { passive: true });
 
-  container.addEventListener('touchend', () => {
-    clearTimeout(pressTimer);
+  container.addEventListener('touchend', () => clearTimeout(pressTimer));
+  container.addEventListener('touchmove', () => {
+    if (!isCapsuleEditing) clearTimeout(pressTimer);
   });
 
-  // Выход из режима редактирования по клику вне капсулы
   document.addEventListener('click', (e) => {
     if (isCapsuleEditing && !e.target.closest('#floating-capsule')) {
       isCapsuleEditing = false;
       document.getElementById('floating-capsule').classList.remove('capsule-shaking');
-      // Перерисовываем капсулу для сброса Sortable
+      if (sortableInstance) {
+        sortableInstance.destroy();
+        sortableInstance = null;
+      }
       renderCapsule();
-  setTimeout(() => initCapsuleEditing(), 500);
     }
   });
 }
