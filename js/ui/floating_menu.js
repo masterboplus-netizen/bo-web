@@ -98,11 +98,16 @@ export function initFloatingMenu() {
         evt.item.onclick = (e) => { e.preventDefault(); e.stopPropagation(); }; // Отменяем клик
         setTimeout(() => { evt.item.onclick = null; }, 100); // Возвращаем клик через 100мс
         capsule.classList.remove('capsule-shaking');
-        evt.item.style.transform = '';
-        evt.item.style.zIndex = '';
-        evt.item.style.boxShadow = '';
-        evt.item.style.borderRadius = '';
-        evt.item.style.background = '';
+        
+        // ТОТАЛЬНЫЙ СБРОС СТИЛЕЙ ДЛЯ ВСЕХ КНОПОК
+        container.querySelectorAll('.nav-item').forEach(el => {
+          el.style.transform = '';
+          el.style.zIndex = '';
+          el.style.boxShadow = '';
+          el.style.borderRadius = '';
+          el.style.background = '';
+          el.classList.remove('sortable-ghost', 'sortable-drag');
+        });
 
         const newOrder = [];
         container.querySelectorAll('.nav-item').forEach(el => {
