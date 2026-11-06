@@ -67,7 +67,10 @@ export function initFloatingMenu() {
 
   // ПЕРЕТАСКИВАНИЕ (ТАЧ) за саму капсулу
   wrapper.addEventListener('touchstart', (e) => {
-    if (isCapsuleEditing) return;
+    if (isCapsuleEditing) {
+      e.preventDefault();
+      return;
+    }
     if (e.target.closest('button')) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
@@ -77,7 +80,10 @@ export function initFloatingMenu() {
   }, { passive: false });
 
   wrapper.addEventListener('touchmove', (e) => {
-    if (isCapsuleEditing) return;
+    if (isCapsuleEditing) {
+      e.preventDefault();
+      return;
+    }
     if (!isDragging) return;
     e.preventDefault();
     const deltaY = e.touches[0].clientY - startY;
@@ -97,7 +103,10 @@ export function initFloatingMenu() {
 
   // ПЕРЕТАСКИВАНИЕ (МЫШКА) за саму капсулу
   wrapper.addEventListener('mousedown', (e) => {
-    if (isCapsuleEditing) return;
+    if (isCapsuleEditing) {
+      e.preventDefault();
+      return;
+    }
     if (e.target.closest('button')) return;
     if (e.target.closest('#toggle-capsule')) return;
     isDragging = true;
@@ -190,6 +199,7 @@ export function initCapsuleEditing() {
 
     pressTimer = setTimeout(() => {
       isCapsuleEditing = true;
+      isDragging = false;
       document.getElementById('floating-capsule').classList.add('capsule-shaking');
       
       // Вибрация (если поддерживается)
