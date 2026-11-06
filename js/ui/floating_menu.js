@@ -149,18 +149,11 @@ export function initFloatingMenu() {
 }
 
 
+
 export function initCapsuleEditing() {
   const container = document.getElementById('capsule-dynamic-items');
   const wrapper = document.getElementById('floating-capsule');
   if (!container || !wrapper) return;
-
-  if (!document.getElementById('capsule-done-btn')) {
-    const doneBtn = document.createElement('button');
-    doneBtn.id = 'capsule-done-btn';
-    doneBtn.innerText = 'Готово';
-    doneBtn.onclick = (e) => { e.stopPropagation(); exitEditMode(); };
-    wrapper.appendChild(doneBtn);
-  }
 
   let pressTimer;
   let sortableInstance = null;
@@ -183,21 +176,15 @@ export function initCapsuleEditing() {
     pressTimer = setTimeout(() => {
       isCapsuleEditing = true;
       wrapper.classList.add('capsule-shaking');
+      
       if (navigator.vibrate) navigator.vibrate(50);
 
       if (typeof Sortable !== 'undefined' && !sortableInstance) {
         sortableInstance = new Sortable(container, {
-          animation: 250, // ПЛАВНОСТЬ
-          delay: 0,
-          delayOnTouchOnly: true,
-          onStart: function(evt) {
-            evt.item.style.zIndex = '1000';
-            evt.item.style.transform = 'scale(1.1)'; // Чуть увеличиваем при захвате
-          },
-          onEnd: function(evt) {
-            evt.item.style.zIndex = '';
-            evt.item.style.transform = '';
-            
+          animation: 200,
+          ghostClass: 'sortable-ghost',
+          dragClass: 'sortable-drag',
+          onEnd: function() {
             const newOrder = [];
             container.querySelectorAll('.nav-item').forEach(el => {
               newOrder.push({ id: el.id, enabled: true });
@@ -210,7 +197,7 @@ export function initCapsuleEditing() {
             });
             localStorage.setItem('widget_config', JSON.stringify(newOrder));
             
-            setTimeout(exitEditMode, 300); // Выход через 0.3 сек после отпускания
+            setTimeout(exitEditMode, 300); 
           }
         });
       }
@@ -222,8 +209,9 @@ export function initCapsuleEditing() {
     if (!isCapsuleEditing) clearTimeout(pressTimer);
   });
 
+  // Выход по тапу на экран
   document.addEventListener('click', (e) => {
-    if (isCapsuleEditing && !e.target.closest('#floating-capsule') && e.target.id !== 'capsule-done-btn') {
+    if (isCapsuleEditing && !e.target.closest('#floating-capsule')) {
       exitEditMode();
     }
   });
