@@ -2,6 +2,8 @@ import { renderDiary } from './screens/diary.js';
 import { renderNotepad } from './screens/notepad.js';
 import { renderFinance } from './screens/finance.js';
 import { openMenu } from './screens/menu.js';
+import { showStub } from './ui/stub.js';
+import { showConfirm } from './ui/confirm.js';
 import { openSettings, openMenuSettings, openWidgetSettings } from './screens/settings.js';
 import { renderCalendar } from './screens/calendar.js';
 import { renderObjects } from './screens/objects.js';
@@ -50,15 +52,6 @@ window.openAddMenu = openAddMenu;
 
 
 
-window.showStub = function(title, tabId) {
-    document.getElementById('app-content').innerHTML = `
-        <div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
-            <div style="margin-bottom: 20px; display: flex; justify-content: center;"><svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--fg-dim)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h20"></path><path d="M4 18v-4a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v4"></path><path d="M12 10V6"></path><path d="M12 6l4-2"></path><path d="M8 10L6 6"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></div>
-            <h3>${title}</h3>
-            <p>Раздел в разработке.</p>
-        </div>`;
-    if (tabId) setNavActive(tabId);
-};
 
 export function setNavActive(tabId) {
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
@@ -98,41 +91,3 @@ window.setNavActive = setNavActive;
 
 // Восстанавливаем последнюю открытую вкладку при загрузке
 
-window.showConfirm = function(message, onConfirm) {
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease;';
-    
-    const modal = document.createElement('div');
-    modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 16px 20px; max-width: 320px; width: 100%; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.2s ease;';
-    
-    modal.innerHTML = `
-        <div style="color: var(--fg); font-size: 15px; margin-bottom: 16px; text-align: center; line-height: 1.4;">${message}</div>
-        <div style="display: flex; gap: 10px;">
-            <button id="confirm-cancel" style="flex: 1; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer; font-weight: 500;">Отмена</button>
-            <button id="confirm-ok" style="flex: 1; padding: 12px; background: #ff3b30; color: white; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; font-weight: bold;">Удалить</button>
-        </div>
-    `;
-    
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    setTimeout(() => {
-        overlay.style.opacity = '1';
-        modal.style.transform = 'scale(1)';
-    }, 10);
-
-    function close() {
-        overlay.style.opacity = '0';
-        modal.style.transform = 'scale(0.95)';
-        setTimeout(() => overlay.remove(), 200);
-    }
-
-    document.getElementById('confirm-cancel').onclick = close;
-    document.getElementById('confirm-ok').onclick = () => {
-        close();
-        onConfirm();
-    };
-    overlay.onclick = (e) => {
-        if (e.target === overlay) close();
-    };
-};
