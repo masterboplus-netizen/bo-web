@@ -85,25 +85,25 @@ export async function openTaskDetail(id) {
                     </button>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="background: var(--bg2); border-radius: 16px; padding: 20px; border: 1px solid var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 15px;">
                     <div>
                         <h2 style="margin: 0 0 10px 0; color: var(--fg); font-size: 24px;">${escapeHtml(task.title)}</h2>
                         <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">${statusText}</span>
                     </div>
 
                     ${task.description ? `
-                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3);">
                         <div style="color: var(--fg-dim); font-size: 12px; margin-bottom: 5px;">Описание</div>
                         <div style="color: var(--fg); font-size: 15px;">${escapeHtml(task.description)}</div>
                     </div>
                     ` : ''}
 
-                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3);">
                         <div style="color: var(--fg-dim); font-size: 12px; margin-bottom: 5px;">Плановый срок</div>
                         <div style="color: var(--fg); font-size: 15px;">${deadlineDisplay}</div>
                     </div>
 
-                    <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3);">
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3);">
                         <div style="color: var(--fg-dim); font-size: 12px; margin-bottom: 5px;">Приоритет</div>
                         <div style="color: var(--fg); font-size: 15px;">${task.priority === 'high' ? 'Высокий' : task.priority === 'low' ? 'Низкий' : 'Средний'}</div>
                     </div>
