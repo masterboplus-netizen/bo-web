@@ -108,6 +108,31 @@ export async function openTaskDetail(id) {
                         <div style="color: var(--fg); font-size: 15px;">${task.priority === 'high' ? 'Высокий' : task.priority === 'low' ? 'Низкий' : 'Средний'}</div>
                     </div>
 
+                    <!-- ЗАГЛУШКИ -->
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: bold; color: var(--fg); font-size: 14px;">Объект</div>
+                            <div style="color: var(--fg-dim); font-size: 13px; margin-top: 3px;">Адрес, парковка, как пройти — будут здесь</div>
+                        </div>
+                        <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                    </div>
+
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: bold; color: var(--fg); font-size: 14px;">Исполнители</div>
+                            <div style="color: var(--fg-dim); font-size: 13px; margin-top: 3px;">Кто отвечает за задачу — будет здесь</div>
+                        </div>
+                        <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                    </div>
+
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: bold; color: var(--fg); font-size: 14px;">Реальное исполнение</div>
+                            <div style="color: var(--fg-dim); font-size: 13px; margin-top: 3px;">Фактические даты начала и окончания работ</div>
+                        </div>
+                        <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                    </div>
+
                     <!-- ФОТОГРАФИИ (ЛЕНТЫ) -->
                     <div>
                         <h3 style="color: var(--fg); margin: 0 0 10px 0; font-size: 18px;">Фотолента</h3>
@@ -123,6 +148,47 @@ export async function openTaskDetail(id) {
                                 Сфотографировать
                             </button>
                         </div>
+                    </div>
+
+                    <!-- ЗАГЛУШКИ (продолжение) -->
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: bold; color: var(--fg); font-size: 14px;">Блокнот</div>
+                            <div style="color: var(--fg-dim); font-size: 13px; margin-top: 3px;">Текстовые заметки — будут здесь</div>
+                        </div>
+                        <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                    </div>
+
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: bold; color: var(--fg); font-size: 14px;">Документы</div>
+                            <div style="color: var(--fg-dim); font-size: 13px; margin-top: 3px;">PDF, чертежи, сметы — будут здесь</div>
+                        </div>
+                        <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                    </div>
+
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: bold; color: var(--fg); font-size: 14px;">Записи диктофона</div>
+                            <div style="color: var(--fg-dim); font-size: 13px; margin-top: 3px;">Аудиозаметки — будут здесь</div>
+                        </div>
+                        <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                    </div>
+
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: bold; color: var(--fg); font-size: 14px;">Связи</div>
+                            <div style="color: var(--fg-dim); font-size: 13px; margin-top: 3px;">Связанные задачи и блокировки — будут здесь</div>
+                        </div>
+                        <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
+                    </div>
+
+                    <div style="padding: 15px; border-bottom: 1px solid var(--bg3); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: bold; color: var(--fg); font-size: 14px;">Отчеты</div>
+                            <div style="color: var(--fg-dim); font-size: 13px; margin-top: 3px;">Генерация PDF/Excel — будет здесь</div>
+                        </div>
+                        <span style="color: var(--fg-dim); font-size: 12px;">Заглушка</span>
                     </div>
 
                     <!-- ДНЕВНИК РАБОТ -->
