@@ -316,11 +316,6 @@ window.gallerySwitchCategory = async function(catId) {
 
         const catPhotos = (allPhotos || []).filter(p => (p.category || 'none') === catId);
         
-        if (catPhotos.length === 0) {
-            alert('В этой категории нет фото');
-            return;
-        }
-
         window._galleryState = {
             taskId: state.taskId,
             category: catId,
