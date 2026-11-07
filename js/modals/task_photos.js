@@ -151,6 +151,12 @@ window.openPhotoGallery = async function(taskId, category, photoId) {
 
         const container = document.getElementById('app-content');
         if (container) container.scrollTop = 0;
+            const replaceBtn = document.createElement("button"); 
+            replaceBtn.innerHTML = "🔄 Заменить фото"; 
+            replaceBtn.style.cssText = "width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); cursor: pointer; font-size: 14px; margin-bottom: 15px;"; 
+            replaceBtn.onclick = function() { window.galleryReplacePhoto(currentPhoto.id); }; 
+            const mainDiv = container.querySelector("div"); 
+            if (mainDiv) mainDiv.appendChild(replaceBtn);
         
         renderGallery();
     } catch (err) {
@@ -302,6 +308,12 @@ function renderGallery() {
         </div>
     `;
     container.scrollTop = 0;
+            const replaceBtn = document.createElement("button"); 
+            replaceBtn.innerHTML = "🔄 Заменить фото"; 
+            replaceBtn.style.cssText = "width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); cursor: pointer; font-size: 14px; margin-bottom: 15px;"; 
+            replaceBtn.onclick = function() { window.galleryReplacePhoto(currentPhoto.id); }; 
+            const mainDiv = container.querySelector("div"); 
+            if (mainDiv) mainDiv.appendChild(replaceBtn);
 }
 
 window.galleryPrev = function() {
@@ -422,4 +434,30 @@ window.galleryMovePhoto = function(photoId) {
             alert('Ошибка перемещения: ' + err.message);
         }
     });
+};
+
+// === ЗАМЕНА ФОТО ===
+window.galleryReplacePhoto = function(photoId) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const state = window._galleryState;
+            const fileName = `task_${state.taskId}_${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+            const { error: uploadError } = await db.storage.from('photos').upload(fileName, file);
+            if (uploadError) throw uploadError;
+            const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
+            const { error: dbError } = await db.from('task_photos').update({ photo_url: urlData.publicUrl }).eq('id', photoId);
+            if (dbError) throw dbError;
+            const updatedPhotos = state.photos.map(p => p.id === photoId ? { ...p, photo_url: urlData.publicUrl } : p);
+            window._galleryState.photos = updatedPhotos;
+            renderGallery();
+        } catch (err) {
+            alert('Ошибка замены: ' + err.message);
+        }
+    };
+    input.click();
 };
