@@ -10,6 +10,10 @@ import { initAudioButton } from './modals/audio_modal.js';
 import './modals/camera_modal.js';
 import { renderTasks, openNewTask, saveNewTask } from './screens/tasks.js';
 import { openObject } from './screens/objectDetail.js';
+import './screens/taskDetail.js';
+import './screens/taskEdit.js';
+import './modals/task_actions.js';
+import './modals/task_photos.js';
 
 function saveCurrentScreen(screen) {
     localStorage.setItem('currentScreen', screen);
