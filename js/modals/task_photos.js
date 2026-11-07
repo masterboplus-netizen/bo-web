@@ -172,12 +172,30 @@ function renderGallery() {
         { id: 'none', label: 'Без категории' }
     ];
 
-    // Капсула категорий
+    // Закольцованная капсула категорий (3 раздела: левый, активный, правый)
     let capsuleHtml = '';
-    categories.forEach(cat => {
-        const isActive = cat.id === state.category;
-        capsuleHtml += `<div onclick="window.gallerySwitchCategory('${cat.id}')" style="flex-shrink: 0; padding: 8px 16px; border-radius: 20px; background: ${isActive ? 'var(--accent)' : 'var(--bg2)'}; color: ${isActive ? 'white' : 'var(--fg)'}; font-size: 13px; cursor: pointer; border: 1px solid ${isActive ? 'var(--accent)' : 'var(--bg3)'}; margin-right: 8px; white-space: nowrap;">${cat.label}</div>`;
-    });
+    const catIds = categories.map(c => c.id);
+    const currentIdx = catIds.indexOf(state.category);
+    const prevIdx = (currentIdx - 1 + categories.length) % categories.length;
+    const nextIdx = (currentIdx + 1) % categories.length;
+
+    const prevCat = categories[prevIdx];
+    const currentCat = categories[currentIdx];
+    const nextCat = categories[nextIdx];
+
+    capsuleHtml = `
+        <div style="display: flex; align-items: center; background: var(--bg2); border-radius: 20px; border: 1px solid var(--bg3); overflow: hidden; margin-bottom: 15px;">
+            <div onclick="window.gallerySwitchCategory('${prevCat.id}')" style="flex: 1; padding: 12px; text-align: center; color: var(--fg-dim); font-size: 13px; cursor: pointer; transition: background 0.2s;">
+                ${prevCat.label}
+            </div>
+            <div style="flex: 1; padding: 12px; text-align: center; color: white; background: var(--accent); font-size: 13px; font-weight: bold;">
+                ${currentCat.label}
+            </div>
+            <div onclick="window.gallerySwitchCategory('${nextCat.id}')" style="flex: 1; padding: 12px; text-align: center; color: var(--fg-dim); font-size: 13px; cursor: pointer; transition: background 0.2s;">
+                ${nextCat.label}
+            </div>
+        </div>
+    `;
 
     container.innerHTML = `
         <div style="padding: 0 20px 20px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
@@ -192,9 +210,7 @@ function renderGallery() {
 
             <div style="color: var(--fg); font-size: 14px; margin-bottom: 10px;">${escapeHtml(currentPhoto.title || 'Фото')}</div>
 
-            <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none;">
-                ${capsuleHtml}
-            </div>
+            ${capsuleHtml}
 
             <div style="position: relative; width: 100%; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px;">
                 <img src="${currentPhoto.photo_url}" style="width: 100%; height: auto; max-height: 60vh; object-fit: contain; display: block;">
