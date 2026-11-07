@@ -326,3 +326,11 @@ window.galleryDeletePhoto = function(photoId) {
         }
     });
 };
+
+
+window.galleryJumpTo = function(index) {
+    if (index >= 0 && index < window._galleryState.photos.length) {
+        window._galleryState.currentIndex = index;
+        renderGallery();
+    }
+};
