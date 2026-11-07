@@ -6,6 +6,7 @@ import { showStub } from './ui/stub.js';
 import { showConfirm } from './ui/confirm.js';
 import { openSettings, openMenuSettings, openWidgetSettings } from './screens/settings.js';
 import { renderCalendar } from './screens/calendar.js';
+import { renderPhotos } from './screens/photos.js';
 import { renderObjects } from './screens/objects.js';
 import { initFloatingMenu, renderCapsule, CAPSULE_ITEMS } from './ui/floating_menu.js';
 import { fetchObjects } from './api/objects.js';
@@ -65,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => { const savedScreen = localS
     initAudioButton();
 });
 window.openCalendar = function() { saveCurrentScreen('calendar'); renderCalendar(); };
+window.openPhotos = function() { saveCurrentScreen('photos'); renderPhotos(); };
 window.openDiary = function() { saveCurrentScreen('diary'); renderDiary(); };
 window.openNotepad = function() { saveCurrentScreen('notepad'); renderNotepad(); };
 window.saveCurrentScreen = saveCurrentScreen;
