@@ -19,7 +19,7 @@ export async function openObject(objectId) {
         let gisLink = 'https://2gis.ru/search/' + encodeURIComponent(address);
 
         let html = `
-            <div style="padding:0 20px 20px 20px; max-width: 600px; margin: 0 auto;">
+            <div style="padding: 0 10px 20px 10px; max-width: 100%; margin: 0 auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <button onclick="window.openObjects()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -100,7 +100,7 @@ window.openEditObject = async function(id) {
         if (!obj) throw new Error('Объект не найден');
 
         container.innerHTML = `
-            <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
+            <div style="padding: 0 10px 20px 10px; max-width: 100%; margin: 0 auto; padding-bottom: 100px;">
                 <button onclick="window.openObject(${id})" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 8px; font-size: 15px; margin-bottom: 15px;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"></line>
