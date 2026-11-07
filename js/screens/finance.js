@@ -182,10 +182,10 @@ export async function renderCashFlow() {
                     
                     html += `
                         <div style="display: grid; grid-template-columns: 70px 70px 70px 1fr; padding: 12px 8px; font-size: 14px; border-bottom: 1px solid var(--bg3); text-align: center; align-items: center;">
-                            <div style="color: #34c759; font-weight: bold;">${incVal}</div>
-                            <div style="color: #ff3b30; font-weight: bold;">${expVal}</div>
+                            <div onclick="window.openEditFinanceInline(${op.id}, ${op.amount}, '${escapeHtml(op.description || '')}')" style="color: #34c759; font-weight: bold; cursor: pointer; text-decoration: underline;">${incVal}</div>
+                            <div onclick="window.openEditFinanceInline(${op.id}, ${op.amount}, '${escapeHtml(op.description || '')}')" style="color: #ff3b30; font-weight: bold; cursor: pointer; text-decoration: underline;">${expVal}</div>
                             <div></div>
-                            <div style="text-align: left; color: var(--fg); font-size: 13px; line-height: 1.3; padding-left: 5px;">${escapeHtml(op.description || '')}</div>
+                            <div onclick="window.openEditFinanceInline(${op.id}, ${op.amount}, '${escapeHtml(op.description || '')}')" style="text-align: left; color: var(--fg); font-size: 13px; line-height: 1.3; padding-left: 5px; cursor: pointer;">${escapeHtml(op.description || '')}</div>
                         </div>
                     `;
                 });
