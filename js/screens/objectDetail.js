@@ -64,14 +64,30 @@ export async function openObject(objectId) {
 
 // === МЕНЮ ДЕЙСТВИЙ (ТРИ ТОЧКИ) ===
 window.openObjectActions = function(id, name) {
-    // Простое нативное меню браузера для скорости, но красиво оформленное
-    const action = prompt(`Действия с объектом "${name}":\n\n1 - Редактировать\n2 - Удалить\n\nВведите цифру (1 или 2):`);
+    // Удаляем старое меню, если есть
+    const oldMenu = document.getElementById('obj-action-menu');
+    if (oldMenu) oldMenu.remove();
+
+    const menu = document.createElement('div');
+    menu.id = 'obj-action-menu';
+    menu.style.cssText = 'position: fixed; top: 100px; right: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); z-index: 10005; overflow: hidden; min-width: 160px; display: flex; flex-direction: column;';
     
-    if (action === '1') {
-        window.openEditObject(id);
-    } else if (action === '2') {
-        window.deleteObjectById(id);
-    }
+    menu.innerHTML = `
+        <div onclick="window.openEditObject(${id})" style="padding: 14px 16px; color: var(--fg); font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--bg3);">Редактировать</div>
+        <div onclick="window.deleteObjectById(${id})" style="padding: 14px 16px; color: #ff3b30; font-size: 15px; cursor: pointer;">Удалить</div>
+    `;
+    
+    document.body.appendChild(menu);
+
+    // Закрытие по клику вне меню
+    setTimeout(() => {
+        document.addEventListener('click', function closeMenu(e) {
+            if (!menu.contains(e.target) && !e.target.closest('button[onclick*="openObjectActions"]')) {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        });
+    }, 10);
 };
 
 // === РЕДАКТИРОВАНИЕ (ШТОРКА) ===
@@ -147,11 +163,7 @@ window.saveObjectChanges = async function(id) {
 
     try {
         await updateObject(id, name, address, budget);
-        // Закрываем шторку, если она открыта
-        const overlay = document.querySelector('div[style*="z-index: 99998"]');
-        if (overlay) overlay.click(); // Эмулируем клик для закрытия
-        
-        window.openObject(id); // Перезагружаем карточку
+        window.openObject(id);
     } catch (err) {
         alert('Ошибка сохранения: ' + err.message);
     }
