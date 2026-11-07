@@ -50,7 +50,7 @@ export async function openTaskDetail(id) {
             previewPhotos.forEach(p => {
                 photosHtml += `
                     <div style="position: relative; flex-shrink: 0; width: 80px; height: 80px;">
-                        <img src="${p.photo_url}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                        <img src="${p.photo_url}" onclick="event.stopPropagation(); window.openPhotoGallery(${task.id}, '${cat.id}', ${p.id})" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer;">
                         <button onclick="window.deleteTaskPhoto(${p.id}, ${task.id})" style="position: absolute; top: 3px; right: 3px; background: rgba(255,0,0,0.7); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px;">×</button>
                     </div>
                 `;
