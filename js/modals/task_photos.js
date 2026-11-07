@@ -162,6 +162,59 @@ function renderGallery() {
     const state = window._galleryState;
     const container = document.getElementById('app-content');
     const currentPhoto = state.photos[state.currentIndex];
+    
+    // Если в категории нет фото — показываем заглушку
+    if (!currentPhoto) {
+        const categories = [
+            { id: 'works', label: 'Работы' },
+            { id: 'docs', label: 'Документы' },
+            { id: 'questions', label: 'Вопросы' },
+            { id: 'drawings', label: 'Чертежи' },
+            { id: 'hidden', label: 'Скрытые работы' },
+            { id: 'none', label: 'Без категории' }
+        ];
+        
+        const catIds = categories.map(c => c.id);
+        const currentIdx = catIds.indexOf(state.category);
+        const prevIdx = (currentIdx - 1 + categories.length) % categories.length;
+        const nextIdx = (currentIdx + 1) % categories.length;
+        const prevCat = categories[prevIdx];
+        const currentCat = categories[currentIdx];
+        const nextCat = categories[nextIdx];
+        
+        container.innerHTML = `
+            <div style="padding: 0 20px 20px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <button onclick="window.openTaskDetail(${state.taskId})" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </button>
+                </div>
+                
+                <div style="display: flex; align-items: center; background: var(--bg2); border-radius: 20px; border: 1px solid var(--bg3); overflow: hidden; margin-bottom: 15px;">
+                    <div onclick="window.gallerySwitchCategory('${prevCat.id}')" style="flex: 1; padding: 12px; text-align: center; color: var(--fg-dim); font-size: 13px; cursor: pointer;">${prevCat.label}</div>
+                    <div style="flex: 1; padding: 12px; text-align: center; color: white; background: var(--accent); font-size: 13px; font-weight: bold;">${currentCat.label}</div>
+                    <div onclick="window.gallerySwitchCategory('${nextCat.id}')" style="flex: 1; padding: 12px; text-align: center; color: var(--fg-dim); font-size: 13px; cursor: pointer;">${nextCat.label}</div>
+                </div>
+                
+                <div style="text-align: center; padding: 60px 20px; color: var(--fg-dim); font-size: 16px; background: var(--bg2); border-radius: 12px; border: 1px dashed var(--bg3); margin-bottom: 15px;">
+                    Нет фото
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <input type="file" id="task-photo-upload" accept="image/*" style="display: none;" onchange="window.uploadTaskPhoto(${state.taskId}, this)">
+                    <button type="button" onclick="document.getElementById('task-photo-upload').click()" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                        Добавить
+                    </button>
+                    <button type="button" onclick="window.openCameraModal()" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                        Сфотографировать
+                    </button>
+                </div>
+            </div>
+        `;
+        return;
+    }
 
     const categories = [
         { id: 'works', label: 'Работы' },
