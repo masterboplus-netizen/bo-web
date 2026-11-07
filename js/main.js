@@ -1,5 +1,6 @@
 import { renderDiary } from './screens/diary.js';
 import { renderNotepad } from './screens/notepad.js';
+import { renderFinance } from './screens/finance.js';
 import { renderCalendar } from './screens/calendar.js';
 import { renderObjects } from './screens/objects.js';
 import { initFloatingMenu, renderCapsule, CAPSULE_ITEMS } from './ui/floating_menu.js';
@@ -86,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => { const savedScreen = localS
 window.openCalendar = function() { saveCurrentScreen('calendar'); renderCalendar(); };
 window.openDiary = function() { saveCurrentScreen('diary'); renderDiary(); };
 window.openNotepad = function() { saveCurrentScreen('notepad'); renderNotepad(); };
+window.openFinance = function() { saveCurrentScreen('finance'); renderFinance(); };
 window.setNavActive = setNavActive;
 window.setNavActive = setNavActive;
 
@@ -126,7 +128,7 @@ window.openMenu = function() { setNavActive('menu');
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     <span style="color: var(--fg); font-size: 10px; text-align: center;">CRM</span>
                 </div>
-                <div onclick="window.showStub('Финансы', 'finance')" style="background: var(--bg2); border-radius: 12px; border: 1px solid var(--bg3); padding: 12px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                <div onclick="window.openFinance()" style="background: var(--bg2); border-radius: 12px; border: 1px solid var(--bg3); padding: 12px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                     <span style="color: var(--fg); font-size: 10px; text-align: center;">Финансы</span>
                 </div>
