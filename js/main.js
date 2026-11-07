@@ -268,6 +268,11 @@ window.openWidgetSettings = function() {
                 alert('Максимум 6 кнопок в настройках (плюс Меню = 7 в виджете).');
                 return;
             }
+            // Проверка на МИНИМУМ (должно быть включено хотя бы 2 в настройках + Меню = 3 в виджете)
+            if (isCurrentlyActive && activeCount <= 2) {
+                alert('Минимум 3 кнопки в виджете (Меню + хотя бы две).');
+                return;
+            }
 
             if (existing) {
                 existing.enabled = !existing.enabled;
