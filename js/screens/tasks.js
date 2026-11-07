@@ -199,14 +199,15 @@ export async function saveNewTask() {
 }
 
 window.deleteTask = async function(id) {
-    if (!confirm('Удалить задачу?')) return;
-    try {
-        const { error } = await db.from('tasks').delete().eq('id', id);
-        if (error) throw error;
-        window.openTasks();
-    } catch (err) {
-        alert('Ошибка удаления: ' + err.message);
-    }
+    window.showConfirm('Удалить задачу?', async () => {
+        try {
+            const { error } = await db.from('tasks').delete().eq('id', id);
+            if (error) throw error;
+            window.openTasks();
+        } catch (err) {
+            alert('Ошибка удаления: ' + err.message);
+        }
+    });
 };
 
 

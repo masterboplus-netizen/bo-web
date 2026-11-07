@@ -149,13 +149,14 @@ window.saveObjectChanges = async function(id) {
 
 // === УДАЛЕНИЕ ===
 window.deleteObjectById = async function(id) {
-    if (!confirm('Удалить этот объект? Все его данные будут потеряны.')) return;
-    try {
-        await deleteObject(id);
-        window.openObjects();
-    } catch (err) {
-        alert('Ошибка удаления: ' + err.message);
-    }
+    window.showConfirm('Удалить этот объект? Все его данные будут потеряны.', async () => {
+        try {
+            await deleteObject(id);
+            window.openObjects();
+        } catch (err) {
+            alert('Ошибка удаления: ' + err.message);
+        }
+    });
 };
 
 window.openObject = openObject;
