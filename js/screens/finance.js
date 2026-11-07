@@ -328,3 +328,87 @@ window.deleteFinanceInline = function(id) {
         }
     });
 };
+
+// === МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ОПЕРАЦИИ ===
+window.openEditFinanceInline = function(id, amount, desc) {
+    const oldModal = document.getElementById('edit-finance-modal');
+    if (oldModal) oldModal.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'edit-finance-modal';
+    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease;';
+
+    const modal = document.createElement('div');
+    modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 24px; max-width: 400px; width: 100%; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.2s ease;';
+
+    modal.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; color: var(--fg); font-size: 18px;">Редактировать операцию</h3>
+            <button id="close-edit-fin" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Сумма (₽)</label>
+            <input type="number" id="edit-fin-amount" value="${amount}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; font-size: 18px;">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Описание</label>
+            <textarea id="edit-fin-desc" rows="3" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; resize: vertical;">${desc}</textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button onclick="window.saveFinanceInline(${id})" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;">Сохранить</button>
+            <button onclick="window.deleteFinanceInline(${id})" style="padding: 14px 20px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer;">Удалить</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+        modal.style.transform = 'scale(1)';
+    }, 10);
+
+    function closeModal() {
+        overlay.style.opacity = '0';
+        modal.style.transform = 'scale(0.95)';
+        setTimeout(() => overlay.remove(), 200);
+    }
+
+    document.getElementById('close-edit-fin').onclick = closeModal;
+    overlay.onclick = (e) => {
+        if (e.target === overlay) closeModal();
+    };
+};
+
+window.saveFinanceInline = async function(id) {
+    const amount = document.getElementById('edit-fin-amount').value;
+    const desc = document.getElementById('edit-fin-desc').value.trim();
+
+    if (!amount || Number(amount) <= 0) return alert('Введите корректную сумму!');
+
+    try {
+        const { error } = await db.from('finance').update({
+            amount: Number(amount),
+            description: desc || null
+        }).eq('id', id);
+
+        if (error) throw error;
+        
+        // Закрываем модалку
+        const overlay = document.getElementById('edit-finance-modal');
+        if (overlay) {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 200);
+        }
+        
+        // Перезагружаем таблицу
+        renderCashFlow();
+    } catch (err) {
+        alert('Ошибка сохранения: ' + err.message);
+    }
+};
