@@ -76,7 +76,7 @@ export async function renderPhotos() {
             { id: 'none', label: 'Без категории' }
         ];
 
-        html += '<div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none;">';
+        html += '<div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; -webkit-overflow-scrolling: touch;">';
         filters.forEach(f => {
             const isActive = filter === f.id;
             html += `<div onclick="window.setGalleryFilter('${f.id}')" style="flex-shrink: 0; padding: 8px 14px; border-radius: 16px; border: 1px solid var(--bg3); background: ${isActive ? 'var(--accent)' : 'var(--bg2)'}; color: ${isActive ? 'white' : 'var(--fg)'}; font-size: 13px; cursor: pointer; white-space: nowrap;">${f.label}</div>`;
