@@ -36,7 +36,7 @@ export async function openObject(objectId) {
                     </button>
                 </div>
 
-                <div style="background: var(--bg2); border-radius: 16px; padding: 20px; margin-bottom: 20px; width: 100%; box-sizing: border-box;">
+                <div style="background: var(--bg2); border-radius: 16px; padding: 20px; margin-bottom: 20px; width: 100%; box-sizing: border-box; border: 1px solid var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
                     <div style="margin-bottom: 15px;">
                         <h2 style="margin: 0; font-size: 22px; color: var(--fg);">${escapeHtml(obj.name)}</h2>
                         <span class="badge" style="background: ${statusColor}; margin-top: 8px; display: inline-block;">${statusText}</span>
