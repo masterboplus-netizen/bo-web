@@ -261,7 +261,7 @@ function renderGallery() {
                 </button>
             </div>
 
-            <div style="background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 12px 15px; margin-bottom: 10px;">
+            <div onclick="window.openEditPhotoTitle(${currentPhoto.id}, '${escapeHtml(currentPhoto.title || '')}')" style="background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 12px 15px; margin-bottom: 10px; cursor: pointer;">
                 <div style="color: var(--fg-dim); font-size: 11px; margin-bottom: 3px;">Название</div>
                 <div style="color: var(--fg); font-size: 15px; font-weight: 500;">${escapeHtml(currentPhoto.title || 'Без названия')}</div>
             </div>
