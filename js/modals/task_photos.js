@@ -149,6 +149,9 @@ window.openPhotoGallery = async function(taskId, category, photoId) {
             currentIndex: 0
         };
 
+        const container = document.getElementById('app-content');
+        if (container) container.scrollTop = 0;
+        
         renderGallery();
     } catch (err) {
         alert('Ошибка загрузки галереи: ' + err.message);
@@ -298,7 +301,7 @@ function renderGallery() {
             ${capsuleHtml}
         </div>
     `;
-    window.scrollTo(0, 0);
+    container.scrollTop = 0;
 }
 
 window.galleryPrev = function() {
