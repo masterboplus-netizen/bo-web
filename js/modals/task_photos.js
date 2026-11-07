@@ -217,26 +217,28 @@ function renderGallery() {
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <button onclick="window.galleryPrev()" style="flex: 1; margin-right: 10px; padding: 14px; background: var(--bg2); color: var(--fg); border: 1px solid var(--bg3); border-radius: 12px; font-size: 16px; cursor: pointer; ${state.currentIndex === 0 ? 'opacity: 0.5;' : ''}" ${state.currentIndex === 0 ? 'disabled' : ''}>← Назад</button>
+                <button onclick="window.galleryPrev()" style="flex: 1; margin-right: 10px; padding: 14px; background: var(--bg2); color: var(--fg); border: 1px solid var(--bg3); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </button>
                 <div style="color: var(--fg-dim); font-size: 14px; margin: 0 15px;">${state.currentIndex + 1} / ${state.photos.length}</div>
-                <button onclick="window.galleryNext()" style="flex: 1; margin-left: 10px; padding: 14px; background: var(--bg2); color: var(--fg); border: 1px solid var(--bg3); border-radius: 12px; font-size: 16px; cursor: pointer; ${state.currentIndex === state.photos.length - 1 ? 'opacity: 0.5;' : ''}" ${state.currentIndex === state.photos.length - 1 ? 'disabled' : ''}>Вперед →</button>
+                <button onclick="window.galleryNext()" style="flex: 1; margin-left: 10px; padding: 14px; background: var(--bg2); color: var(--fg); border: 1px solid var(--bg3); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
             </div>
         </div>
     `;
 }
 
 window.galleryPrev = function() {
-    if (window._galleryState.currentIndex > 0) {
-        window._galleryState.currentIndex--;
-        renderGallery();
-    }
+    const state = window._galleryState;
+    state.currentIndex = (state.currentIndex - 1 + state.photos.length) % state.photos.length;
+    renderGallery();
 };
 
 window.galleryNext = function() {
-    if (window._galleryState.currentIndex < window._galleryState.photos.length - 1) {
-        window._galleryState.currentIndex++;
-        renderGallery();
-    }
+    const state = window._galleryState;
+    state.currentIndex = (state.currentIndex + 1) % state.photos.length;
+    renderGallery();
 };
 
 window.gallerySwitchCategory = async function(catId) {
