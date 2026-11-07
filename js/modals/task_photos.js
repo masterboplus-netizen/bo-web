@@ -258,12 +258,18 @@ function renderGallery() {
                 </button>
             </div>
 
-            <div style="color: var(--fg); font-size: 14px; margin-bottom: 10px;">${escapeHtml(currentPhoto.title || 'Фото')}</div>
+            <div style="background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 12px 15px; margin-bottom: 10px;">
+                <div style="color: var(--fg-dim); font-size: 11px; margin-bottom: 3px;">Название</div>
+                <div style="color: var(--fg); font-size: 15px; font-weight: 500;">${escapeHtml(currentPhoto.title || 'Без названия')}</div>
+            </div>
 
-            <button onclick="window.galleryMovePhoto(${currentPhoto.id})" style="width: 100%; padding: 12px; background: var(--bg2); color: var(--fg); border: 1px solid var(--bg3); border-radius: 12px; font-size: 14px; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-                Раздел: ${currentCat.label}
-            </button>
+            <div onclick="window.galleryMovePhoto(${currentPhoto.id})" style="background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 12px 15px; margin-bottom: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="color: var(--fg-dim); font-size: 11px; margin-bottom: 3px;">Раздел</div>
+                    <div style="color: var(--fg); font-size: 15px; font-weight: 500;">${currentCat.label}</div>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--fg-dim)" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            </div>
 
             <div style="position: relative; width: 100%; height: 60vh; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
                 <img src="${currentPhoto.photo_url}" style="width: 100%; height: 100%; object-fit: contain; display: block;">
