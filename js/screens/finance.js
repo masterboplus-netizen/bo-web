@@ -224,7 +224,12 @@ window.openAddFinance = async function() {
 
     container.innerHTML = `
         <div style="padding: 20px; max-width: 500px; margin: 0 auto;">
-            <button onclick="window.openFinance()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; margin-bottom: 15px; font-size: 14px;">← Назад</button>
+            <button onclick="window.openFinance()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 8px; font-size: 15px; margin-bottom: 15px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                        </button>
             <h2 style="color: var(--fg); margin-bottom: 20px;">Новая операция</h2>
 
             <div style="display: flex; flex-direction: column; gap: 15px;">

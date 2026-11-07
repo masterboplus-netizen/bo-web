@@ -47,7 +47,12 @@ export async function openObject(objectId) {
                 </div>
 
                 <button onclick="window.saveObjectChanges(${obj.id})" style="width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">Сохранить</button>
-                <button onclick="window.openObjects()" style="width: 100%; padding: 14px; background: transparent; color: var(--fg-dim); border: none; font-size: 14px; cursor: pointer;">← Назад к списку</button>
+                <button onclick="window.openObjects()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 8px; font-size: 15px; margin-bottom: 15px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                        </button>
             </div>
         `;
         document.getElementById('app-content').innerHTML = html;
