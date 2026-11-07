@@ -90,64 +90,42 @@ window.openObjectActions = function(id, name) {
     }, 10);
 };
 
-// === РЕДАКТИРОВАНИЕ (ШТОРКА) ===
+// === РЕДАКТИРОВАНИЕ (ОТДЕЛЬНЫЙ ЭКРАН) ===
 window.openEditObject = async function(id) {
+    const container = document.getElementById('app-content');
+    container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка...</div>';
+
     try {
         const obj = await fetchObject(id);
-        if (!obj) return;
+        if (!obj) throw new Error('Объект не найден');
 
-        const overlay = document.createElement('div');
-        overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; opacity: 0; transition: opacity 0.3s ease;';
-        
-        const sheet = document.createElement('div');
-        sheet.style.cssText = 'position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg2); border-radius: 24px 24px 0 0; z-index: 99999; padding: 24px 16px 32px 16px; box-sizing: border-box; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--border); max-width: 600px; margin: 0 auto;';
-        
-        sheet.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h3 style="margin: 0; color: var(--fg);">Редактировать объект</h3>
-                <button id="close-edit-obj" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        container.innerHTML = `
+            <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
+                <button onclick="window.openObject(${id})" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 8px; font-size: 15px; margin-bottom: 15px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
                 </button>
-            </div>
+                <h2 style="color: var(--fg); margin-bottom: 20px;">Редактирование объекта</h2>
 
-            <div>
-                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Название</label>
-                <input type="text" id="edit-obj-name" value="${escapeHtml(obj.name)}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; font-size: 16px;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Название</label>
+                        <input type="text" id="edit-obj-name" value="${escapeHtml(obj.name)}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; font-size: 16px;">
+                    </div>
+                    <div>
+                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Адрес</label>
+                        <input type="text" id="edit-obj-address" value="${escapeHtml(obj.address || '')}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Бюджет (₽)</label>
+                        <input type="number" id="edit-obj-budget" value="${obj.budget || 0}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    </div>
+                    <button onclick="window.saveObjectChanges(${id})" style="width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;">Сохранить</button>
+                </div>
             </div>
-
-            <div>
-                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Адрес</label>
-                <input type="text" id="edit-obj-address" value="${escapeHtml(obj.address || '')}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-            </div>
-
-            <div>
-                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Бюджет (₽)</label>
-                <input type="number" id="edit-obj-budget" value="${obj.budget || 0}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-            </div>
-
-            <button onclick="window.saveObjectChanges(${id})" style="width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;">Сохранить</button>
         `;
-        
-        document.body.appendChild(overlay);
-        document.body.appendChild(sheet);
-
-        setTimeout(() => {
-            overlay.style.opacity = '1';
-            sheet.style.transform = 'translateY(0)';
-        }, 10);
-
-        function closeEdit() {
-            overlay.style.opacity = '0';
-            sheet.style.transform = 'translateY(100%)';
-            setTimeout(() => {
-                overlay.remove();
-                sheet.remove();
-            }, 300);
-        }
-
-        overlay.onclick = closeEdit;
-        document.getElementById('close-edit-obj').onclick = closeEdit;
-
     } catch (err) {
         alert('Ошибка: ' + err.message);
     }
