@@ -464,3 +464,63 @@ window.galleryReplacePhoto = function(photoId) {
     };
     input.click();
 };
+
+// === ПРИВЯЗКА ФОТО К ЗАДАЧЕ ===
+window.openLinkPhotoModal = async function(photoId) {
+    // Загружаем список задач
+    const { data: tasks, error } = await db.from('tasks').select('id, title').order('created_at', { ascending: false });
+    if (error) { alert('Ошибка загрузки задач'); return; }
+
+    // Загружаем текущую привязку
+    const { data: links } = await db.from('photo_links').select('*').eq('photo_id', photoId).eq('link_type', 'task');
+    const currentTaskId = links && links.length > 0 ? links[0].link_id : null;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'link-photo-overlay';
+    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box;';
+
+    const modal = document.createElement('div');
+    modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 16px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); box-sizing: border-box;';
+
+    let listHtml = '';
+    tasks.forEach(t => {
+        const isSelected = t.id === currentTaskId;
+        listHtml += '<div onclick="window.setPhotoLink(' + photoId + ', ' + (isSelected ? 'null' : t.id) + ')" style="padding: 12px; border-radius: 8px; margin-bottom: 8px; background: ' + (isSelected ? 'var(--accent)' : 'var(--bg3)') + '; color: ' + (isSelected ? 'white' : 'var(--fg)') + '; cursor: pointer; font-size: 14px;">' + escapeHtml(t.title) + (isSelected ? ' (текущая)' : '') + '</div>';
+    });
+
+    modal.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0; color: var(--fg); font-size: 16px;">Привязать к задаче</h3>
+            <button id="close-link-photo" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">✕</button>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+            ${listHtml}
+        </div>
+        <button onclick="window.setPhotoLink(${photoId}, null)" style="width: 100%; padding: 12px; background: var(--bg3); color: #ff3b30; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px;">Отвязать</button>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    document.getElementById('close-link-photo').onclick = () => overlay.remove();
+    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+};
+
+window.setPhotoLink = async function(photoId, taskId) {
+    try {
+        // Удаляем старые связи
+        await db.from('photo_links').delete().eq('photo_id', photoId).eq('link_type', 'task');
+
+        // Если выбрана задача, создаем новую связь
+        if (taskId) {
+            await db.from('photo_links').insert([{ photo_id: photoId, link_type: 'task', link_id: taskId }]);
+        }
+
+        const overlay = document.getElementById('link-photo-overlay');
+        if (overlay) overlay.remove();
+
+        renderGallery();
+    } catch (err) {
+        alert('Ошибка: ' + err.message);
+    }
+};
