@@ -9,7 +9,7 @@ export function openAddMenu() {
 
   const sheet = document.createElement('div');
   sheet.id = 'add-menu-sheet';
-  sheet.style.cssText = 'position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg2); border-radius: 24px 24px 0 0; z-index: 99999; padding: 24px 16px 32px 16px; box-sizing: border-box; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--border);';
+  sheet.style.cssText = 'position: fixed; bottom: 0; left: 0; width: 100%; max-height: 80vh; overflow-y: auto; background: var(--bg2); border-radius: 24px 24px 0 0; z-index: 99999; padding: 24px 16px 32px 16px; box-sizing: border-box; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--border);';
 
   const grid = document.createElement('div');
   grid.style.cssText = 'display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;';
