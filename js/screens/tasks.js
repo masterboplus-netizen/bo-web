@@ -570,12 +570,9 @@ window.openEditTask = async function(id) { localStorage.setItem('currentTaskId',
                     </div>
 
                     <!-- КНОПКИ ДЕЙСТВИЙ -->
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button onclick="window.saveTaskChanges(${task.id})" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                    <div style="margin-top: 10px;">
+                        <button onclick="window.saveTaskChanges(${task.id})" style="width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;">
                             Сохранить
-                        </button>
-                        <button onclick="window.deleteTask(${task.id})" style="padding: 14px 20px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer;">
-                            Удалить
                         </button>
                     </div>
                 </div>
