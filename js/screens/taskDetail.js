@@ -43,6 +43,9 @@ export async function openTaskDetail(id) {
         let ribbonsHtml = '';
         categories.forEach(cat => {
             const catPhotos = (photos || []).filter(p => (p.category || 'none') === cat.id);
+
+            // Пропускаем категории без фото
+            if (catPhotos.length === 0) return;
             const previewPhotos = catPhotos.slice(0, 3);
             const moreCount = catPhotos.length - 3;
 
