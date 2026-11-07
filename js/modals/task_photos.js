@@ -58,7 +58,7 @@ window.openCategoryPicker = function(callback) {
 
     modal.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">' +
         '<h3 style="margin: 0; color: var(--fg); font-size: 16px;">В какую категорию добавить?</h3>' +
-        '<button id="close-cat-picker" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>' +
+        '' +
         '</div>' +
         '<div id="cat-buttons-container">' + buttonsHtml + '</div>' +
         '<div style="display: flex; gap: 10px; margin-top: 15px;">' +
