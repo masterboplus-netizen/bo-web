@@ -392,6 +392,7 @@ window.galleryDeletePhoto = function(photoId) {
                     window._galleryState.photos = catPhotos;
                     window._galleryState.currentIndex = Math.min(state.currentIndex, catPhotos.length - 1);
                     renderGallery();
+            setTimeout(() => window.openTaskDetail(state.taskId), 500);
                 }
             }
         } catch (err) {
@@ -429,6 +430,7 @@ window.galleryMovePhoto = function(photoId) {
                     currentIndex: 0
                 };
                 renderGallery();
+            setTimeout(() => window.openTaskDetail(state.taskId), 500);
             }
         } catch (err) {
             alert('Ошибка перемещения: ' + err.message);
@@ -455,6 +457,7 @@ window.galleryReplacePhoto = function(photoId) {
             const updatedPhotos = state.photos.map(p => p.id === photoId ? { ...p, photo_url: urlData.publicUrl } : p);
             window._galleryState.photos = updatedPhotos;
             renderGallery();
+            setTimeout(() => window.openTaskDetail(state.taskId), 500);
         } catch (err) {
             alert('Ошибка замены: ' + err.message);
         }
