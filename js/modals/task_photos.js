@@ -216,6 +216,15 @@ function renderGallery() {
                 <img src="${currentPhoto.photo_url}" style="width: 100%; height: 100%; object-fit: contain; display: block;">
             </div>
 
+            <!-- Лента миниатюр -->
+            <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none;">
+                ${state.photos.map((p, idx) => `
+                    <div onclick="window.galleryJumpTo(${idx})" style="flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid ${idx === state.currentIndex ? 'var(--accent)' : 'transparent'}; opacity: ${idx === state.currentIndex ? '1' : '0.6'}; transition: all 0.2s;">
+                        <img src="${p.photo_url}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                    </div>
+                `).join('')}
+            </div>
+
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <button onclick="window.galleryPrev()" style="flex: 1; margin-right: 10px; padding: 14px; background: var(--bg2); color: var(--fg); border: 1px solid var(--bg3); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
