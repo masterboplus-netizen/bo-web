@@ -38,7 +38,7 @@ window.openCategoryPicker = function(callback) {
     overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease;';
 
     const modal = document.createElement('div');
-    modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 16px; max-width: 340px; width: 100%; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.2s ease;';
+    modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 16px; width: calc(100vw - 40px); max-width: 400px; max-height: 85vh; overflow-y: auto; box-sizing: border-box; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.2s ease;';
 
     let selectedCategory = 'none';
 
