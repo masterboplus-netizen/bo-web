@@ -110,6 +110,7 @@ export async function openTaskDetail(id) {
 
                     <!-- ФОТОГРАФИИ (ЛЕНТЫ) -->
                     <div>
+                        <h3 style="color: var(--fg); margin: 0 0 10px 0; font-size: 18px;">Фотолента</h3>
                         ${ribbonsHtml}
                         <div style="display: flex; gap: 10px; margin-top: 10px;">
                             <input type="file" id="task-photo-upload" accept="image/*" style="display: none;" onchange="window.uploadTaskPhoto(${task.id}, this)">
