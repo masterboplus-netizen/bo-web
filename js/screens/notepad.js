@@ -16,7 +16,7 @@ export async function renderNotepad() {
         if (error) throw error;
 
         let html = `
-            <div style="padding: 15px; max-width: 600px; margin: 0 auto; padding-bottom: 80px;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 0 15px 80px 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: var(--fg); margin: 0;">Блокнот</h2>
                     <button onclick="window.openNewNote()" style="background: var(--accent); color: white; border: none; border-radius: 20px; padding: 8px 16px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
@@ -78,7 +78,7 @@ window.openNote = async function(id) {
         if (error) throw error;
 
         container.innerHTML = `
-            <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px; display: flex; flex-direction: column; height: 100%;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 0 15px 80px 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--bg3); padding-bottom: 15px;">
                     <button onclick="window.openNotepad()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; font-size: 15px; display: flex; align-items: center; gap: 5px;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Назад

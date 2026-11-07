@@ -29,7 +29,7 @@ export async function renderFinance() {
     const balanceSign = totalBalance > 0 ? '+' : '';
 
     container.innerHTML = `
-        <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 80px;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 0 15px 80px 15px;">
             <h2 style="color: var(--fg); margin-bottom: 20px;">Финансы</h2>
 
             <!-- Капсула баланса -->
@@ -119,7 +119,7 @@ export async function renderCashFlow() {
 
         // Формируем HTML
         let html = `
-            <div style="padding: 15px; max-width: 600px; margin: 0 auto; padding-bottom: 80px;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 0 15px 80px 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: var(--fg); margin: 0;">Финансы</h2>
                     <button onclick="window.openAddFinance()" style="background: var(--accent); color: white; border: none; border-radius: 20px; padding: 8px 16px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
