@@ -234,14 +234,14 @@ function renderGallery() {
     const nextCat = categories[nextIdx];
 
     capsuleHtml = `
-        <div style="display: flex; align-items: center; background: var(--bg2); border-radius: 20px; border: 1px solid var(--bg3); overflow: hidden; margin-bottom: 15px;">
-            <div onclick="window.gallerySwitchCategory('${prevCat.id}')" style="flex: 1; padding: 12px; text-align: center; color: var(--fg-dim); font-size: 13px; cursor: pointer; transition: background 0.2s;">
+        <div style="display: flex; align-items: stretch; background: var(--bg2); border-radius: 20px; border: 1px solid var(--bg3); overflow: hidden; margin-bottom: 15px; height: 50px;">
+            <div onclick="window.gallerySwitchCategory('${prevCat.id}')" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 8px; text-align: center; color: var(--fg-dim); font-size: 12px; cursor: pointer; line-height: 1.2; overflow: hidden;">
                 ${prevCat.label}
             </div>
-            <div style="flex: 1; padding: 12px; text-align: center; color: white; background: var(--accent); font-size: 13px; font-weight: bold;">
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 8px; text-align: center; color: white; background: var(--accent); font-size: 12px; font-weight: bold; line-height: 1.2; overflow: hidden;">
                 ${currentCat.label}
             </div>
-            <div onclick="window.gallerySwitchCategory('${nextCat.id}')" style="flex: 1; padding: 12px; text-align: center; color: var(--fg-dim); font-size: 13px; cursor: pointer; transition: background 0.2s;">
+            <div onclick="window.gallerySwitchCategory('${nextCat.id}')" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 8px; text-align: center; color: var(--fg-dim); font-size: 12px; cursor: pointer; line-height: 1.2; overflow: hidden;">
                 ${nextCat.label}
             </div>
         </div>
