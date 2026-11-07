@@ -307,9 +307,7 @@ window.openTaskDetail = async function(id) {
                     <div style="margin-top: 10px; border-top: 1px solid var(--bg3); padding-top: 15px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                             <h3 style="color: var(--fg); margin: 0; font-size: 18px;">Дневник работ</h3>
-                            <button onclick="window.addTaskLog(${task.id})" style="background: var(--accent); color: white; border: none; border-radius: 20px; padding: 8px 16px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                                🎤 Записать
-                            </button>
+                            
                         </div>
                         <div id="task-logs-container-${task.id}">
                             ${logs && logs.length > 0 ? logs.map(function(log) { 
@@ -551,9 +549,7 @@ window.openEditTask = async function(id) { localStorage.setItem('currentTaskId',
                     <div style="margin-top: 10px; border-top: 1px solid var(--bg3); padding-top: 15px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                             <h3 style="color: var(--fg); margin: 0; font-size: 18px;">Дневник работ</h3>
-                            <button onclick="window.addTaskLog(${task.id})" style="background: var(--accent); color: white; border: none; border-radius: 20px; padding: 8px 16px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                                🎤 Записать
-                            </button>
+                            
                         </div>
                         <div id="task-logs-container-${task.id}">
                             ${logs && logs.length > 0 ? logs.map(function(log) { 
