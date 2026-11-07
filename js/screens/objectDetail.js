@@ -199,7 +199,7 @@ window.openEditAddress = async function(id) {
 
             <div style="display: flex; gap: 10px;">
                 <button onclick="window.saveAddress(${id})" style="flex: 1; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">Сохранить</button>
-                <button onclick="document.getElementById('address-modal-overlay').remove()" style="flex: 1; padding: 12px; background: var(--bg3); color: var(--fg); border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">Отмена</button>
+                <button id="cancel-address" style="flex: 1; padding: 12px; background: var(--bg3); color: var(--fg); border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">Отмена</button>
             </div>
         `;
 
@@ -212,6 +212,7 @@ window.openEditAddress = async function(id) {
         }, 10);
 
         document.getElementById('close-address').onclick = () => overlay.remove();
+        document.getElementById('cancel-address').onclick = () => overlay.remove();
         overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
     } catch (err) {
