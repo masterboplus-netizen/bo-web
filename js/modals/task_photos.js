@@ -262,7 +262,7 @@ function renderGallery() {
 
             <button onclick="window.galleryMovePhoto(${currentPhoto.id})" style="width: 100%; padding: 12px; background: var(--bg2); color: var(--fg); border: 1px solid var(--bg3); border-radius: 12px; font-size: 14px; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-                Переместить в раздел
+                Раздел: ${currentCat.label}
             </button>
 
             <div style="position: relative; width: 100%; height: 60vh; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
