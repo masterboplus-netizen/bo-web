@@ -164,7 +164,8 @@ window.openEditDiaryEntry = async function(id) {
                     </svg>
                 </button>
 
-                <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="background: var(--bg2); border-radius: 16px; padding: 20px; border: 1px solid var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
                     <div>
                         <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Задача</label>
                         <select id="diary-task-id" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
@@ -190,7 +191,8 @@ window.openEditDiaryEntry = async function(id) {
                         <input type="text" id="diary-unit" value="${escapeHtml(log.unit || '')}" placeholder="ряды, м2, шт" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
                     </div>
 
-                    <button onclick="window.saveDiaryEntry(${id})" style="width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;">Сохранить</button>
+                    </div>
+                    <button onclick="window.saveDiaryEntry(${id})" style="width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px;">Сохранить</button>
                 </div>
             </div>
         `;
@@ -260,7 +262,8 @@ window.openAddDiaryEntry = async function() {
                     </svg>
                 </button>
 
-                <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="background: var(--bg2); border-radius: 16px; padding: 20px; border: 1px solid var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
                     <div>
                         <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Задача</label>
                         <select id="diary-task-id" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
