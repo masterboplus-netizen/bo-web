@@ -194,6 +194,9 @@ window.openEditTaskModal = async function(id) {
         setTimeout(() => {
             overlay.style.opacity = '1';
             modal.style.transform = 'scale(1)';
+            if (field === 'deadline') {
+                window.renderModalCalendar(currentValue);
+            }
         }, 10);
 
         function close() {
@@ -256,20 +259,8 @@ window.openEditField = async function(field, currentValue, taskId) {
     } else if (field === 'deadline') {
         fieldLabel = 'Плановый срок';
         fieldHtml = `
-            <div style="display: flex; background: var(--bg3); border-radius: 10px; padding: 2px; margin-bottom: 15px;">
-                <button onclick="window.toggleModalDeadline('single')" id="modal-btn-single" style="flex: 1; padding: 8px; border-radius: 8px; border: none; background: var(--accent); color: white; font-size: 13px; cursor: pointer;">Одна дата</button>
-                <button onclick="window.toggleModalDeadline('range')" id="modal-btn-range" style="flex: 1; padding: 8px; border-radius: 8px; border: none; background: transparent; color: var(--fg-dim); font-size: 13px; cursor: pointer;">Диапазон</button>
-            </div>
-            <div id="modal-deadline-single">
-                <input type="date" id="modal-field-input" value="` + currentValue + `" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-            </div>
-            <div id="modal-deadline-range" style="display: none;">
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <input type="date" id="modal-field-input-start" value="` + currentValue + `" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <span style="color: var(--fg-dim);">—</span>
-                    <input type="date" id="modal-field-input-end" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                </div>
-            </div>
+            <div id="modal-calendar-container" style="margin-bottom: 15px;"></div>
+            <input type="hidden" id="modal-field-input" value="` + currentValue + `">
             <div style="display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap;">
                 <button onclick="window.setModalQuickDate('today')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Сегодня</button>
                 <button onclick="window.setModalQuickDate('tomorrow')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Завтра</button>
@@ -337,4 +328,73 @@ window.saveEditField = async function(field, taskId) {
     } catch (err) {
         alert('Ошибка сохранения: ' + err.message);
     }
+};
+
+// === КАСТОМНЫЙ КАЛЕНДАРЬ В МОДАЛКЕ ===
+window._modalCalYear = new Date().getFullYear();
+window._modalCalMonth = new Date().getMonth();
+window._modalCalSelected = null;
+
+window.renderModalCalendar = function(selectedDate) {
+    if (selectedDate) {
+        const d = new Date(selectedDate);
+        if (!isNaN(d)) {
+            window._modalCalYear = d.getFullYear();
+            window._modalCalMonth = d.getMonth();
+            window._modalCalSelected = selectedDate;
+        }
+    }
+
+    const container = document.getElementById('modal-calendar-container');
+    if (!container) return;
+
+    const year = window._modalCalYear;
+    const month = window._modalCalMonth;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+    const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+
+    let html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <button onclick="window.changeModalMonth(-1)" style="background: transparent; border: none; color: var(--fg); font-size: 20px; cursor: pointer; padding: 5px 10px;">&lt;</button>
+            <span style="color: var(--fg); font-weight: bold; font-size: 15px;">${monthNames[month]} ${year}</span>
+            <button onclick="window.changeModalMonth(1)" style="background: transparent; border: none; color: var(--fg); font-size: 20px; cursor: pointer; padding: 5px 10px;">&gt;</button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 11px; color: var(--fg-dim); margin-bottom: 5px;">
+            <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
+    `;
+
+    for (let i = 0; i < startDay; i++) html += `<div></div>`;
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isSelected = dateStr === window._modalCalSelected;
+        const isToday = dateStr === new Date().toISOString().split('T')[0];
+
+        let bg = 'transparent';
+        let color = 'var(--fg)';
+        if (isSelected) { bg = 'var(--accent)'; color = 'white'; }
+        else if (isToday) { bg = 'var(--bg3)'; }
+
+        html += `<div onclick="window.selectModalDate('${dateStr}')" style="padding: 8px 0; border-radius: 50%; background: ${bg}; color: ${color}; cursor: pointer; font-size: 13px; text-align: center;">${day}</div>`;
+    }
+
+    html += `</div>`;
+    container.innerHTML = html;
+};
+
+window.changeModalMonth = function(delta) {
+    window._modalCalMonth += delta;
+    if (window._modalCalMonth < 0) { window._modalCalMonth = 11; window._modalCalYear--; }
+    if (window._modalCalMonth > 11) { window._modalCalMonth = 0; window._modalCalYear++; }
+    window.renderModalCalendar();
+};
+
+window.selectModalDate = function(dateStr) {
+    window._modalCalSelected = dateStr;
+    document.getElementById('modal-field-input').value = dateStr;
+    window.renderModalCalendar();
 };
