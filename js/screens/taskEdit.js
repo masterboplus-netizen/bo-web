@@ -131,3 +131,110 @@ window.saveTaskChanges = async function(id) {
 };
 
 window.openEditTask = openEditTask;
+
+// === МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ЗАДАЧИ ===
+window.openEditTaskModal = async function(id) {
+    try {
+        const { data: task, error } = await db.from('tasks').select('*').eq('id', id).single();
+        if (error) throw error;
+
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease;';
+
+        const modal = document.createElement('div');
+        modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 20px; max-width: 400px; width: 100%; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.2s ease; max-height: 80vh; overflow-y: auto;';
+
+        modal.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: var(--fg); font-size: 18px;">Редактировать задачу</h3>
+                <button id="close-edit-task" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Название</label>
+                <input type="text" id="modal-task-title" value="${escapeHtml(task.title || '')}" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Описание</label>
+                <textarea id="modal-task-desc" rows="2" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">${escapeHtml(task.description || '')}</textarea>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Плановый срок</label>
+                <input type="date" id="modal-task-deadline" value="${task.deadline_start || ''}" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                    <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Приоритет</label>
+                    <select id="modal-task-priority" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
+                        <option value="low" ${task.priority === 'low' ? 'selected' : ''}>Низкий</option>
+                        <option value="medium" ${task.priority === 'medium' ? 'selected' : ''}>Средний</option>
+                        <option value="high" ${task.priority === 'high' ? 'selected' : ''}>Высокий</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Статус</label>
+                    <select id="modal-task-status" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">
+                        <option value="active" ${task.status === 'active' ? 'selected' : ''}>В работе</option>
+                        <option value="done" ${task.status === 'done' ? 'selected' : ''}>Выполнена</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="window.saveEditTaskModal(${id})" style="width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 5px;">Сохранить</button>
+        `;
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+            modal.style.transform = 'scale(1)';
+        }, 10);
+
+        function close() {
+            overlay.style.opacity = '0';
+            modal.style.transform = 'scale(0.95)';
+            setTimeout(() => overlay.remove(), 200);
+        }
+
+        document.getElementById('close-edit-task').onclick = close;
+        overlay.onclick = (e) => { if (e.target === overlay) close(); };
+
+    } catch (err) {
+        alert('Ошибка: ' + err.message);
+    }
+};
+
+window.saveEditTaskModal = async function(id) {
+    const title = document.getElementById('modal-task-title').value.trim();
+    const desc = document.getElementById('modal-task-desc').value.trim();
+    const deadline = document.getElementById('modal-task-deadline').value || null;
+    const priority = document.getElementById('modal-task-priority').value;
+    const status = document.getElementById('modal-task-status').value;
+
+    if (!title) return alert('Название не может быть пустым!');
+
+    try {
+        const { error } = await db.from('tasks').update({
+            title: title,
+            description: desc || null,
+            deadline_start: deadline,
+            priority: priority,
+            status: status
+        }).eq('id', id);
+        if (error) throw error;
+
+        // Закрываем модалку
+        const overlay = document.querySelector('div[style*="z-index: 100000"]');
+        if (overlay) overlay.remove();
+
+        window.openTaskDetail(id);
+    } catch (err) {
+        alert('Ошибка сохранения: ' + err.message);
+    }
+};

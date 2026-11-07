@@ -85,7 +85,7 @@ export async function openTaskDetail(id) {
                     </button>
                 </div>
 
-                <div style="background: var(--bg2); border-radius: 16px; padding: 15px; border: 1px solid var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 15px; width: 100%; box-sizing: border-box;">
+                <div onclick="window.openEditTaskModal(${task.id})" style="background: var(--bg2); border-radius: 16px; padding: 15px; border: 1px solid var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 15px; width: 100%; box-sizing: border-box; cursor: pointer;">
                     <div>
                         <h2 style="margin: 0 0 10px 0; color: var(--fg); font-size: 24px;">${escapeHtml(task.title)}</h2>
                         <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">${statusText}</span>
