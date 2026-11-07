@@ -136,11 +136,11 @@ export async function renderCashFlow() {
 
                 <!-- Таблица -->
                 <div style="background: var(--bg2); border-radius: 12px; border: 1px solid var(--bg3); overflow: hidden;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; background: var(--bg3); padding: 10px; font-size: 12px; color: var(--fg-dim); font-weight: bold; text-align: center;">
+                    <div style="display: grid; grid-template-columns: 70px 70px 70px 1fr; background: var(--bg3); padding: 12px 8px; font-size: 11px; color: var(--fg-dim); font-weight: bold; text-align: center; border-bottom: 1px solid var(--border);">
                         <div>ПРИХОД</div>
                         <div>РАСХОД</div>
                         <div>ИТОГ</div>
-                        <div>ОПИСАНИЕ</div>
+                        <div style="text-align: left; padding-left: 5px;">ОПИСАНИЕ</div>
                     </div>
         `;
 
@@ -176,22 +176,22 @@ export async function renderCashFlow() {
                     const expVal = !isIncome ? Number(op.amount).toLocaleString('ru-RU') : '';
                     
                     html += `
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; padding: 10px; font-size: 13px; border-bottom: 1px solid var(--bg3); text-align: center; align-items: center;">
+                        <div style="display: grid; grid-template-columns: 70px 70px 70px 1fr; padding: 12px 8px; font-size: 14px; border-bottom: 1px solid var(--bg3); text-align: center; align-items: center;">
                             <div style="color: #34c759; font-weight: bold;">${incVal}</div>
                             <div style="color: #ff3b30; font-weight: bold;">${expVal}</div>
                             <div></div>
-                            <div style="text-align: left; color: var(--fg); font-size: 12px; line-height: 1.3;">${escapeHtml(op.description || '')}</div>
+                            <div style="text-align: left; color: var(--fg); font-size: 13px; line-height: 1.3; padding-left: 5px;">${escapeHtml(op.description || '')}</div>
                         </div>
                     `;
                 });
 
                 // Итог за день
                 html += `
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; padding: 10px; font-size: 13px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); text-align: center; align-items: center;">
+                    <div style="display: grid; grid-template-columns: 70px 70px 70px 1fr; padding: 12px 8px; font-size: 14px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); text-align: center; align-items: center;">
                         <div></div>
                         <div></div>
-                        <div style="color: ${dayTotalColor}; font-weight: bold; font-size: 14px;">${dayTotal > 0 ? '+' : ''}${dayTotal.toLocaleString('ru-RU')}</div>
-                        <div style="text-align: left; color: var(--fg-dim); font-size: 11px; font-weight: bold;">ИТОГ ЗА ДЕНЬ</div>
+                        <div style="color: ${dayTotalColor}; font-weight: bold; font-size: 15px;">${dayTotal > 0 ? '+' : ''}${dayTotal.toLocaleString('ru-RU')}</div>
+                        <div style="text-align: left; color: var(--fg-dim); font-size: 11px; font-weight: bold; padding-left: 5px;">ИТОГ ЗА ДЕНЬ</div>
                     </div>
                 `;
             }
@@ -292,7 +292,7 @@ window.saveFinance = async function() {
         }]);
 
         if (error) throw error;
-        window.openFinance();
+        window.openCashFlow();
     } catch (err) {
         alert('Ошибка сохранения: ' + err.message);
     }
