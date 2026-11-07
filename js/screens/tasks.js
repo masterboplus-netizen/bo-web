@@ -337,13 +337,28 @@ window.openTaskDetail = async function(id) {
 
 // === МЕНЮ ДЕЙСТВИЙ (ТРИ ТОЧКИ) ===
 window.openTaskActions = function(id, name) {
-    const action = prompt(`Действия с задачей "${name}":\n\n1 - Редактировать\n2 - Удалить\n\nВведите цифру (1 или 2):`);
-    
-    if (action === '1') {
-        window.openEditTask(id);
-    } else if (action === '2') {
-        window.deleteTask(id);
-    }
+    const oldMenu = document.getElementById('task-action-menu');
+    if (oldMenu) oldMenu.remove();
+
+    const menu = document.createElement('div');
+    menu.id = 'task-action-menu';
+    menu.style.cssText = 'position: fixed; top: 100px; right: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); z-index: 10005; overflow: hidden; min-width: 160px; display: flex; flex-direction: column;';
+
+    menu.innerHTML = `
+        <div onclick="window.openEditTask(${id})" style="padding: 14px 16px; color: var(--fg); font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--bg3);">Редактировать</div>
+        <div onclick="window.deleteTask(${id})" style="padding: 14px 16px; color: #ff3b30; font-size: 15px; cursor: pointer;">Удалить</div>
+    `;
+
+    document.body.appendChild(menu);
+
+    setTimeout(() => {
+        document.addEventListener('click', function closeMenu(e) {
+            if (!menu.contains(e.target) && !e.target.closest('button[onclick*="openTaskActions"]')) {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        });
+    }, 10);
 };
 
 
