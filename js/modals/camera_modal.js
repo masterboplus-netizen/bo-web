@@ -58,6 +58,8 @@ export function openCameraModal() {
     modal.remove();
     const wrapper = document.getElementById('floating-capsule-wrapper');
     if (wrapper) wrapper.style.right = '8px';
+    // Очищаем currentTaskId, чтобы следующее фото не прицепилось к старой задаче
+    localStorage.removeItem('currentTaskId');
   }
 
   shootBtn.addEventListener('click', () => {
