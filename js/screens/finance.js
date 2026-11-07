@@ -308,3 +308,23 @@ window.saveFinance = async function() {
         alert('Ошибка сохранения: ' + err.message);
     }
 };
+
+window.deleteFinanceInline = function(id) {
+    // Закрываем модалку
+    const overlay = document.getElementById('edit-finance-modal');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 200);
+    }
+
+    // Показываем красивое окно подтверждения
+    window.showConfirm('Удалить эту операцию?', async () => {
+        try {
+            const { error } = await db.from('finance').delete().eq('id', id);
+            if (error) throw error;
+            renderCashFlow();
+        } catch (err) {
+            alert('Ошибка удаления: ' + err.message);
+        }
+    });
+};
