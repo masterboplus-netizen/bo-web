@@ -385,3 +385,31 @@ window.galleryJumpTo = function(index) {
         renderGallery();
     }
 };
+
+
+window.galleryMovePhoto = function(photoId) {
+    window.openCategoryPicker(async (newCategory) => {
+        try {
+            const { error } = await db.from('task_photos').update({ category: newCategory }).eq('id', photoId);
+            if (error) throw error;
+
+            const state = window._galleryState;
+            const { data: allPhotos } = await db.from('task_photos').select('*').eq('task_id', state.taskId);
+            const catPhotos = (allPhotos || []).filter(p => (p.category || 'none') === newCategory);
+
+            if (catPhotos.length === 0) {
+                window.openTaskDetail(state.taskId);
+            } else {
+                window._galleryState = {
+                    taskId: state.taskId,
+                    category: newCategory,
+                    photos: catPhotos,
+                    currentIndex: 0
+                };
+                renderGallery();
+            }
+        } catch (err) {
+            alert('Ошибка перемещения: ' + err.message);
+        }
+    });
+};
