@@ -299,6 +299,10 @@ window.openEditField = async function(field, currentValue, taskId) {
     setTimeout(() => {
         overlay.style.opacity = '1';
         modal.style.transform = 'scale(1)';
+        // ВЫЗОВ КАЛЕНДАРЯ ДЛЯ ПОЛЯ ДАТЫ
+        if (field === 'deadline') {
+            window.renderModalCalendar(currentValue);
+        }
     }, 10);
 
     function close() {
