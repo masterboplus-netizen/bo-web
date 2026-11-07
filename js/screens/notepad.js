@@ -79,23 +79,27 @@ window.openNote = async function(id) {
 
         container.innerHTML = `
             <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px; display: flex; flex-direction: column; height: 100%;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <button onclick="window.openNotepad()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; font-size: 14px;">← Назад</button>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="window.togglePinNote(${note.id}, ${note.is_pinned})" style="background: transparent; border: none; color: ${note.is_pinned ? 'var(--accent)' : 'var(--fg-dim)'}; cursor: pointer; font-size: 20px;">
-                            ${note.is_pinned ? '📌' : '📍'}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--bg3); padding-bottom: 15px;">
+                    <button onclick="window.openNotepad()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; font-size: 15px; display: flex; align-items: center; gap: 5px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Назад
+                    </button>
+                    <div style="display: flex; gap: 15px;">
+                        <button onclick="window.togglePinNote(${note.id}, ${note.is_pinned})" style="background: transparent; border: none; color: ${note.is_pinned ? 'var(--accent)' : 'var(--fg-dim)'}; cursor: pointer; display: flex; align-items: center;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="${note.is_pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
                         </button>
-                        <button onclick="window.deleteNote(${note.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; font-size: 16px;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        <button onclick="window.deleteNote(${note.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; display: flex; align-items: center;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                         </button>
                     </div>
                 </div>
                 
-                <input type="text" id="note-title" value="${escapeHtml(note.title)}" placeholder="Заголовок" style="width: 100%; background: transparent; border: none; color: var(--fg); font-size: 24px; font-weight: bold; margin-bottom: 15px; outline: none;">
+                <input type="text" id="note-title" value="${escapeHtml(note.title)}" placeholder="Заголовок" style="width: 100%; background: transparent; border: none; color: var(--fg); font-size: 26px; font-weight: bold; margin-bottom: 15px; outline: none; padding: 0;">
                 
-                <textarea id="note-content" placeholder="Текст заметки..." style="flex: 1; width: 100%; min-height: 50vh; background: transparent; border: none; color: var(--fg); font-size: 16px; line-height: 1.5; resize: none; outline: none; box-sizing: border-box;">${escapeHtml(note.content || '')}</textarea>
+                <div style="height: 1px; background: var(--bg3); width: 100%; margin-bottom: 15px;"></div>
+
+                <textarea id="note-content" placeholder="Текст заметки..." style="flex: 1; width: 100%; min-height: 50vh; background: transparent; border: none; color: var(--fg); font-size: 16px; line-height: 1.6; resize: none; outline: none; box-sizing: border-box; padding: 0;">${escapeHtml(note.content || '')}</textarea>
                 
-                <div id="note-status" style="text-align: center; color: var(--fg-dim); font-size: 12px; margin-top: 10px; opacity: 0; transition: opacity 0.3s;">Сохранено</div>
+                <div id="note-status" style="text-align: center; color: var(--accent); font-weight: bold; font-size: 13px; margin-top: 10px; opacity: 0; transition: opacity 0.3s; position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--bg2); padding: 6px 16px; border-radius: 20px; border: 1px solid var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.5);">✓ Сохранено</div>
             </div>
         `;
 
