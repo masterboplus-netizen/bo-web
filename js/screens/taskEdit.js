@@ -272,9 +272,9 @@ window.openEditField = async function(field, currentValue, taskId) {
         fieldLabel = 'Приоритет';
         fieldHtml = `
             <div id="priority-buttons" style="display: flex; flex-direction: column; gap: 8px;">
-                <button type="button" onclick="window.setModalPriority('low')" id="prio-btn-low" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'low' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'low' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Низкий</button>
-                <button type="button" onclick="window.setModalPriority('medium')" id="prio-btn-medium" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'medium' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'medium' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Средний</button>
-                <button type="button" onclick="window.setModalPriority('high')" id="prio-btn-high" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'high' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'high' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Высокий</button>
+                <button type="button" onclick="window._selectPriority('low', ${taskId})" id="prio-btn-low" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'low' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'low' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Низкий</button>
+                <button type="button" onclick="window._selectPriority('medium', ${taskId})" id="prio-btn-medium" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'medium' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'medium' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Средний</button>
+                <button type="button" onclick="window._selectPriority('high', ${taskId})" id="prio-btn-high" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'high' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'high' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Высокий</button>
             </div>
             <input type="hidden" id="modal-field-input" value="${currentValue}">
         `;
@@ -283,14 +283,12 @@ window.openEditField = async function(field, currentValue, taskId) {
     modal.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <h3 style="margin: 0; color: var(--fg); font-size: 16px;">${fieldLabel}</h3>
-            <button id="close-edit-field" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
+            
         </div>
         <div style="margin-bottom: 15px;">
             ${fieldHtml}
         </div>
-        <button onclick="window.saveEditField('${field}', ${taskId})" style="width: 100%; padding: 10px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">Сохранить</button>
+        
     `;
 
     overlay.appendChild(modal);
