@@ -13,9 +13,9 @@ export function renderCalendar() {
             <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
                 
                 <div style="display: flex; background: var(--bg2); border-radius: 20px; padding: 4px; margin-bottom: 20px;">
+                    <button onclick="window.goToToday()" style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: transparent; color: var(--fg-dim); font-weight: bold; cursor: pointer;">Сегодня</button>
                     <button onclick="window.switchCalView('month')" id="cal-btn-month" style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer;">Месяц</button>
                     <button onclick="window.switchCalView('year')" id="cal-btn-year" style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: transparent; color: var(--fg-dim); cursor: pointer;">Год</button>
-                    <button onclick="window.switchCalView('30days')" id="cal-btn-30days" style="flex: 1; padding: 10px; border-radius: 16px; border: none; background: transparent; color: var(--fg-dim); cursor: pointer;">30 дней</button>
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 10px;">
