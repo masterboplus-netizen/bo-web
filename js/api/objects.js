@@ -20,3 +20,9 @@ export async function updateObject(id, name, address, budget) {
     if (error) throw error;
     return true;
 }
+
+export async function deleteObject(id) {
+    const { error } = await db.from('objects').delete().eq('id', id);
+    if (error) throw error;
+    return true;
+}
