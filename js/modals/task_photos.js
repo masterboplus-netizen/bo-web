@@ -212,8 +212,8 @@ function renderGallery() {
 
             ${capsuleHtml}
 
-            <div style="position: relative; width: 100%; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px;">
-                <img src="${currentPhoto.photo_url}" style="width: 100%; height: auto; max-height: 60vh; object-fit: contain; display: block;">
+            <div style="position: relative; width: 100%; height: 60vh; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
+                <img src="${currentPhoto.photo_url}" style="width: 100%; height: 100%; object-fit: contain; display: block;">
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center;">
