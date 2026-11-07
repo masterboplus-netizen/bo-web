@@ -66,7 +66,7 @@ export function openNewTask() {
 
     container.innerHTML = `
         <div style="padding: 20px; max-width: 500px; margin: 0 auto;">
-            <h2 style="color: var(--fg); margin-bottom: 20px;">Новая задача</h2>
+            
 
             <div style="margin-bottom: 15px;">
                 <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Название *</label>

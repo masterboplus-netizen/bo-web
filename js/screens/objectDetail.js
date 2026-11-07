@@ -107,7 +107,7 @@ window.openEditObject = async function(id) {
                         <polyline points="12 19 5 12 12 5"></polyline>
                     </svg>
                 </button>
-                <h2 style="color: var(--fg); margin-bottom: 20px;">Редактирование объекта</h2>
+                
 
                 <div style="display: flex; flex-direction: column; gap: 15px;">
                     <div>
