@@ -6,6 +6,7 @@ function escapeHtml(text) {
     });
 }
 
+// === ПРОСМОТР ОБЪЕКТА ===
 export async function openObject(objectId) {
     try {
         const obj = await fetchObject(objectId);
@@ -13,52 +14,46 @@ export async function openObject(objectId) {
 
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
-        let address = obj.address || obj.addres || '';
+        let address = obj.address || obj.addres || 'Адрес не указан';
+        let yandexLink = 'https://yandex.ru/maps/?text=' + encodeURIComponent(address);
+        let gisLink = 'https://2gis.ru/search/' + encodeURIComponent(address);
 
         let html = `
             <div style="padding-top: 10px; max-width: 600px; margin: 0 auto;">
-<button onclick="window.openObjects()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 8px; font-size: 15px; margin-bottom: 15px;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="19" y1="12" x2="5" y2="12"></line>
-                                <polyline points="12 19 5 12 12 5"></polyline>
-                            </svg>
-                        </button>
-                <div style="background: var(--bg2); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2 style="margin: 0; font-size: 20px; color: var(--fg);">Редактирование объекта</h2>
-                        <button onclick="window.deleteObjectById(${obj.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; padding: 5px;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        </button>
-                    </div>
-
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Название</label>
-                        <input type="text" id="edit-obj-name" value="${escapeHtml(obj.name)}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; font-size: 16px;">
-                    </div>
-
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Адрес</label>
-                        <input type="text" id="edit-obj-address" value="${escapeHtml(address)}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    </div>
-
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Бюджет (₽)</label>
-                        <input type="number" id="edit-obj-budget" value="${obj.budget || 0}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    </div>
-
-                    <div style="display: flex; gap: 8px; margin-top: 20px;">
-                        <a href="https://yandex.ru/maps/?text=${encodeURIComponent(address)}" target="_blank" style="flex: 1; text-align: center; padding: 10px; background: var(--bg3); border-radius: 10px; color: var(--fg); text-decoration: none; font-size: 13px;">Яндекс</a>
-                        <a href="https://2gis.ru/search/${encodeURIComponent(address)}" target="_blank" style="flex: 1; text-align: center; padding: 10px; background: var(--bg3); border-radius: 10px; color: var(--fg); text-decoration: none; font-size: 13px;">2ГИС</a>
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <button onclick="window.openObjects()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                    </button>
+                    <button onclick="window.openObjectActions(${obj.id}, '${escapeHtml(obj.name)}')" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="12" cy="5" r="1"></circle>
+                            <circle cx="12" cy="19" r="1"></circle>
+                        </svg>
+                    </button>
                 </div>
 
-                <button onclick="window.saveObjectChanges(${obj.id})" style="width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">Сохранить</button>
-                <button onclick="window.openObjects()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 8px; font-size: 15px; margin-bottom: 15px;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="19" y1="12" x2="5" y2="12"></line>
-                                <polyline points="12 19 5 12 12 5"></polyline>
-                            </svg>
-                        </button>
+                <div style="background: var(--bg2); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+                    <div style="margin-bottom: 15px;">
+                        <h2 style="margin: 0; font-size: 22px; color: var(--fg);">${escapeHtml(obj.name)}</h2>
+                        <span class="badge" style="background: ${statusColor}; margin-top: 8px; display: inline-block;">${statusText}</span>
+                    </div>
+                    
+                    <div style="color: var(--fg-dim); font-size: 14px; margin-bottom: 15px;">${escapeHtml(address)}</div>
+                    
+                    <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                        <a href="${yandexLink}" target="_blank" style="flex: 1; text-align: center; padding: 10px; background: var(--bg3); border-radius: 10px; color: var(--fg); text-decoration: none; font-size: 13px;">Яндекс</a>
+                        <a href="${gisLink}" target="_blank" style="flex: 1; text-align: center; padding: 10px; background: var(--bg3); border-radius: 10px; color: var(--fg); text-decoration: none; font-size: 13px;">2ГИС</a>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--bg3); padding-top: 15px;">
+                        <span style="color: var(--fg-dim);">Бюджет</span>
+                        <span style="font-size: 18px; font-weight: bold; color: var(--fg);">${obj.budget || 0} ₽</span>
+                    </div>
+                </div>
             </div>
         `;
         document.getElementById('app-content').innerHTML = html;
@@ -67,6 +62,82 @@ export async function openObject(objectId) {
     }
 }
 
+// === МЕНЮ ДЕЙСТВИЙ (ТРИ ТОЧКИ) ===
+window.openObjectActions = function(id, name) {
+    // Простое нативное меню браузера для скорости, но красиво оформленное
+    const action = prompt(`Действия с объектом "${name}":\n\n1 - Редактировать\n2 - Удалить\n\nВведите цифру (1 или 2):`);
+    
+    if (action === '1') {
+        window.openEditObject(id);
+    } else if (action === '2') {
+        window.deleteObjectById(id);
+    }
+};
+
+// === РЕДАКТИРОВАНИЕ (ШТОРКА) ===
+window.openEditObject = async function(id) {
+    try {
+        const obj = await fetchObject(id);
+        if (!obj) return;
+
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; opacity: 0; transition: opacity 0.3s ease;';
+        
+        const sheet = document.createElement('div');
+        sheet.style.cssText = 'position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg2); border-radius: 24px 24px 0 0; z-index: 99999; padding: 24px 16px 32px 16px; box-sizing: border-box; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--border); max-width: 600px; margin: 0 auto;';
+        
+        sheet.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: var(--fg);">Редактировать объект</h3>
+                <button id="close-edit-obj" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <div>
+                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Название</label>
+                <input type="text" id="edit-obj-name" value="${escapeHtml(obj.name)}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; font-size: 16px;">
+            </div>
+
+            <div>
+                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Адрес</label>
+                <input type="text" id="edit-obj-address" value="${escapeHtml(obj.address || '')}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+            </div>
+
+            <div>
+                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px; font-size: 13px;">Бюджет (₽)</label>
+                <input type="number" id="edit-obj-budget" value="${obj.budget || 0}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+            </div>
+
+            <button onclick="window.saveObjectChanges(${id})" style="width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;">Сохранить</button>
+        `;
+        
+        document.body.appendChild(overlay);
+        document.body.appendChild(sheet);
+
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+            sheet.style.transform = 'translateY(0)';
+        }, 10);
+
+        function closeEdit() {
+            overlay.style.opacity = '0';
+            sheet.style.transform = 'translateY(100%)';
+            setTimeout(() => {
+                overlay.remove();
+                sheet.remove();
+            }, 300);
+        }
+
+        overlay.onclick = closeEdit;
+        document.getElementById('close-edit-obj').onclick = closeEdit;
+
+    } catch (err) {
+        alert('Ошибка: ' + err.message);
+    }
+};
+
+// === СОХРАНЕНИЕ ===
 window.saveObjectChanges = async function(id) {
     const name = document.getElementById('edit-obj-name').value.trim();
     const address = document.getElementById('edit-obj-address').value.trim();
@@ -76,13 +147,17 @@ window.saveObjectChanges = async function(id) {
 
     try {
         await updateObject(id, name, address, budget);
-        alert('Объект сохранен!');
+        // Закрываем шторку, если она открыта
+        const overlay = document.querySelector('div[style*="z-index: 99998"]');
+        if (overlay) overlay.click(); // Эмулируем клик для закрытия
+        
         window.openObject(id); // Перезагружаем карточку
     } catch (err) {
         alert('Ошибка сохранения: ' + err.message);
     }
 };
 
+// === УДАЛЕНИЕ ===
 window.deleteObjectById = async function(id) {
     if (!confirm('Удалить этот объект? Все его данные будут потеряны.')) return;
     try {
