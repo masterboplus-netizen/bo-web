@@ -38,7 +38,7 @@ window.openCategoryPicker = function(callback) {
     overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease;';
 
     const modal = document.createElement('div');
-    modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 24px; max-width: 400px; width: 100%; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.2s ease;';
+    modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 16px; max-width: 340px; width: 100%; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.2s ease;';
 
     let selectedCategory = 'none';
 
@@ -53,11 +53,11 @@ window.openCategoryPicker = function(callback) {
 
     let buttonsHtml = '';
     categories.forEach(cat => {
-        buttonsHtml += '<button onclick="window._selectCategory(\'' + cat.id + '\')" id="cat-btn-' + cat.id + '" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ' + (cat.id === 'none' ? 'var(--accent)' : 'var(--bg2)') + '; color: ' + (cat.id === 'none' ? 'white' : 'var(--fg)') + '; font-size: 14px; cursor: pointer; margin-bottom: 8px; width: 100%; text-align: left;">' + cat.label + '</button>';
+        buttonsHtml += '<button onclick="window._selectCategory(\'' + cat.id + '\')" id="cat-btn-' + cat.id + '" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: ' + (cat.id === 'none' ? 'var(--accent)' : 'var(--bg2)') + '; color: ' + (cat.id === 'none' ? 'white' : 'var(--fg)') + '; font-size: 14px; cursor: pointer; margin-bottom: 8px; width: 100%; text-align: left;">' + cat.label + '</button>';
     });
 
     modal.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">' +
-        '<h3 style="margin: 0; color: var(--fg); font-size: 18px;">В какую категорию добавить?</h3>' +
+        '<h3 style="margin: 0; color: var(--fg); font-size: 16px;">В какую категорию добавить?</h3>' +
         '<button id="close-cat-picker" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>' +
         '</div>' +
         '<div id="cat-buttons-container">' + buttonsHtml + '</div>' +
