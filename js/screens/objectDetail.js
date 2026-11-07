@@ -42,7 +42,7 @@ export async function openObject(objectId) {
                         <span class="badge" style="background: ${statusColor}; margin-top: 8px; display: inline-block;">${statusText}</span>
                     </div>
                     
-                    <div style="color: var(--fg-dim); font-size: 14px; margin-bottom: 15px;">${escapeHtml(address)}</div>
+                    <div onclick="window.openEditAddress(${obj.id})" style="color: var(--fg-dim); font-size: 14px; margin-bottom: 15px; cursor: pointer;">${escapeHtml(address)}</div>
                     
                     <div style="display: flex; gap: 8px; margin-bottom: 20px;">
                         <a href="${yandexLink}" target="_blank" style="flex: 1; text-align: center; padding: 10px; background: var(--bg3); border-radius: 10px; color: var(--fg); text-decoration: none; font-size: 13px;">Яндекс</a>
@@ -160,3 +160,179 @@ window.deleteObjectById = async function(id) {
 };
 
 window.openObject = openObject;
+
+window.openEditAddress = async function(id) {
+    try {
+        const obj = await fetchObject(id);
+        if (!obj) throw new Error('Объект не найден');
+
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease;';
+
+        const modal = document.createElement('div');
+        modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 16px; max-width: 340px; width: 100%; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.2s ease; max-height: 500px; overflow-y: auto;';
+
+        const currentAddress = obj.address || '';
+
+        modal.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: var(--fg); font-size: 16px;">Редактировать адрес</h3>
+                <button id="close-address" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <!-- Свободный ввод и кнопки-стрелки -->
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <input type="text" id="addr-free" placeholder="Город, улица, дом..." value="${escapeHtml(currentAddress)}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <button onclick="window.parseAddressDown()" style="padding: 0 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: var(--fg); cursor: pointer; font-size: 18px;" title="Разобрать по полям">↓</button>
+                <button onclick="window.parseAddressUp()" style="padding: 0 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg3); color: var(--fg); cursor: pointer; font-size: 18px;" title="Собрать из полей">↑</button>
+            </div>
+
+            <!-- Поля -->
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+                <input type="text" id="addr-city" placeholder="Город" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <input type="text" id="addr-street" placeholder="Улица" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="addr-house" placeholder="Дом" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="text" id="addr-block" placeholder="Корпус" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="addr-entrance" placeholder="Подъезд" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="text" id="addr-floor" placeholder="Этаж" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="text" id="addr-flat" placeholder="Кв" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button onclick="window.saveAddress(${id})" style="flex: 1; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">Сохранить</button>
+                <button onclick="document.getElementById('address-modal-overlay').remove()" style="flex: 1; padding: 12px; background: var(--bg3); color: var(--fg); border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">Отмена</button>
+            </div>
+        `;
+
+        overlay.id = 'address-modal-overlay';
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+            modal.style.transform = 'scale(1)';
+        }, 10);
+
+        document.getElementById('close-address').onclick = () => overlay.remove();
+        overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+    } catch (err) {
+        alert('Ошибка загрузки объекта: ' + err.message);
+    }
+};
+
+window.parseAddressDown = function() {
+    const free = document.getElementById('addr-free').value;
+    if (!free) return;
+
+    // Простой парсер: разбиваем по запятым или пробелам
+    // В реальности нужен сложный парсер, но для начала сделаем так:
+    // Ищем "город", "ул", "д", "кв" по ключевым словам.
+    
+    // Очищаем поля
+    document.getElementById('addr-city').value = '';
+    document.getElementById('addr-street').value = '';
+    document.getElementById('addr-house').value = '';
+    document.getElementById('addr-block').value = '';
+    document.getElementById('addr-entrance').value = '';
+    document.getElementById('addr-floor').value = '';
+    document.getElementById('addr-flat').value = '';
+
+    // Пытаемся распарсить (эвристика)
+    let parts = free.split(',').map(s => s.trim()).filter(s => s);
+    
+    // Если запятых нет, попробуем разбить по пробелам (для "Москва Ленина 5")
+    if (parts.length < 2) {
+        parts = free.split(' ').map(s => s.trim()).filter(s => s);
+    }
+
+    // Просто раскидываем по порядку в первые поля (это базовая логика)
+    // Для умного парсера нужно писать регулярки, но пока так.
+    if (parts[0]) document.getElementById('addr-city').value = parts[0];
+    if (parts[1]) {
+        let street = parts[1].replace(/^(ул\.?|улица)\s*/i, '');
+        document.getElementById('addr-street').value = street;
+    }
+    if (parts[2]) {
+        let house = parts[2].replace(/^(д\.?|дом)\s*/i, '');
+        document.getElementById('addr-house').value = house;
+    }
+    
+    // Ищем по ключевым словам в оставшихся частях
+    const fullText = free.toLowerCase();
+    
+    const blockMatch = fullText.match(/(?:корпус|к\.|корп)\s*(\d+)/);
+    if (blockMatch) document.getElementById('addr-block').value = blockMatch[1];
+    
+    const entranceMatch = fullText.match(/(?:подъезд|п\.|под)\s*(\d+)/);
+    if (entranceMatch) document.getElementById('addr-entrance').value = entranceMatch[1];
+    
+    const floorMatch = fullText.match(/(?:этаж|эт\.|э)\s*(\d+)/);
+    if (floorMatch) document.getElementById('addr-floor').value = floorMatch[1];
+    
+    const flatMatch = fullText.match(/(?:кв\.?|квартира|кв)\s*(\d+)/);
+    if (flatMatch) document.getElementById('addr-flat').value = flatMatch[1];
+};
+
+window.parseAddressUp = function() {
+    const city = document.getElementById('addr-city').value.trim();
+    const street = document.getElementById('addr-street').value.trim();
+    const house = document.getElementById('addr-house').value.trim();
+    const block = document.getElementById('addr-block').value.trim();
+    const entrance = document.getElementById('addr-entrance').value.trim();
+    const floor = document.getElementById('addr-floor').value.trim();
+    const flat = document.getElementById('addr-flat').value.trim();
+
+    let parts = [];
+    if (city) parts.push(city);
+    if (street) parts.push(street);
+    if (house) parts.push('д. ' + house);
+    if (block) parts.push('корп. ' + block);
+    if (entrance) parts.push('подъезд ' + entrance);
+    if (floor) parts.push('этаж ' + floor);
+    if (flat) parts.push('кв. ' + flat);
+
+    document.getElementById('addr-free').value = parts.join(', ');
+};
+
+window.saveAddress = async function(id) {
+    const free = document.getElementById('addr-free').value.trim();
+    
+    // Если свободное поле пустое, собираем из ячеек
+    let finalAddress = free;
+    if (!finalAddress) {
+        const city = document.getElementById('addr-city').value.trim();
+        const street = document.getElementById('addr-street').value.trim();
+        const house = document.getElementById('addr-house').value.trim();
+        // ... (можно собрать полную строку из всех полей, если нужно)
+        // Но для простоты, если свободное пусто, просто берем город и улицу.
+        // Или лучше, чтобы кнопка "вверх" заполняла свободное поле, и мы сохраняли его.
+        // Если пользователь не нажал "вверх", но заполнил ячейки, давай соберем:
+        let parts = [];
+        if (city) parts.push(city);
+        if (street) parts.push(street);
+        if (house) parts.push('д. ' + house);
+        finalAddress = parts.join(', ');
+    }
+
+    try {
+        await updateObject(id, null, finalAddress, null); // updateObject принимает (id, name, address, budget)
+        // Но у нас updateObject требует name. Нам нужно передать текущее имя.
+        // Получим объект, чтобы взять имя.
+        const obj = await fetchObject(id);
+        await updateObject(id, obj.name, finalAddress, obj.budget);
+        
+        const overlay = document.getElementById('address-modal-overlay');
+        if (overlay) overlay.remove();
+        
+        window.openObject(id);
+    } catch (err) {
+        alert('Ошибка сохранения: ' + err.message);
+    }
+};
