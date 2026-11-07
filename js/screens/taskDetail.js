@@ -64,7 +64,7 @@ export async function openTaskDetail(id) {
             }
 
             if (moreCount > 0) {
-                photosHtml += `<button onclick="window.openTaskPhotoGallery(${task.id}, '${cat.id}')" style="flex-shrink: 0; width: 80px; height: 80px; border-radius: 8px; border: 1px dashed var(--fg-dim); background: transparent; color: var(--fg-dim); cursor: pointer; font-size: 12px;">Еще (${moreCount})</button>`;
+                photosHtml += `<button onclick="window.openPhotoGallery(${task.id}, '${cat.id}')" style="flex-shrink: 0; width: 80px; height: 80px; border-radius: 8px; border: 1px dashed var(--fg-dim); background: transparent; color: var(--fg-dim); cursor: pointer; font-size: 12px;">Еще (${moreCount})</button>`;
             }
 
             ribbonsHtml += `
