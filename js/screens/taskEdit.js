@@ -259,8 +259,18 @@ window.openEditField = async function(field, currentValue, taskId) {
     } else if (field === 'deadline') {
         fieldLabel = 'Плановый срок';
         fieldHtml = `
+            <div style="display: flex; background: var(--bg2); border-radius: 12px; padding: 2px; margin-bottom: 15px;">
+                <button onclick="window.toggleDeadlineType('single')" id="btn-single" style="flex: 1; padding: 8px; border-radius: 10px; border: none; background: ${!currentValue.includes(' - ') ? 'var(--accent)' : 'transparent'}; color: ${!currentValue.includes(' - ') ? 'white' : 'var(--fg-dim)'}; font-size: 13px; cursor: pointer;">Одна дата</button>
+                <button onclick="window.toggleDeadlineType('range')" id="btn-range" style="flex: 1; padding: 8px; border-radius: 10px; border: none; background: ${currentValue.includes(' - ') ? 'var(--accent)' : 'transparent'}; color: ${currentValue.includes(' - ') ? 'white' : 'var(--fg-dim)'}; font-size: 13px; cursor: pointer;">Диапазон</button>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <input type="date" id="modal-deadline-start" value="${currentValue.split(' - ')[0] || ''}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <input type="date" id="modal-deadline-end" value="${currentValue.split(' - ')[1] || ''}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; display: ${currentValue.includes(' - ') ? 'block' : 'none'};">
+            </div>
+
             <div id="modal-calendar-container" style="margin-bottom: 15px;"></div>
-            <input type="hidden" id="modal-field-input" value="` + currentValue + `">
+            <input type="hidden" id="modal-field-input" value="${currentValue}">
             <div style="display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap;">
                 <button onclick="window.setModalQuickDate('today')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Сегодня</button>
                 <button onclick="window.setModalQuickDate('tomorrow')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Завтра</button>
@@ -319,7 +329,17 @@ window.saveEditField = async function(field, taskId) {
     try {
         const updateData = {};
         if (field === 'description') updateData.description = value || null;
-        else if (field === 'deadline') updateData.deadline_start = value || null;
+        else if (field === 'deadline') {
+        const start = document.getElementById('modal-deadline-start').value;
+        const end = document.getElementById('modal-deadline-end').value;
+        if (end && end !== '') {
+            updateData.deadline_start = start || null;
+            updateData.deadline_end = end || null;
+        } else {
+            updateData.deadline_start = start || null;
+            updateData.deadline_end = null;
+        }
+    }
         else if (field === 'priority') updateData.priority = value;
 
         const { error } = await db.from('tasks').update(updateData).eq('id', taskId);
