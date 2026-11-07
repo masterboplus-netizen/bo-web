@@ -206,7 +206,7 @@ export async function renderCashFlow() {
     }
 }
 
-window.openAddFinance = async function() {
+window.openAddFinance = async function(defaultType = 'income') {
     const container = document.getElementById('app-content');
     
     // Загружаем объекты для выпадающего списка
@@ -264,7 +264,8 @@ window.openAddFinance = async function() {
         </div>
     `;
 
-    window._financeType = 'income'; // По умолчанию приход
+    // Устанавливаем тип по умолчанию из параметра
+    window.setFinanceType(defaultType || 'income');
 };
 
 window.setFinanceType = function(type) {
