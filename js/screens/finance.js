@@ -30,7 +30,7 @@ export async function renderFinance() {
 
     container.innerHTML = `
         <div style="max-width: 600px; margin: 0 auto; padding: 0 15px 80px 15px;">
-            <h2 style="color: var(--fg); margin-bottom: 20px;">Финансы</h2>
+            
 
             <!-- Капсула баланса -->
             <div style="background: var(--bg2); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid var(--bg3); margin-bottom: 20px;">

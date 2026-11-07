@@ -18,13 +18,7 @@ export async function renderDiary() {
 
         let html = `
             <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 style="color: var(--fg); margin: 0;">Дневник работ</h2>
-                    <button onclick="window.openAddDiaryEntry()" style="background: var(--accent); color: white; border: none; border-radius: 20px; padding: 8px 16px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        Добавить
-                    </button>
-                </div>
+                
         `;
 
         if (!logs || logs.length === 0) {
