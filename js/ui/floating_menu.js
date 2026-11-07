@@ -94,10 +94,7 @@ export function initFloatingMenu() {
       },
 
       onEnd: function(evt) {
-        document.body.style.overflow = ''; // Возвращаем скролл
-        evt.item.onclick = (e) => { e.preventDefault(); e.stopPropagation(); }; // Отменяем клик
-        setTimeout(() => { evt.item.onclick = null; }, 100);
-        
+        document.body.style.overflow = '';
         capsule.classList.remove('capsule-shaking');
         
         // ТОТАЛЬНАЯ ОЧИСТКА КЛАССОВ И СТИЛЕЙ SORTABLE
