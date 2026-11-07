@@ -141,15 +141,12 @@ window.openPhotoGallery = async function(taskId, category, photoId) {
             return;
         }
 
-        // Находим индекс текущего фото
-        let startIndex = catPhotos.findIndex(p => p.id === photoId);
-        if (startIndex === -1) startIndex = 0;
-
+        // Всегда открываем с первого фото
         window._galleryState = {
             taskId: taskId,
             category: category,
             photos: catPhotos,
-            currentIndex: startIndex
+            currentIndex: 0
         };
 
         renderGallery();
@@ -294,6 +291,7 @@ function renderGallery() {
             </div>
         </div>
     `;
+    window.scrollTo(0, 0);
 }
 
 window.galleryPrev = function() {
