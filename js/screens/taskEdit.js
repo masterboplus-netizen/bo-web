@@ -270,11 +270,14 @@ window.openEditField = async function(field, currentValue, taskId) {
         `;
     } else if (field === 'priority') {
         fieldLabel = 'Приоритет';
-        fieldHtml = '<select id="modal-field-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">' +
-            '<option value="low" ' + (currentValue === 'low' ? 'selected' : '') + '>Низкий</option>' +
-            '<option value="medium" ' + (currentValue === 'medium' ? 'selected' : '') + '>Средний</option>' +
-            '<option value="high" ' + (currentValue === 'high' ? 'selected' : '') + '>Высокий</option>' +
-            '</select>';
+        fieldHtml = `
+            <div id="priority-buttons" style="display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" onclick="window.setModalPriority('low')" id="prio-btn-low" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'low' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'low' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Низкий</button>
+                <button type="button" onclick="window.setModalPriority('medium')" id="prio-btn-medium" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'medium' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'medium' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Средний</button>
+                <button type="button" onclick="window.setModalPriority('high')" id="prio-btn-high" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'high' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'high' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Высокий</button>
+            </div>
+            <input type="hidden" id="modal-field-input" value="${currentValue}">
+        `;
     }
 
     modal.innerHTML = `
