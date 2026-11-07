@@ -6,7 +6,98 @@ function escapeHtml(text) {
     });
 }
 
+
 export async function renderFinance() {
+    if (window.setNavActive) window.setNavActive('finance');
+    const container = document.getElementById('app-content');
+    
+    // Считаем общий баланс для капсулы
+    let totalBalance = 0;
+    try {
+        const { data: transactions } = await db.from('finance').select('amount, type');
+        if (transactions) {
+            transactions.forEach(t => {
+                if (t.type === 'income') totalBalance += Number(t.amount);
+                else if (t.type === 'expense') totalBalance -= Number(t.amount);
+            });
+        }
+    } catch (e) {
+        console.error('Ошибка при подсчете баланса', e);
+    }
+
+    const balanceColor = totalBalance >= 0 ? '#34c759' : '#ff3b30';
+    const balanceSign = totalBalance > 0 ? '+' : '';
+
+    container.innerHTML = `
+        <div style="padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 80px;">
+            <h2 style="color: var(--fg); margin-bottom: 20px;">Финансы</h2>
+
+            <!-- Капсула баланса -->
+            <div style="background: var(--bg2); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid var(--bg3); margin-bottom: 20px;">
+                <div style="color: var(--fg-dim); font-size: 13px; margin-bottom: 5px;">ОБЩИЙ БАЛАНС</div>
+                <div style="color: ${balanceColor}; font-size: 32px; font-weight: bold;">${balanceSign}${totalBalance.toLocaleString('ru-RU')} ₽</div>
+            </div>
+
+            <!-- Список разделов -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div onclick="window.openCashFlow()" style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 20px;">📒</span>
+                        <span style="color: var(--fg); font-size: 16px; font-weight: 500;">Расходы и Доходы</span>
+                    </div>
+                    <span style="color: var(--fg-dim);">→</span>
+                </div>
+
+                <div onclick="window.showStub('Бюджет объекта', 'finance')" style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3); cursor: pointer; display: flex; justify-content: space-between; align-items: center; opacity: 0.6;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 20px;">🏗️</span>
+                        <span style="color: var(--fg); font-size: 16px;">Бюджет объекта</span>
+                    </div>
+                    <span style="color: var(--fg-dim);">→</span>
+                </div>
+
+                <div onclick="window.showStub('Сводная смета', 'finance')" style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3); cursor: pointer; display: flex; justify-content: space-between; align-items: center; opacity: 0.6;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 20px;">📋</span>
+                        <span style="color: var(--fg); font-size: 16px;">Сводная смета</span>
+                    </div>
+                    <span style="color: var(--fg-dim);">→</span>
+                </div>
+
+                <div onclick="window.showStub('Внеплановые работы', 'finance')" style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3); cursor: pointer; display: flex; justify-content: space-between; align-items: center; opacity: 0.6;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 20px;">⚡</span>
+                        <span style="color: var(--fg); font-size: 16px;">Внеплановые работы</span>
+                    </div>
+                    <span style="color: var(--fg-dim);">→</span>
+                </div>
+
+                <div onclick="window.showStub('Кассовый план', 'finance')" style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3); cursor: pointer; display: flex; justify-content: space-between; align-items: center; opacity: 0.6;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 20px;">💰</span>
+                        <span style="color: var(--fg); font-size: 16px;">Кассовый план (Cash Flow)</span>
+                    </div>
+                    <span style="color: var(--fg-dim);">→</span>
+                </div>
+
+                <div onclick="window.showStub('Личные финансы', 'finance')" style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3); cursor: pointer; display: flex; justify-content: space-between; align-items: center; opacity: 0.6;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 20px;">💳</span>
+                        <span style="color: var(--fg); font-size: 16px;">Личные финансы</span>
+                    </div>
+                    <span style="color: var(--fg-dim);">→</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+window.openCashFlow = function() {
+    saveCurrentScreen('finance_cashflow');
+    renderCashFlow();
+};
+
+export async function renderCashFlow() {
     if (window.setNavActive) window.setNavActive('finance');
     const container = document.getElementById('app-content');
     container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка финансов...</div>';
