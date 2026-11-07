@@ -255,7 +255,28 @@ window.openEditField = async function(field, currentValue, taskId) {
         fieldHtml = '<textarea id="modal-field-input" rows="4" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">' + currentValue + '</textarea>';
     } else if (field === 'deadline') {
         fieldLabel = 'Плановый срок';
-        fieldHtml = '<input type="date" id="modal-field-input" value="' + currentValue + '" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">';
+        fieldHtml = `
+            <div style="display: flex; background: var(--bg3); border-radius: 10px; padding: 2px; margin-bottom: 15px;">
+                <button onclick="window.toggleModalDeadline('single')" id="modal-btn-single" style="flex: 1; padding: 8px; border-radius: 8px; border: none; background: var(--accent); color: white; font-size: 13px; cursor: pointer;">Одна дата</button>
+                <button onclick="window.toggleModalDeadline('range')" id="modal-btn-range" style="flex: 1; padding: 8px; border-radius: 8px; border: none; background: transparent; color: var(--fg-dim); font-size: 13px; cursor: pointer;">Диапазон</button>
+            </div>
+            <div id="modal-deadline-single">
+                <input type="date" id="modal-field-input" value="` + currentValue + `" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+            </div>
+            <div id="modal-deadline-range" style="display: none;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="date" id="modal-field-input-start" value="` + currentValue + `" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <span style="color: var(--fg-dim);">—</span>
+                    <input type="date" id="modal-field-input-end" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                </div>
+            </div>
+            <div style="display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap;">
+                <button onclick="window.setModalQuickDate('today')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Сегодня</button>
+                <button onclick="window.setModalQuickDate('tomorrow')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Завтра</button>
+                <button onclick="window.setModalQuickDate('plus3')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">+3 дня</button>
+                <button onclick="window.setModalQuickDate('plus7')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">+7 дней</button>
+            </div>
+        `;
     } else if (field === 'priority') {
         fieldLabel = 'Приоритет';
         fieldHtml = '<select id="modal-field-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">' +
