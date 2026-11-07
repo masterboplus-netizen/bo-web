@@ -238,3 +238,82 @@ window.saveEditTaskModal = async function(id) {
         alert('Ошибка сохранения: ' + err.message);
     }
 };
+
+// === УНИВЕРСАЛЬНАЯ МОДАЛКА ДЛЯ РЕДАКТИРОВАНИЯ ОДНОГО ПОЛЯ ===
+window.openEditField = async function(field, currentValue, taskId) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease;';
+
+    const modal = document.createElement('div');
+    modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 20px; max-width: 400px; width: 100%; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.2s ease;';
+
+    let fieldLabel = '';
+    let fieldHtml = '';
+
+    if (field === 'description') {
+        fieldLabel = 'Описание';
+        fieldHtml = '<textarea id="modal-field-input" rows="4" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">' + currentValue + '</textarea>';
+    } else if (field === 'deadline') {
+        fieldLabel = 'Плановый срок';
+        fieldHtml = '<input type="date" id="modal-field-input" value="' + currentValue + '" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">';
+    } else if (field === 'priority') {
+        fieldLabel = 'Приоритет';
+        fieldHtml = '<select id="modal-field-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg);">' +
+            '<option value="low" ' + (currentValue === 'low' ? 'selected' : '') + '>Низкий</option>' +
+            '<option value="medium" ' + (currentValue === 'medium' ? 'selected' : '') + '>Средний</option>' +
+            '<option value="high" ' + (currentValue === 'high' ? 'selected' : '') + '>Высокий</option>' +
+            '</select>';
+    }
+
+    modal.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0; color: var(--fg); font-size: 18px;">${fieldLabel}</h3>
+            <button id="close-edit-field" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div style="margin-bottom: 15px;">
+            ${fieldHtml}
+        </div>
+        <button onclick="window.saveEditField('${field}', ${taskId})" style="width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer;">Сохранить</button>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+        modal.style.transform = 'scale(1)';
+    }, 10);
+
+    function close() {
+        overlay.style.opacity = '0';
+        modal.style.transform = 'scale(0.95)';
+        setTimeout(() => overlay.remove(), 200);
+    }
+
+    document.getElementById('close-edit-field').onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+};
+
+window.saveEditField = async function(field, taskId) {
+    const value = document.getElementById('modal-field-input').value;
+
+    try {
+        const updateData = {};
+        if (field === 'description') updateData.description = value || null;
+        else if (field === 'deadline') updateData.deadline_start = value || null;
+        else if (field === 'priority') updateData.priority = value;
+
+        const { error } = await db.from('tasks').update(updateData).eq('id', taskId);
+        if (error) throw error;
+
+        // Закрываем модалку
+        const overlay = document.querySelector('div[style*="z-index: 100000"]');
+        if (overlay) overlay.remove();
+
+        window.openTaskDetail(taskId);
+    } catch (err) {
+        alert('Ошибка сохранения: ' + err.message);
+    }
+};
