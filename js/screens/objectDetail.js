@@ -42,7 +42,7 @@ export async function openObject(objectId) {
                         <span class="badge" style="background: ${statusColor}; margin-top: 8px; display: inline-block;">${statusText}</span>
                     </div>
                     
-                    <div onclick="window.openEditAddress(${obj.id})" style="color: var(--fg-dim); font-size: 14px; margin-bottom: 15px; cursor: pointer;">${escapeHtml(address)}</div>
+                    <div style="color: var(--fg-dim); font-size: 14px; margin-bottom: 15px;">${escapeHtml(address)}</div>
                     
                     <div style="display: flex; gap: 8px; margin-bottom: 20px;">
                         <a href="${yandexLink}" target="_blank" style="flex: 1; text-align: center; padding: 10px; background: var(--bg3); border-radius: 10px; color: var(--fg); text-decoration: none; font-size: 13px;">Яндекс</a>
@@ -160,97 +160,3 @@ window.deleteObjectById = async function(id) {
 };
 
 window.openObject = openObject;
-
-
-// === МОДАЛКА РЕДАКТИРОВАНИЯ АДРЕСА ===
-window.openEditAddress = async function(id) {
-    try {
-        const obj = await fetchObject(id);
-        if (!obj) throw new Error('Объект не найден');
-
-        const overlay = document.createElement('div');
-        overlay.id = 'address-modal-overlay';
-        overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease;';
-
-        const modal = document.createElement('div');
-        modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 16px; max-width: 340px; width: 100%; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.2s ease; max-height: 500px; overflow-y: auto;';
-
-        modal.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: var(--fg); font-size: 16px;">Редактировать адрес</h3>
-                <button id="close-address" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-                <input type="text" id="addr-city" placeholder="Город" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                <input type="text" id="addr-street" placeholder="Улица" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="addr-house" placeholder="Дом" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <input type="text" id="addr-block" placeholder="Корпус" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="addr-entrance" placeholder="Подъезд" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <input type="text" id="addr-floor" placeholder="Этаж" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <input type="text" id="addr-flat" placeholder="Кв" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <button id="save-address-btn" style="flex: 1; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">Сохранить</button>
-                <button id="cancel-address" style="flex: 1; padding: 12px; background: var(--bg3); color: var(--fg); border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">Отмена</button>
-            </div>
-        `;
-
-        overlay.appendChild(modal);
-        document.body.appendChild(overlay);
-
-        setTimeout(() => {
-            overlay.style.opacity = '1';
-            modal.style.transform = 'scale(1)';
-        }, 10);
-
-        document.getElementById('close-address').onclick = () => overlay.remove();
-        document.getElementById('cancel-address').onclick = () => overlay.remove();
-        document.getElementById('save-address-btn').onclick = () => window.saveAddress(id);
-        overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
-
-    } catch (err) {
-        alert('Ошибка загрузки объекта: ' + err.message);
-    }
-};
-
-// === СОХРАНЕНИЕ АДРЕСА ===
-window.saveAddress = async function(id) {
-    const city = document.getElementById('addr-city').value.trim();
-    const street = document.getElementById('addr-street').value.trim();
-    const house = document.getElementById('addr-house').value.trim();
-    const block = document.getElementById('addr-block').value.trim();
-    const entrance = document.getElementById('addr-entrance').value.trim();
-    const floor = document.getElementById('addr-floor').value.trim();
-    const flat = document.getElementById('addr-flat').value.trim();
-
-    let parts = [];
-    if (city) parts.push(city);
-    if (street) parts.push(street);
-    if (house) parts.push('д. ' + house);
-    if (block) parts.push('корп. ' + block);
-    if (entrance) parts.push('подъезд ' + entrance);
-    if (floor) parts.push('этаж ' + floor);
-    if (flat) parts.push('кв. ' + flat);
-
-    const finalAddress = parts.join(', ');
-
-    try {
-        const obj = await fetchObject(id);
-        await updateObject(id, obj.name, finalAddress, obj.budget);
-        
-        const overlay = document.getElementById('address-modal-overlay');
-        if (overlay) overlay.remove();
-        
-        window.openObject(id);
-    } catch (err) {
-        alert('Ошибка сохранения: ' + err.message);
-    }
-};
