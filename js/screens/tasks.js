@@ -238,7 +238,7 @@ window.openTaskDetail = async function(id) {
         }
 
         let html = `
-            <div style="padding: 10px 20px 20px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 120px;">
+            <div style="padding:0 20px 20px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 120px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <button onclick="window.openTasks()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -378,7 +378,7 @@ window.openEditTask = async function(id) { localStorage.setItem('currentTaskId',
         const hasDeadlineEnd = task.deadline_end !== null;
 
         let html = `
-            <div style="padding: 10px 20px 20px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 120px;">
+            <div style="padding:0 20px 20px 20px; max-width: 600px; margin: 0 auto; padding-bottom: 120px;">
                 <button onclick="window.openTaskDetail(${task.id})" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 8px; font-size: 15px; margin-bottom: 15px;">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="19" y1="12" x2="5" y2="12"></line>
