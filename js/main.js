@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => { const savedScreen = localS
 window.openCalendar = function() { saveCurrentScreen('calendar'); renderCalendar(); };
 window.openDiary = function() { saveCurrentScreen('diary'); renderDiary(); };
 window.openNotepad = function() { saveCurrentScreen('notepad'); renderNotepad(); };
+window.saveCurrentScreen = saveCurrentScreen;
 window.openFinance = function() { saveCurrentScreen('finance'); renderFinance(); };
 window.setNavActive = setNavActive;
 window.setNavActive = setNavActive;
