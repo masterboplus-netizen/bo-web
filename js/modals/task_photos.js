@@ -107,6 +107,10 @@ window.openTaskPhotoGallery = function(taskId, category) {
 };
 
 window.deleteTaskPhoto = async function(photoId, taskId) {
+    if (!photoId || photoId === 'null' || photoId === 'undefined') {
+        alert('Ошибка: неверный ID фото');
+        return;
+    }
     window.showConfirm('Удалить это фото?', async () => {
         try {
             const { error } = await db.from('task_photos').delete().eq('id', photoId);
