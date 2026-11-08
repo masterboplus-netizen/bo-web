@@ -57,7 +57,7 @@ export async function openEditField(field, currentValue, taskId) {
         <div style="margin-bottom: 15px;">
             ${fieldHtml}
         </div>
-        <button onclick="window.saveEditField('${field}', ${taskId})" style="width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 5px;">Сохранить</button>
+        ${field === 'deadline' ? `<button onclick="window.saveEditField('deadline', ${taskId})" style="width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 5px;">Сохранить</button>` : ''}
     `;
 
     overlay.appendChild(modal);
