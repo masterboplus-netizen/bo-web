@@ -99,8 +99,7 @@ window.openCategoryPicker = function(callback) {
         callback(selectedCategory);
     };
 
-    document.getElementById('close-cat-picker').onclick = () => overlay.remove();
-    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+        overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 };
 
 window.openTaskPhotoGallery = function(taskId, category) {
@@ -151,12 +150,6 @@ window.openPhotoGallery = async function(taskId, category, photoId) {
 
         const container = document.getElementById('app-content');
         if (container) container.scrollTop = 0;
-            const replaceBtn = document.createElement("button"); 
-            replaceBtn.innerHTML = "🔄 Заменить фото"; 
-            replaceBtn.style.cssText = "width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); cursor: pointer; font-size: 14px; margin-bottom: 15px;"; 
-            replaceBtn.onclick = function() { window.galleryReplacePhoto(currentPhoto.id); }; 
-            const mainDiv = container.querySelector("div"); 
-            if (mainDiv) mainDiv.appendChild(replaceBtn);
         
         renderGallery();
     } catch (err) {
@@ -308,12 +301,6 @@ function renderGallery() {
         </div>
     `;
     container.scrollTop = 0;
-            const replaceBtn = document.createElement("button"); 
-            replaceBtn.innerHTML = "🔄 Заменить фото"; 
-            replaceBtn.style.cssText = "width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); cursor: pointer; font-size: 14px; margin-bottom: 15px;"; 
-            replaceBtn.onclick = function() { window.galleryReplacePhoto(currentPhoto.id); }; 
-            const mainDiv = container.querySelector("div"); 
-            if (mainDiv) mainDiv.appendChild(replaceBtn);
 }
 
 window.galleryPrev = function() {
