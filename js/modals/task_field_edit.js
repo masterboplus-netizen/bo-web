@@ -44,7 +44,7 @@ export async function openEditField(field, currentValue, taskId) {
             </div>
 
             <div id="deadline-single" style="display: ${!currentValue.includes(' - ') ? 'block' : 'none'}; margin-bottom: 15px;">
-                <div id="modal-deadline-start" onclick="window.openCustomCalendar('start')" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue ? currentValue.split(' - ')[0].split('-').reverse().join('.') : 'Выберите дату'}</div>
+                <div id="modal-deadline-start" onclick="window.openCustomCalendar('single')" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue ? currentValue.split(' - ')[0].split('-').reverse().join('.') : 'Выберите дату'}</div>
             </div>
             <div id="deadline-range" style="display: ${currentValue.includes(' - ') ? 'block' : 'none'}; margin-bottom: 15px;">
                 <div style="display: flex; gap: 10px;">
@@ -122,18 +122,24 @@ export async function saveEditField(field, taskId) {
         else if (field === 'deadline') {
             const single = document.getElementById('deadline-single');
             const isSingle = single ? single.style.display !== 'none' : true;
+            const toISO = (str) => {
+                if (!str || str === 'Выберите дату' || str === 'Начало' || str === 'Конец') return null;
+                const parts = str.split('.');
+                if (parts.length === 3) return parts[2] + '-' + parts[1] + '-' + parts[0];
+                return str;
+            };
             if (isSingle) {
                 const startEl = document.getElementById('modal-deadline-start');
                 const start = startEl ? startEl.textContent.trim() : '';
-                updateData.deadline_start = start || null;
+                updateData.deadline_start = toISO(start);
                 updateData.deadline_end = null;
             } else {
                 const startEl = document.getElementById('modal-deadline-start-range');
                 const start = startEl ? startEl.textContent.trim() : '';
                 const endEl = document.getElementById('modal-deadline-end');
                 const end = endEl ? endEl.textContent.trim() : '';
-                updateData.deadline_start = start || null;
-                updateData.deadline_end = end || null;
+                updateData.deadline_start = toISO(start);
+                updateData.deadline_end = toISO(end);
             }
         }
         else if (field === 'priority') updateData.priority = value;
