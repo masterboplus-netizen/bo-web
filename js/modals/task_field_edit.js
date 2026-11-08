@@ -19,14 +19,17 @@ export async function openEditField(field, currentValue, taskId) {
         const range = document.getElementById('deadline-range');
         const btnSingle = document.getElementById('btn-single');
         const btnRange = document.getElementById('btn-range');
+        const quickBtns = document.getElementById('quick-date-buttons');
         if (type === 'single') {
             if (single) single.style.display = 'block';
             if (range) range.style.display = 'none';
+            if (quickBtns) quickBtns.style.display = 'flex';
             if (btnSingle) { btnSingle.style.background = 'var(--accent)'; btnSingle.style.color = 'white'; }
             if (btnRange) { btnRange.style.background = 'transparent'; btnRange.style.color = 'var(--fg-dim)'; }
         } else {
             if (single) single.style.display = 'none';
             if (range) range.style.display = 'block';
+            if (quickBtns) quickBtns.style.display = 'none';
             if (btnRange) { btnRange.style.background = 'var(--accent)'; btnRange.style.color = 'white'; }
             if (btnSingle) { btnSingle.style.background = 'transparent'; btnSingle.style.color = 'var(--fg-dim)'; }
         }
@@ -67,7 +70,7 @@ export async function openEditField(field, currentValue, taskId) {
 
             <div id="modal-calendar-container" style="margin-bottom: 15px;"></div>
             <input type="hidden" id="modal-field-input" value="${currentValue}">
-            <div style="display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap;">
+            <div id="quick-date-buttons" style="display: ${currentValue.includes(' - ') ? 'none' : 'flex'}; gap: 6px; margin-top: 12px; flex-wrap: wrap;">
                 <button onclick="window.setModalQuickDate('today')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Сегодня</button>
                 <button onclick="window.setModalQuickDate('tomorrow')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Завтра</button>
                 <button onclick="window.setModalQuickDate('plus3')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">+3 дня</button>
