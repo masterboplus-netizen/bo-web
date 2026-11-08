@@ -48,5 +48,3 @@ window.uploadFromMenu = function() {
     };
     input.click();
 };
-    input.click();
-};
