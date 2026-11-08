@@ -288,7 +288,6 @@ window.openEditField = async function(field, currentValue, taskId) {
                 <button type="button" onclick="window._selectPriority('high', ${taskId})" id="prio-btn-high" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'high' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'high' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Высокий</button>
             </div>
             <input type="hidden" id="modal-field-input" value="${currentValue}">
-            <button onclick="window.saveEditField('priority', ${taskId})" style="width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 15px;">Сохранить</button>
         `;
     }
 
@@ -488,21 +487,19 @@ window.savePhotoTitle = async function(photoId) {
     }
 };
 
-// === ВЫБОР ПРИОРИТЕТА В МОДАЛКЕ ===
-window._selectPriority = function(priority, taskId) {
-    const input = document.getElementById('modal-field-input');
-    if (input) input.value = priority;
-
-    ['low', 'medium', 'high'].forEach(p => {
-        const btn = document.getElementById('prio-btn-' + p);
-        if (btn) {
-            if (p === priority) {
-                btn.style.background = 'var(--accent)';
-                btn.style.color = 'white';
-            } else {
-                btn.style.background = 'var(--bg2)';
-                btn.style.color = 'var(--fg)';
-            }
-        }
-    });
+// === ВЫБОР ПРИОРИТЕТА В МОДАЛКЕ (АВТОСОХРАНЕНИЕ) ===
+window._selectPriority = async function(priority, taskId) {
+    try {
+        const { error } = await db.from('tasks').update({ priority: priority }).eq('id', taskId);
+        if (error) throw error;
+        
+        // Закрываем модалку
+        const overlay = document.querySelector('div[style*="z-index: 100000"]');
+        if (overlay) overlay.remove();
+        
+        // Обновляем экран
+        window.openTaskDetail(taskId);
+    } catch (err) {
+        alert('Ошибка сохранения приоритета: ' + err.message);
+    }
 };
