@@ -8,5 +8,41 @@ export const menuItems = [
   { text: 'Задача', action: () => window.openNewTask(), svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' },
   { text: 'Дневник', action: () => window.openAddDiaryEntry(), svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' }
 ,
-  { text: 'Галерея', action: () => window.openPhotos(), svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' }
+  { text: 'Фото', action: () => window.uploadFromMenu(), svg: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' }
 ];
+
+window.uploadFromMenu = function() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Файл слишком большой (макс 5 МБ)');
+            return;
+        }
+
+        try {
+            const fileName = `gallery_${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+            const { error: uploadError } = await db.storage.from('photos').upload(fileName, file);
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
+
+            const { error: dbError } = await db.from('task_photos').insert([{
+                task_id: null,
+                photo_url: urlData.publicUrl,
+                title: null,
+                category: 'none'
+            }]);
+            if (dbError) throw dbError;
+
+            alert('Фото загружено в Галерею');
+            window.openPhotos();
+        } catch (err) {
+            alert('Ошибка загрузки: ' + err.message);
+        }
+    };
+    input.click();
+};
