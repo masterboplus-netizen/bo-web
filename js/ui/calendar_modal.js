@@ -6,10 +6,23 @@ window._modalCalRangeStart = null;
 window._modalCalRangeEnd = null;
 
 export function openCustomCalendar(mode) {
-    window._modalCalMode = (mode === 'end' || mode === 'start-range' || mode === 'range') ? 'range' : 'single';
+    window._modalCalMode = (mode === 'end' || mode === 'start-range') ? 'range' : 'single';
     window._modalCalSelected = null;
-    window._modalCalRangeStart = null;
-    window._modalCalRangeEnd = null;
+    // Если открываем диапазон и уже есть сохранённые даты в полях — подхватываем их
+    if (window._modalCalMode === 'range') {
+        const startEl = document.getElementById('modal-deadline-start-range');
+        const endEl = document.getElementById('modal-deadline-end');
+        const toISO = (str) => {
+            if (!str || str === 'Начало' || str === 'Конец') return null;
+            const p = str.split('.');
+            return p.length === 3 ? p[2] + '-' + p[1] + '-' + p[0] : str;
+        };
+        if (startEl) window._modalCalRangeStart = toISO(startEl.textContent.trim());
+        if (endEl) window._modalCalRangeEnd = toISO(endEl.textContent.trim());
+    } else {
+        window._modalCalRangeStart = null;
+        window._modalCalRangeEnd = null;
+    }
 
     const overlay = document.createElement('div');
     overlay.id = 'custom-calendar-overlay';

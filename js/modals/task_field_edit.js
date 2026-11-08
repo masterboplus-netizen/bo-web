@@ -1,6 +1,18 @@
 import { db } from '../api/supabase.js';
 
 export async function openEditField(field, currentValue, taskId) {
+    if (field === 'deadline' && currentValue && currentValue.includes(' - ')) {
+        const parts = currentValue.split(' - ');
+        if (parts.length === 2) {
+            const toISO = (str) => {
+                const p = str.split('.');
+                return p.length === 3 ? p[2] + '-' + p[1] + '-' + p[0] : str;
+            };
+            window._modalCalRangeStart = toISO(parts[0]);
+            window._modalCalRangeEnd = toISO(parts[1]);
+        }
+    }
+
     // Локальная функция для переключения типа срока
     window.toggleDeadlineType = function(type) {
         const single = document.getElementById('deadline-single');
