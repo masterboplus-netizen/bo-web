@@ -90,7 +90,7 @@ export async function openTaskDetail(id) {
 
                 <div style="background: var(--bg2); border-radius: 16px; padding: 15px; border: 1px solid var(--bg3); box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 15px; width: 100%; box-sizing: border-box;">
                     <div>
-                        <h2 style="margin: 0 0 10px 0; color: var(--fg); font-size: 24px;">${escapeHtml(task.title)}</h2>
+                        <h2 onclick="window.openEditField('title', '${escapeHtml(task.title)}', ${task.id})" style="margin: 0 0 10px 0; color: var(--fg); font-size: 24px; cursor: pointer;">${escapeHtml(task.title)}</h2>
                         <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">${statusText}</span>
                     </div>
 

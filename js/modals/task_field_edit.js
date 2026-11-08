@@ -46,7 +46,10 @@ export async function openEditField(field, currentValue, taskId) {
     let fieldLabel = '';
     let fieldHtml = '';
 
-    if (field === 'description') {
+    if (field === 'title') {
+        fieldLabel = 'Название';
+        fieldHtml = '<input type="text" id="modal-field-input" value="' + currentValue + '" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">';
+    } else if (field === 'description') {
         fieldLabel = 'Описание';
         fieldHtml = '<textarea id="modal-field-input" rows="4" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">' + currentValue + '</textarea>';
     } else if (field === 'deadline') {
@@ -126,7 +129,8 @@ export async function saveEditField(field, taskId) {
 
     try {
         const updateData = {};
-        if (field === 'description') updateData.description = value || null;
+        if (field === 'title') updateData.title = value || null;
+        else if (field === 'description') updateData.description = value || null;
         else if (field === 'deadline') {
             const single = document.getElementById('deadline-single');
             const isSingle = single ? single.style.display !== 'none' : true;
