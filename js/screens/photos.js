@@ -38,7 +38,7 @@ export async function renderPhotos() {
         if (filtered.length === 0) {
             html += `<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Фото пока нет.</div>`;
         } else {
-            html += '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">';
+            html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;">';
             filtered.forEach((p, idx) => {
                 // Находим индекс в общем массиве (для листания)
                 const globalIdx = window._galleryPhotos.findIndex(ph => ph.id === p.id);
