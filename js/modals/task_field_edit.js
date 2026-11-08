@@ -57,12 +57,21 @@ export async function openEditField(field, currentValue, taskId) {
         <div style="margin-bottom: 15px;">
             ${fieldHtml}
         </div>
+        <button onclick="window.saveEditField('${field}', ${taskId})" style="width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 5px;">Сохранить</button>
     `;
 
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            if (field === 'description' || field === 'deadline') {
+                window.saveEditField(field, taskId);
+            } else {
+                overlay.remove();
+            }
+        }
+    };
 
     setTimeout(() => {
         overlay.style.opacity = '1';
@@ -78,8 +87,7 @@ export async function openEditField(field, currentValue, taskId) {
         setTimeout(() => overlay.remove(), 200);
     }
 
-    document.getElementById('close-edit-field').onclick = close;
-    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+        overlay.onclick = (e) => { if (e.target === overlay) close(); };
 }
 
 export async function saveEditField(field, taskId) {

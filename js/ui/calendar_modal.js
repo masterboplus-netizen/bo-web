@@ -74,7 +74,10 @@ export function setModalQuickDate(type) {
     else if (type === 'plus7') { d.setDate(d.getDate() + 7); }
     const dateStr = d.toISOString().split('T')[0];
     window._modalCalSelected = dateStr;
-    document.getElementById('modal-field-input').value = dateStr;
+    const input = document.getElementById('modal-field-input');
+    if (input) input.value = dateStr;
+    const startInput = document.getElementById('modal-deadline-start');
+    if (startInput) startInput.value = dateStr;
     window.renderModalCalendar(dateStr);
 }
 
