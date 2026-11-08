@@ -62,7 +62,8 @@ export function changeModalMonth(delta) {
 
 export function selectModalDate(dateStr) {
     window._modalCalSelected = dateStr;
-    document.getElementById('modal-field-input').value = dateStr;
+    const input = document.getElementById('modal-field-input');
+    if (input) input.value = dateStr;
     window.renderModalCalendar();
 }
 
