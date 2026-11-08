@@ -44,12 +44,12 @@ export async function openEditField(field, currentValue, taskId) {
             </div>
 
             <div id="deadline-single" style="display: ${!currentValue.includes(' - ') ? 'block' : 'none'}; margin-bottom: 15px;">
-                <input type="date" id="modal-deadline-start" value="${currentValue.split(' - ')[0] || ''}" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <div id="modal-deadline-start" onclick="window.openCustomCalendar('start')" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue.split(' - ')[0] || 'Выберите дату'}</div>
             </div>
             <div id="deadline-range" style="display: ${currentValue.includes(' - ') ? 'block' : 'none'}; margin-bottom: 15px;">
                 <div style="display: flex; gap: 10px;">
-                    <input type="date" id="modal-deadline-start-range" value="${currentValue.split(' - ')[0] || ''}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <input type="date" id="modal-deadline-end" value="${currentValue.split(' - ')[1] || ''}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <div id="modal-deadline-start-range" onclick="window.openCustomCalendar('start-range')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue.split(' - ')[0] || 'Начало'}</div>
+                    <div id="modal-deadline-end" onclick="window.openCustomCalendar('end')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue.split(' - ')[1] || 'Конец'}</div>
                 </div>
             </div>
 
