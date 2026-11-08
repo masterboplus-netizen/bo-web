@@ -190,6 +190,7 @@ window.openEditTaskModal = async function(id) {
 
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
+        overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
         setTimeout(() => {
             overlay.style.opacity = '1';
