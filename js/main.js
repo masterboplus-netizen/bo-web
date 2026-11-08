@@ -19,6 +19,10 @@ import './screens/taskDetail.js';
 import './screens/taskEdit.js';
 import './modals/task_actions.js';
 import './modals/task_photos.js';
+import './modals/task_field_edit.js';
+import './ui/calendar_modal.js';
+import './modals/photo_title.js';
+
 
 function saveCurrentScreen(screen) {
     localStorage.setItem('currentScreen', screen);
