@@ -288,6 +288,7 @@ window.openEditField = async function(field, currentValue, taskId) {
                 <button type="button" onclick="window._selectPriority('high', ${taskId})" id="prio-btn-high" style="padding: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: ${currentValue === 'high' ? 'var(--accent)' : 'var(--bg2)'}; color: ${currentValue === 'high' ? 'white' : 'var(--fg)'}; font-size: 15px; cursor: pointer; text-align: left; padding-left: 16px;">Высокий</button>
             </div>
             <input type="hidden" id="modal-field-input" value="${currentValue}">
+            <button onclick="window.saveEditField('priority', ${taskId})" style="width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 15px;">Сохранить</button>
         `;
     }
 
@@ -304,6 +305,9 @@ window.openEditField = async function(field, currentValue, taskId) {
 
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
+
+    // Закрытие по клику на фон
+    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
     setTimeout(() => {
         overlay.style.opacity = '1';
