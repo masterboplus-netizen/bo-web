@@ -123,12 +123,15 @@ export async function saveEditField(field, taskId) {
             const single = document.getElementById('deadline-single');
             const isSingle = single ? single.style.display !== 'none' : true;
             if (isSingle) {
-                const start = document.getElementById('modal-deadline-start').value;
+                const startEl = document.getElementById('modal-deadline-start');
+                const start = startEl ? startEl.textContent.trim() : '';
                 updateData.deadline_start = start || null;
                 updateData.deadline_end = null;
             } else {
-                const start = document.getElementById('modal-deadline-start-range').value;
-                const end = document.getElementById('modal-deadline-end').value;
+                const startEl = document.getElementById('modal-deadline-start-range');
+                const start = startEl ? startEl.textContent.trim() : '';
+                const endEl = document.getElementById('modal-deadline-end');
+                const end = endEl ? endEl.textContent.trim() : '';
                 updateData.deadline_start = start || null;
                 updateData.deadline_end = end || null;
             }

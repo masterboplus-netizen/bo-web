@@ -95,11 +95,12 @@ export function renderCalendar() {
 }
 
 export function handleCalendarDayClick(dateStr) {
+    const formatted = dateStr.split('-').reverse().join('.');
     if (window._modalCalMode === 'single') {
         const singleInput = document.getElementById('modal-deadline-start');
-        if (singleInput) singleInput.value = dateStr;
+        if (singleInput) singleInput.textContent = formatted;
         const startRange = document.getElementById('modal-deadline-start-range');
-        if (startRange) startRange.value = dateStr;
+        if (startRange) startRange.textContent = formatted;
         const overlay = document.getElementById('custom-calendar-overlay');
         if (overlay) overlay.remove();
     } else {
@@ -125,8 +126,8 @@ export function saveRangeFromCalendar() {
     if (window._modalCalRangeStart && window._modalCalRangeEnd) {
         const startInput = document.getElementById('modal-deadline-start-range');
         const endInput = document.getElementById('modal-deadline-end');
-        if (startInput) startInput.value = window._modalCalRangeStart;
-        if (endInput) endInput.value = window._modalCalRangeEnd;
+        if (startInput) startInput.textContent = window._modalCalRangeStart.split('-').reverse().join('.');
+        if (endInput) endInput.textContent = window._modalCalRangeEnd.split('-').reverse().join('.');
     }
     const overlay = document.getElementById('custom-calendar-overlay');
     if (overlay) overlay.remove();
@@ -152,18 +153,19 @@ export function setModalQuickDate(type) {
     else if (type === 'plus3') { d.setDate(d.getDate() + 3); }
     else if (type === 'plus7') { d.setDate(d.getDate() + 7); }
     const dateStr = d.toISOString().split('T')[0];
+    const formatted = dateStr.split('-').reverse().join('.');
     
     const single = document.getElementById('deadline-single');
     const isSingle = single ? single.style.display !== 'none' : true;
     
     if (isSingle) {
         const input = document.getElementById('modal-deadline-start');
-        if (input) input.value = dateStr;
+        if (input) input.textContent = formatted;
     } else {
         const start = document.getElementById('modal-deadline-start-range');
         const end = document.getElementById('modal-deadline-end');
-        if (start && !start.value) start.value = dateStr;
-        else if (end) end.value = dateStr;
+        if (start && (start.textContent === 'Начало' || !start.textContent)) start.textContent = formatted;
+        else if (end) end.textContent = formatted;
     }
 }
 window.setModalQuickDate = setModalQuickDate;
