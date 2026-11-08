@@ -30,7 +30,7 @@ export async function renderPhotos() {
 
         // Рендер
         let html = '<div style="padding: 10px; max-width: 800px; margin: 0 auto; padding-bottom: 100px;">';
-        html += '<h2 style="color: var(--fg); margin-bottom: 15px;">Галерея</h2>';
+        
 
         // Фильтр убран
 
