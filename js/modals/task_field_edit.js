@@ -19,8 +19,7 @@ export async function openEditField(field, currentValue, taskId) {
         const range = document.getElementById('deadline-range');
         const btnSingle = document.getElementById('btn-single');
         const btnRange = document.getElementById('btn-range');
-        const quickBtns = document.getElementById('quick-date-buttons');
-        if (type === 'single') {
+                if (type === 'single') {
             if (single) single.style.display = 'block';
             if (range) range.style.display = 'none';
             if (quickBtns) quickBtns.style.display = 'flex';
@@ -70,13 +69,7 @@ export async function openEditField(field, currentValue, taskId) {
 
             <div id="modal-calendar-container" style="margin-bottom: 15px;"></div>
             <input type="hidden" id="modal-field-input" value="${currentValue}">
-            <div id="quick-date-buttons" style="display: ${currentValue.includes(' - ') ? 'none' : 'flex'}; gap: 6px; margin-top: 12px; flex-wrap: wrap;">
-                <button onclick="window.setModalQuickDate('today')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Сегодня</button>
-                <button onclick="window.setModalQuickDate('tomorrow')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">Завтра</button>
-                <button onclick="window.setModalQuickDate('plus3')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">+3 дня</button>
-                <button onclick="window.setModalQuickDate('plus7')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; cursor: pointer;">+7 дней</button>
-            </div>
-        `;
+                    `;
     } else if (field === 'priority') {
         fieldLabel = 'Приоритет';
         fieldHtml = `
