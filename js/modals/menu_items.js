@@ -15,34 +15,36 @@ window.uploadFromMenu = function() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
+    input.multiple = true; // РАЗРЕШАЕМ НЕСКОЛЬКО ФАЙЛОВ
     input.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        if (file.size > 5 * 1024 * 1024) {
-            alert('Файл слишком большой (макс 5 МБ)');
-            return;
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Файл ' + file.name + ' слишком большой (макс 5 МБ), пропускаем');
+                continue;
+            }
+            try {
+                const fileName = `gallery_${Date.now()}_${i}_${file.name.replace(/\s/g, '_')}`;
+                const { error: uploadError } = await db.storage.from('photos').upload(fileName, file);
+                if (uploadError) throw uploadError;
+                const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
+                const { error: dbError } = await db.from('task_photos').insert([{
+                    task_id: null,
+                    photo_url: urlData.publicUrl,
+                    title: null,
+                    category: 'none'
+                }]);
+                if (dbError) throw dbError;
+            } catch (err) {
+                console.error('Ошибка загрузки ' + file.name + ': ' + err.message);
+            }
         }
-
-        try {
-            const fileName = `gallery_${Date.now()}_${file.name.replace(/\s/g, '_')}`;
-            const { error: uploadError } = await db.storage.from('photos').upload(fileName, file);
-            if (uploadError) throw uploadError;
-
-            const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
-
-            const { error: dbError } = await db.from('task_photos').insert([{
-                task_id: null,
-                photo_url: urlData.publicUrl,
-                title: null,
-                category: 'none'
-            }]);
-            if (dbError) throw dbError;
-
-            alert('Фото загружено в Галерею');
-            window.openPhotos();
-        } catch (err) {
-            alert('Ошибка загрузки: ' + err.message);
-        }
+        window.openPhotos();
     };
+    input.click();
+};
     input.click();
 };
