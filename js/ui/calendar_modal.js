@@ -144,3 +144,26 @@ window.renderCalendar = renderCalendar;
 window.handleCalendarDayClick = handleCalendarDayClick;
 window.saveRangeFromCalendar = saveRangeFromCalendar;
 window.changeModalMonth = changeModalMonth;
+
+export function setModalQuickDate(type) {
+    const d = new Date();
+    if (type === 'today') { /* nothing */ }
+    else if (type === 'tomorrow') { d.setDate(d.getDate() + 1); }
+    else if (type === 'plus3') { d.setDate(d.getDate() + 3); }
+    else if (type === 'plus7') { d.setDate(d.getDate() + 7); }
+    const dateStr = d.toISOString().split('T')[0];
+    
+    const single = document.getElementById('deadline-single');
+    const isSingle = single ? single.style.display !== 'none' : true;
+    
+    if (isSingle) {
+        const input = document.getElementById('modal-deadline-start');
+        if (input) input.value = dateStr;
+    } else {
+        const start = document.getElementById('modal-deadline-start-range');
+        const end = document.getElementById('modal-deadline-end');
+        if (start && !start.value) start.value = dateStr;
+        else if (end) end.value = dateStr;
+    }
+}
+window.setModalQuickDate = setModalQuickDate;
