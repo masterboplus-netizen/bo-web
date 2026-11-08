@@ -101,7 +101,7 @@ export async function openTaskDetail(id) {
                     </div>
                     ` : ''}
 
-                    <div onclick="window.openEditField('deadline', '${(task.deadline_start || '').substring(0, 10)}', ${task.id})" style="padding: 15px; border-bottom: 1px solid var(--bg3); cursor: pointer;">
+                    <div onclick="window.openEditField('deadline', '${(task.deadline_start || '').substring(0, 10)}${task.deadline_end ? ' - ' + task.deadline_end.substring(0, 10) : ''}', ${task.id})" style="padding: 15px; border-bottom: 1px solid var(--bg3); cursor: pointer;">
                         <div style="color: var(--fg-dim); font-size: 12px; margin-bottom: 5px;">Плановый срок</div>
                         <div style="color: var(--fg); font-size: 15px;">${deadlineDisplay}</div>
                     </div>
