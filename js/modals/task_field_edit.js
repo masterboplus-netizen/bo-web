@@ -44,12 +44,12 @@ export async function openEditField(field, currentValue, taskId) {
             </div>
 
             <div id="deadline-single" style="display: ${!currentValue.includes(' - ') ? 'block' : 'none'}; margin-bottom: 15px;">
-                <div id="modal-deadline-start" onclick="window.openCustomCalendar('start')" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue.split(' - ')[0] || 'Выберите дату'}</div>
+                <div id="modal-deadline-start" onclick="window.openCustomCalendar('start')" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue ? currentValue.split(' - ')[0].split('-').reverse().join('.') : 'Выберите дату'}</div>
             </div>
             <div id="deadline-range" style="display: ${currentValue.includes(' - ') ? 'block' : 'none'}; margin-bottom: 15px;">
                 <div style="display: flex; gap: 10px;">
-                    <div id="modal-deadline-start-range" onclick="window.openCustomCalendar('start-range')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue.split(' - ')[0] || 'Начало'}</div>
-                    <div id="modal-deadline-end" onclick="window.openCustomCalendar('end')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue.split(' - ')[1] || 'Конец'}</div>
+                    <div id="modal-deadline-start-range" onclick="window.openCustomCalendar('start-range')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue ? currentValue.split(' - ')[0].split('-').reverse().join('.') : 'Начало'}</div>
+                    <div id="modal-deadline-end" onclick="window.openCustomCalendar('end')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${currentValue && currentValue.split(' - ')[1] ? currentValue.split(' - ')[1].split('-').reverse().join('.') : 'Конец'}</div>
                 </div>
             </div>
 
@@ -101,8 +101,7 @@ export async function openEditField(field, currentValue, taskId) {
         overlay.style.opacity = '1';
         modal.style.transform = 'scale(1)';
         if (field === 'deadline') {
-            window.renderModalCalendar(currentValue);
-        }
+                    }
     }, 10);
 
     function close() {
