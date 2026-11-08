@@ -361,6 +361,10 @@ window.galleryPhotoActions = function(photoId) {
 };
 
 window.galleryDeletePhoto = function(photoId) {
+    if (!photoId || photoId === 'null' || photoId === 'undefined') {
+        alert('Ошибка: неверный ID фото');
+        return;
+    }
     window.showConfirm('Удалить это фото?', async () => {
         try {
             const state = window._galleryState;
