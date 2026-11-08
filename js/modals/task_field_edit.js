@@ -1,6 +1,25 @@
 import { db } from '../api/supabase.js';
 
 export async function openEditField(field, currentValue, taskId) {
+    // Локальная функция для переключения типа срока
+    window.toggleDeadlineType = function(type) {
+        const single = document.getElementById('deadline-single');
+        const range = document.getElementById('deadline-range');
+        const btnSingle = document.getElementById('btn-single');
+        const btnRange = document.getElementById('btn-range');
+        if (type === 'single') {
+            if (single) single.style.display = 'block';
+            if (range) range.style.display = 'none';
+            if (btnSingle) { btnSingle.style.background = 'var(--accent)'; btnSingle.style.color = 'white'; }
+            if (btnRange) { btnRange.style.background = 'transparent'; btnRange.style.color = 'var(--fg-dim)'; }
+        } else {
+            if (single) single.style.display = 'none';
+            if (range) range.style.display = 'block';
+            if (btnRange) { btnRange.style.background = 'var(--accent)'; btnRange.style.color = 'white'; }
+            if (btnSingle) { btnSingle.style.background = 'transparent'; btnSingle.style.color = 'var(--fg-dim)'; }
+        }
+    };
+
     if (currentValue && typeof currentValue === 'string' && currentValue.includes('T')) {
         currentValue = currentValue.substring(0, 10);
     }
@@ -24,9 +43,14 @@ export async function openEditField(field, currentValue, taskId) {
                 <button onclick="window.toggleDeadlineType('range')" id="btn-range" style="flex: 1; padding: 8px; border-radius: 10px; border: none; background: ${currentValue.includes(' - ') ? 'var(--accent)' : 'transparent'}; color: ${currentValue.includes(' - ') ? 'white' : 'var(--fg-dim)'}; font-size: 13px; cursor: pointer;">Диапазон</button>
             </div>
 
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <input type="date" id="modal-deadline-start" value="${currentValue.split(' - ')[0] || ''}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                <input type="date" id="modal-deadline-end" value="${currentValue.split(' - ')[1] || ''}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; display: ${currentValue.includes(' - ') ? 'block' : 'none'};">
+            <div id="deadline-single" style="display: ${!currentValue.includes(' - ') ? 'block' : 'none'}; margin-bottom: 15px;">
+                <input type="date" id="modal-deadline-start" value="${currentValue.split(' - ')[0] || ''}" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+            </div>
+            <div id="deadline-range" style="display: ${currentValue.includes(' - ') ? 'block' : 'none'}; margin-bottom: 15px;">
+                <div style="display: flex; gap: 10px;">
+                    <input type="date" id="modal-deadline-start-range" value="${currentValue.split(' - ')[0] || ''}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="date" id="modal-deadline-end" value="${currentValue.split(' - ')[1] || ''}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                </div>
             </div>
 
             <div id="modal-calendar-container" style="margin-bottom: 15px;"></div>
@@ -97,14 +121,17 @@ export async function saveEditField(field, taskId) {
         const updateData = {};
         if (field === 'description') updateData.description = value || null;
         else if (field === 'deadline') {
-            const start = document.getElementById('modal-deadline-start').value;
-            const end = document.getElementById('modal-deadline-end').value;
-            if (end && end !== '') {
-                updateData.deadline_start = start || null;
-                updateData.deadline_end = end || null;
-            } else {
+            const single = document.getElementById('deadline-single');
+            const isSingle = single ? single.style.display !== 'none' : true;
+            if (isSingle) {
+                const start = document.getElementById('modal-deadline-start').value;
                 updateData.deadline_start = start || null;
                 updateData.deadline_end = null;
+            } else {
+                const start = document.getElementById('modal-deadline-start-range').value;
+                const end = document.getElementById('modal-deadline-end').value;
+                updateData.deadline_start = start || null;
+                updateData.deadline_end = end || null;
             }
         }
         else if (field === 'priority') updateData.priority = value;
