@@ -483,3 +483,22 @@ window.savePhotoTitle = async function(photoId) {
         alert('Ошибка сохранения: ' + err.message);
     }
 };
+
+// === ВЫБОР ПРИОРИТЕТА В МОДАЛКЕ ===
+window._selectPriority = function(priority, taskId) {
+    const input = document.getElementById('modal-field-input');
+    if (input) input.value = priority;
+
+    ['low', 'medium', 'high'].forEach(p => {
+        const btn = document.getElementById('prio-btn-' + p);
+        if (btn) {
+            if (p === priority) {
+                btn.style.background = 'var(--accent)';
+                btn.style.color = 'white';
+            } else {
+                btn.style.background = 'var(--bg2)';
+                btn.style.color = 'var(--fg)';
+            }
+        }
+    });
+};
