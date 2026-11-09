@@ -524,7 +524,7 @@ window.showSelectionSheet = function() {
 
     const sheet = document.createElement('div');
     sheet.id = 'selection-sheet';
-    sheet.style.cssText = 'position: fixed; bottom: 70px; left: 0; width: 100%; background: var(--bg2); border-top: 1px solid var(--bg3); border-radius: 20px 20px 0 0; padding: 15px; z-index: 10005; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.4);';
+    sheet.style.cssText = 'position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg2); border-top: 1px solid var(--bg3); border-radius: 20px 20px 0 0; padding: 15px 15px 35px 15px; z-index: 10010; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.4);';
 
     sheet.innerHTML = `
         <button onclick="window.shareSelected()" style="background: transparent; border: none; color: var(--fg); display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; font-size: 11px;">
