@@ -129,6 +129,8 @@ function renderFullGallery() {
     const photo = photos[window._galleryIndex];
 
     if (!photo) {
+        // Если фото нет (удалено или индекс вне диапазона) — сбрасываем индекс и открываем сетку
+        window._galleryIndex = 0;
         window.openPhotos();
         return;
     }
@@ -228,6 +230,7 @@ window.galleryDeletePhoto = function(photoId) {
         try {
             const { error } = await db.from('task_photos').delete().eq('id', safeId);
             if (error) throw error;
+            window._galleryIndex = 0;
             window.openPhotos();
         } catch (err) {
             alert('Ошибка удаления: ' + err.message);
