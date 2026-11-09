@@ -32,9 +32,21 @@ export function openNewTask() {
             </div>
 
             <div style="margin-bottom: 20px;">
-                <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Срок</label>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <div id="new-task-deadline-start" onclick="window.openCustomCalendar('new-task')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${today.split('-').reverse().join('.')}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <label style="color: var(--fg-dim);">Срок</label>
+                    <div style="display: flex; background: var(--bg2); border-radius: 12px; padding: 2px;">
+                        <button onclick="window.toggleNewTaskDeadlineType('single')" id="new-btn-single" style="padding: 4px 10px; border-radius: 10px; border: none; background: var(--accent); color: white; font-size: 12px; cursor: pointer;">Одна дата</button>
+                        <button onclick="window.toggleNewTaskDeadlineType('range')" id="new-btn-range" style="padding: 4px 10px; border-radius: 10px; border: none; background: transparent; color: var(--fg-dim); font-size: 12px; cursor: pointer;">Диапазон</button>
+                    </div>
+                </div>
+                <div id="new-deadline-single" style="display: block;">
+                    <div id="new-task-deadline-start" onclick="window.openCustomCalendar('new-task')" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${today.split('-').reverse().join('.')}</div>
+                </div>
+                <div id="new-deadline-range" style="display: none;">
+                    <div style="display: flex; gap: 10px;">
+                        <div id="new-task-deadline-start-range" onclick="window.openCustomCalendar('new-task-range')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">Начало</div>
+                        <div id="new-task-deadline-end" onclick="window.openCustomCalendar('new-task-end')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">Конец</div>
+                    </div>
                     <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px;">
                         <button onclick="window.setNewTaskQuickDate('today')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 11px; cursor: pointer;">Сегодня</button>
                         <button onclick="window.setNewTaskQuickDate('tomorrow')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 11px; cursor: pointer;">Завтра</button>
@@ -98,7 +110,28 @@ export async function saveNewTask() {
 
     const desc = document.getElementById('new-task-desc').value.trim();
     const priority = document.getElementById('new-task-priority').value;
-    const dateStart = window._newTaskDeadline || (() => { const el = document.getElementById('new-task-deadline-start'); if (!el) return ''; const parts = el.textContent.trim().split('.'); return parts.length === 3 ? parts[2] + '-' + parts[1] + '-' + parts[0] : ''; })();
+    const single = document.getElementById('new-deadline-single');
+    const isSingle = single ? single.style.display !== 'none' : true;
+    let dateStart = null;
+    let dateEnd = null;
+    if (isSingle) {
+        const el = document.getElementById('new-task-deadline-start');
+        if (el && el.textContent !== 'Выберите дату') {
+            const p = el.textContent.trim().split('.');
+            if (p.length === 3) dateStart = p[2] + '-' + p[1] + '-' + p[0];
+        }
+    } else {
+        const elStart = document.getElementById('new-task-deadline-start-range');
+        const elEnd = document.getElementById('new-task-deadline-end');
+        if (elStart && elStart.textContent !== 'Начало') {
+            const p = elStart.textContent.trim().split('.');
+            if (p.length === 3) dateStart = p[2] + '-' + p[1] + '-' + p[0];
+        }
+        if (elEnd && elEnd.textContent !== 'Конец') {
+            const p = elEnd.textContent.trim().split('.');
+            if (p.length === 3) dateEnd = p[2] + '-' + p[1] + '-' + p[0];
+        }
+    }
 
     let photoUrl = null;
     const photoInput = document.getElementById('new-task-photo');
@@ -124,6 +157,7 @@ export async function saveNewTask() {
             description: desc || null,
             priority: priority,
             deadline_start: dateStart || null,
+            deadline_end: dateEnd || null,
             status: 'active',
             photo_url: photoUrl
         }]);

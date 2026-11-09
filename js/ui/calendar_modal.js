@@ -6,7 +6,7 @@ window._modalCalRangeStart = null;
 window._modalCalRangeEnd = null;
 
 export function openCustomCalendar(mode) {
-    window._modalCalMode = (mode === 'end' || mode === 'start-range') ? 'range' : 'single';
+    window._modalCalMode = (mode === 'end' || mode === 'start-range' || mode === 'new-task-range' || mode === 'new-task-end') ? 'range' : 'single';
     window._modalCalSelected = null;
     // Если открываем диапазон и уже есть сохранённые даты в полях — подхватываем их
     if (window._modalCalMode === 'range') {
@@ -114,6 +114,8 @@ export function handleCalendarDayClick(dateStr) {
         if (singleInput) singleInput.textContent = formatted;
         const startRange = document.getElementById('modal-deadline-start-range');
         if (startRange) startRange.textContent = formatted;
+        const newTaskStart = document.getElementById('new-task-deadline-start');
+        if (newTaskStart) newTaskStart.textContent = formatted;
         const overlay = document.getElementById('custom-calendar-overlay');
         if (overlay) overlay.remove();
     } else {
@@ -141,6 +143,10 @@ export function saveRangeFromCalendar() {
         const endInput = document.getElementById('modal-deadline-end');
         if (startInput) startInput.textContent = window._modalCalRangeStart.split('-').reverse().join('.');
         if (endInput) endInput.textContent = window._modalCalRangeEnd.split('-').reverse().join('.');
+        const newStart = document.getElementById('new-task-deadline-start-range');
+        const newEnd = document.getElementById('new-task-deadline-end');
+        if (newStart) newStart.textContent = window._modalCalRangeStart.split('-').reverse().join('.');
+        if (newEnd) newEnd.textContent = window._modalCalRangeEnd.split('-').reverse().join('.');
     }
     const overlay = document.getElementById('custom-calendar-overlay');
     if (overlay) overlay.remove();
