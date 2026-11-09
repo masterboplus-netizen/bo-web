@@ -83,7 +83,6 @@ export async function renderPhotos() {
         html += '</div>';
         
         // Плавающая капсула внизу
-        const currentTab = window._galleryTab || 'photos';
         html += `
             <div style="position: fixed; bottom: 100px; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 15px; box-sizing: border-box; z-index: 10002; pointer-events: none;">
                 <div style="display: flex; background: var(--bg2); border-radius: 24px; padding: 4px; border: 1px solid var(--bg3); flex: 0 1 auto; max-width: 320px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); pointer-events: auto;">
@@ -241,8 +240,6 @@ window.galleryDeletePhoto = function(photoId) {
 };
 
 // === РЕЖИМ ВЫДЕЛЕНИЯ ===
-window._longPressTimer = null;
-
 window.enableSelectionMode = function() {
     window._selectionMode = true;
     if (window.showSelectionSheet) window.showSelectionSheet();
