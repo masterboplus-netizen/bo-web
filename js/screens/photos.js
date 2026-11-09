@@ -603,6 +603,7 @@ window.deleteSelectedPhotos = async function() {
     if (!confirm('Удалить ' + window._selectedPhotos.length + ' фото?')) return;
     try {
         for (const pid of window._selectedPhotos) {
+            if (!pid || pid === 'null') continue;
             await db.from('task_photos').delete().eq('id', pid);
         }
         window._selectedPhotos = [];
