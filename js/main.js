@@ -1,4 +1,5 @@
 import { renderDiary } from './screens/diary.js';
+import './modals/diary_edit.js';
 import { renderNotepad } from './screens/notepad.js';
 import { renderFinance } from './screens/finance.js';
 import { renderCashFlow } from './screens/cashflow.js';
