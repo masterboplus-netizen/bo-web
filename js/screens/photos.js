@@ -60,11 +60,11 @@ export async function renderPhotos() {
         if (filtered.length === 0) {
             html += `<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Фото пока нет.</div>`;
         } else {
-            html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;">';
+            html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; user-select: none; -webkit-user-select: none;">';
             filtered.forEach((p, idx) => {
                 // Находим индекс в общем массиве (для листания)
                 const globalIdx = window._galleryPhotos.findIndex(ph => ph.id === p.id);
-                html += `<div class="photo-cell" data-photo-id="${p.id}" onmousedown="window.startPhotoLongPress(${p.id}, this)" onmouseup="window.cancelPhotoLongPress()" onmouseleave="window.cancelPhotoLongPress()" ontouchstart="window.startPhotoLongPress(${p.id}, this)" ontouchend="window.cancelPhotoLongPress()" onclick="window.handlePhotoClick(${globalIdx}, ${p.id}, this)" style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; background: #000;"><img src="${p.photo_url}" style="width: 100%; height: 100%; object-fit: cover; display: block;"><div class="photo-select-circle" style="display: none; position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid white; background: rgba(0,0,0,0.3);"></div></div>`;
+                html += `<div class="photo-cell" data-photo-id="${p.id}" onmousedown="window.startPhotoLongPress(${p.id}, this)" onmouseup="window.cancelPhotoLongPress()" onmouseleave="window.cancelPhotoLongPress()" ontouchstart="window.startPhotoLongPress(${p.id}, this)" ontouchend="window.cancelPhotoLongPress()" onclick="window.handlePhotoClick(${globalIdx}, ${p.id}, this)" style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; background: #000;"><img src="${p.photo_url}" draggable="false" oncontextmenu="return false;" style="width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;"><div class="photo-select-circle" style="display: none; position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid white; background: rgba(0,0,0,0.3);"></div></div>`;
             });
             html += '</div>';
         }
@@ -167,7 +167,7 @@ function renderFullGallery() {
             <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none;">
                 ${photos.map((p, idx) => `
                     <div onclick="window.openFullGallery(${idx})" style="flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid ${idx === window._galleryIndex ? 'var(--accent)' : 'transparent'}; opacity: ${idx === window._galleryIndex ? '1' : '0.6'}; transition: all 0.2s;">
-                        <img src="${p.photo_url}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                        <img src="${p.photo_url}" draggable="false" oncontextmenu="return false;" style="width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
                     </div>
                 `).join('')}
             </div>
