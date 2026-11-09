@@ -19,6 +19,7 @@ import './modals/camera_modal.js';
 import { renderTasks } from './screens/tasks.js';
 import { openNewTask, saveNewTask } from './modals/task_create.js';
 import { openObject } from './screens/objectDetail.js';
+import './modals/object_edit.js';
 import './screens/taskDetail.js';
 import './screens/taskEdit.js';
 import './modals/task_actions.js';
