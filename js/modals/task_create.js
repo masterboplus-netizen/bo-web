@@ -34,14 +34,13 @@ export function openNewTask() {
             <div style="margin-bottom: 20px;">
                 <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Срок</label>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="date" id="new-task-deadline-start" value="${today}" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <select id="new-task-quick-date" onchange="window.applyQuickDate(this.value)" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 12px; max-width: 100px;">
-                        <option value="">Быстро...</option>
-                        <option value="today">Сегодня</option>
-                        <option value="tomorrow">Завтра</option>
-                        <option value="plus3">+3 дня</option>
-                        <option value="plus7">+7 дней</option>
-                    </select>
+                    <div id="new-task-deadline-start" onclick="window.openCustomCalendar('new-task')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${today.split('-').reverse().join('.')}</div>
+                    <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px;">
+                        <button onclick="window.setNewTaskQuickDate('today')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 11px; cursor: pointer;">Сегодня</button>
+                        <button onclick="window.setNewTaskQuickDate('tomorrow')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 11px; cursor: pointer;">Завтра</button>
+                        <button onclick="window.setNewTaskQuickDate('plus3')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 11px; cursor: pointer;">+3</button>
+                        <button onclick="window.setNewTaskQuickDate('plus7')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 11px; cursor: pointer;">+7</button>
+                    </div>
                 </div>
             </div>
 
@@ -99,7 +98,7 @@ export async function saveNewTask() {
 
     const desc = document.getElementById('new-task-desc').value.trim();
     const priority = document.getElementById('new-task-priority').value;
-    const dateStart = document.getElementById('new-task-deadline-start').value;
+    const dateStart = window._newTaskDeadline || (() => { const el = document.getElementById('new-task-deadline-start'); if (!el) return ''; const parts = el.textContent.trim().split('.'); return parts.length === 3 ? parts[2] + '-' + parts[1] + '-' + parts[0] : ''; })();
 
     let photoUrl = null;
     const photoInput = document.getElementById('new-task-photo');
