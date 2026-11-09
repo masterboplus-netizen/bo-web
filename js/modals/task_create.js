@@ -171,3 +171,21 @@ export async function saveNewTask() {
 
 window.openNewTask = openNewTask;
 window.saveNewTask = saveNewTask;
+
+window.toggleNewTaskDeadlineType = function(type) {
+    const single = document.getElementById('new-deadline-single');
+    const range = document.getElementById('new-deadline-range');
+    const btnSingle = document.getElementById('new-btn-single');
+    const btnRange = document.getElementById('new-btn-range');
+    if (type === 'single') {
+        if (single) single.style.display = 'block';
+        if (range) range.style.display = 'none';
+        if (btnSingle) { btnSingle.style.background = 'var(--accent)'; btnSingle.style.color = 'white'; }
+        if (btnRange) { btnRange.style.background = 'transparent'; btnRange.style.color = 'var(--fg-dim)'; }
+    } else {
+        if (single) single.style.display = 'none';
+        if (range) range.style.display = 'block';
+        if (btnRange) { btnRange.style.background = 'var(--accent)'; btnRange.style.color = 'white'; }
+        if (btnSingle) { btnSingle.style.background = 'transparent'; btnSingle.style.color = 'var(--fg-dim)'; }
+    }
+};
