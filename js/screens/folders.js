@@ -52,3 +52,7 @@ export async function createNewFolder() {
 window.renderFoldersTab = renderFoldersTab;
 window.createNewFolder = createNewFolder;
 window.openFolder = openFolder;
+
+export function openFolder(id) {
+    alert('Открытие папки ' + id + ' (в разработке)');
+}

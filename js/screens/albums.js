@@ -63,7 +63,7 @@ export async function createNewAlbum() {
     if (!name) return;
     await createAlbum(name, null);
     renderAlbumsTab();
-};
+}
 
 export async function openAlbum(id) {
     const container = document.getElementById('app-content');
@@ -93,7 +93,7 @@ export async function openAlbum(id) {
     } catch (err) {
         container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${err.message}</div>`;
     }
-};
+}
 
 export async function removePhotoFromAlbum(albumId, photoId) {
     if (!confirm('Удалить фото из альбома?')) return;
@@ -104,7 +104,7 @@ export async function removePhotoFromAlbum(albumId, photoId) {
     } catch (err) {
         alert('Ошибка: ' + err.message);
     }
-};
+}
 
 export async function deleteAlbum(id) {
     if (!confirm('Удалить весь альбом?')) return;
@@ -115,7 +115,7 @@ export async function deleteAlbum(id) {
     } catch (err) {
         alert('Ошибка: ' + err.message);
     }
-};
+}
 
 window.renderAlbumsTab = renderAlbumsTab;
 window.createNewAlbum = createNewAlbum;
