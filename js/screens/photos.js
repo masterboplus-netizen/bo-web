@@ -432,3 +432,8 @@ window.createNewFolder = async function() {
 window.openFolder = function(id) {
     alert('Открытие папки ' + id + ' (в разработке)');
 };
+
+window.switchGalleryTab = function(tab) {
+    window._galleryTab = tab;
+    renderPhotos();
+};
