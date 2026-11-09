@@ -72,6 +72,7 @@ export async function renderPhotos() {
         } else {
             html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; user-select: none; -webkit-user-select: none;">';
             filtered.forEach((p, idx) => {
+                if (!p) return;
                 // Находим индекс в общем массиве (для листания)
                 const globalIdx = window._galleryPhotos.findIndex(ph => ph.id === p.id);
                 html += `<div class="photo-cell" data-photo-id="${p.id}" onmousedown="window.startPhotoLongPress(${p.id}, this)" onmouseup="window.cancelPhotoLongPress()" onmouseleave="window.cancelPhotoLongPress()" ontouchstart="window.startPhotoLongPress(${p.id}, this)" ontouchend="window.cancelPhotoLongPress()" onclick="window.handlePhotoClick(${globalIdx}, ${p.id}, this)" style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; background: #000;"><img src="${p.photo_url}" draggable="false" oncontextmenu="return false;" style="width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;"><div class="photo-select-circle" style="display: none; position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid white; background: rgba(0,0,0,0.3);"></div></div>`;
