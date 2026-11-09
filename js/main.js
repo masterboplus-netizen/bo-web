@@ -1,6 +1,8 @@
 import { renderDiary } from './screens/diary.js';
 import { renderNotepad } from './screens/notepad.js';
 import { renderFinance } from './screens/finance.js';
+import { renderCashFlow } from './screens/cashflow.js';
+import './modals/finance_operation.js';
 import { openMenu } from './screens/menu.js';
 import { showStub } from './ui/stub.js';
 import { showConfirm } from './ui/confirm.js';
