@@ -226,6 +226,7 @@ window.gallerySwitchCategory = async function(catId) {
 window.galleryDeletePhoto = function(photoId) {
     const safeId = window.safePhotoId(photoId, 'galleryDeletePhoto');
     if (!safeId) return;
+    window.openPhotos();
     window.showConfirm('Удалить это фото?', async () => {
         try {
             const { error } = await db.from('task_photos').delete().eq('id', safeId);
