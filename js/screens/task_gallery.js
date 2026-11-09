@@ -165,7 +165,7 @@ window.galleryPhotoActions = function(photoId) {
     menu.style.cssText = 'position: fixed; top: 100px; right: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); z-index: 10005; overflow: hidden; min-width: 160px; display: flex; flex-direction: column;';
 
     menu.innerHTML = `
-        <div onclick="this.parentElement.remove(); window.galleryDeletePhoto(${photoId})" style="padding: 14px 16px; color: #ff3b30; font-size: 15px; cursor: pointer;">Удалить</div>
+        <div onclick="this.parentElement.remove(); window.taskGalleryDeletePhoto(${photoId})" style="padding: 14px 16px; color: #ff3b30; font-size: 15px; cursor: pointer;">Удалить</div>
     `;
 
     document.body.appendChild(menu);
