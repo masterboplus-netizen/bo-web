@@ -329,6 +329,7 @@ window.handlePhotoClick = function(globalIdx, id, el) {
             window._selectedPhotos.splice(idx, 1);
             if (circle) { circle.style.display = 'none'; circle.innerHTML = ''; }
             el.classList.remove('photo-item-selected');
+                el.style.transform = 'scale(1)';
             el.style.transform = 'scale(1)';
         }
         const count = document.getElementById('gallery-select-count');
