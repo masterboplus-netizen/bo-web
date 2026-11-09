@@ -52,8 +52,8 @@ export async function renderPhotos() {
         // Плавающая капсула внизу
         const currentTab = window._galleryTab || 'photos';
         html += `
-            <div style="position: fixed; bottom: 80px; left: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 15px; z-index: 100; pointer-events: none;">
-                <div style="display: flex; background: var(--bg2); border-radius: 24px; padding: 4px; border: 1px solid var(--bg3); flex: 1; max-width: 320px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); pointer-events: auto;">
+            <div style="position: fixed; bottom: 80px; left: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0; z-index: 100; pointer-events: none;">
+                <div style="display: flex; background: var(--bg2); border-radius: 24px; padding: 4px; border: 1px solid var(--bg3); flex: 0 1 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.4); pointer-events: auto;">
                     <button onclick="window.switchGalleryTab('photos')" style="flex: 1; padding: 10px 12px; border-radius: 20px; border: none; background: ${currentTab === 'photos' ? 'var(--accent)' : 'transparent'}; color: ${currentTab === 'photos' ? 'white' : 'var(--fg-dim)'}; font-size: 13px; font-weight: ${currentTab === 'photos' ? 'bold' : 'normal'}; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                         Фото
