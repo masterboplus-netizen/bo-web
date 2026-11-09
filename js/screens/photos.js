@@ -322,12 +322,14 @@ window.handlePhotoClick = function(globalIdx, id, el) {
         const circle = el.querySelector('.photo-select-circle');
         if (idx === -1) {
             window._selectedPhotos.push(id);
-            if (circle) circle.style.display = 'block';
+            if (circle) { circle.style.display = 'block'; circle.style.background = '#007aff'; circle.style.borderColor = '#007aff'; circle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="position:absolute; top:2px; left:2px;"><polyline points="20 6 9 17 4 12"></polyline></svg>'; }
             el.classList.add('photo-item-selected');
+            el.style.transform = 'scale(0.85)';
         } else {
             window._selectedPhotos.splice(idx, 1);
-            if (circle) circle.style.display = 'none';
+            if (circle) { circle.style.display = 'none'; circle.innerHTML = ''; }
             el.classList.remove('photo-item-selected');
+            el.style.transform = 'scale(1)';
         }
         const count = document.getElementById('gallery-select-count');
         if (count) count.textContent = window._selectedPhotos.length;
