@@ -26,7 +26,7 @@ window._galleryFilter = 'all';
 window._galleryPhotos = [];
 window._galleryIndex = 0;
 
-export async function renderPhotos() { alert('RENDER PHOTOS CALLED');
+export async function renderPhotos() {
     const currentTab = window._galleryTab || 'photos';
     if (currentTab === 'albums') {
         return renderAlbumsTab();
