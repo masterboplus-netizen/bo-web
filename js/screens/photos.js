@@ -7,6 +7,8 @@ function escapeHtml(text) {
     });
 }
 
+window._selectedPhotos = [];
+window._selectionMode = false;
 window._galleryFilter = 'all';
 window._galleryPhotos = [];
 window._galleryIndex = 0;
@@ -29,7 +31,18 @@ export async function renderPhotos() {
         }
 
         // Рендер
-        let html = '<div style="padding: 10px; max-width: 800px; margin: 0 auto; padding-bottom: 100px;">';
+        let html = `
+            <div id="gallery-top-overlay" style="position: fixed; top: 60px; left: 0; width: 100%; z-index: 100; padding: 10px 15px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; pointer-events: none; background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);">
+                <div id="gallery-select-info" style="display: none; align-items: center; gap: 10px; pointer-events: auto;">
+                    <button onclick="window.exitSelectionMode()" style="background: rgba(255,255,255,0.15); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+                    <span id="gallery-select-count" style="color: var(--fg); font-size: 18px; font-weight: bold;">0</span>
+                </div>
+                <div style="flex: 1; text-align: center; pointer-events: none;">
+                    <span id="gallery-current-month" style="color: var(--fg); font-size: 16px; font-weight: bold; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 12px;">Месяц</span>
+                </div>
+                <button onclick="window.showGallerySettings()" style="background: rgba(255,255,255,0.15); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; pointer-events: auto;">⋮</button>
+            </div>
+            <div style="padding: 10px; max-width: 800px; margin: 0 auto; padding-bottom: 100px;">`;
         
 
         // Фильтр убран
@@ -42,7 +55,7 @@ export async function renderPhotos() {
             filtered.forEach((p, idx) => {
                 // Находим индекс в общем массиве (для листания)
                 const globalIdx = window._galleryPhotos.findIndex(ph => ph.id === p.id);
-                html += `<div onclick="window.openFullGallery(${globalIdx})" style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; background: #000;"><img src="${p.photo_url}" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div>`;
+                html += `<div class="photo-cell" data-photo-id="${p.id}" onmousedown="window.startPhotoLongPress(${p.id}, this)" onmouseup="window.cancelPhotoLongPress()" onmouseleave="window.cancelPhotoLongPress()" ontouchstart="window.startPhotoLongPress(${p.id}, this)" ontouchend="window.cancelPhotoLongPress()" onclick="window.handlePhotoClick(${globalIdx}, ${p.id}, this)" style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; background: #000;"><img src="${p.photo_url}" style="width: 100%; height: 100%; object-fit: cover; display: block;"><div class="photo-select-circle" style="display: none; position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid white; background: rgba(0,0,0,0.3);"></div></div>`;
             });
             html += '</div>';
         }
@@ -203,4 +216,106 @@ window.galleryDeletePhoto = function(photoId) {
             alert('Ошибка удаления: ' + err.message);
         }
     });
+};
+
+// === РЕЖИМ ВЫДЕЛЕНИЯ ===
+window._longPressTimer = null;
+
+window.enableSelectionMode = function() {
+    window._selectionMode = true;
+    document.body.classList.add('selection-mode');
+    const info = document.getElementById('gallery-select-info');
+    if (info) info.style.display = 'flex';
+    const grid = document.querySelector('#app-content div[style*="grid-template-columns"]');
+    if (grid) grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+};
+
+window.disableSelectionMode = function() {
+    window._selectionMode = false;
+    window._selectedPhotos = [];
+    document.body.classList.remove('selection-mode');
+    const info = document.getElementById('gallery-select-info');
+    if (info) info.style.display = 'none';
+    const count = document.getElementById('gallery-select-count');
+    if (count) count.textContent = '0';
+    const grid = document.querySelector('#app-content div[style*="grid-template-columns"]');
+    if (grid) grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    document.querySelectorAll('.photo-select-circle').forEach(c => c.remove());
+    document.querySelectorAll('.photo-item-selected').forEach(c => c.classList.remove('photo-item-selected'));
+};
+
+window.togglePhotoSelection = function(id, el) {
+    if (!window._selectionMode) {
+        window.enableSelectionMode();
+    }
+    const idx = window._selectedPhotos.indexOf(id);
+    if (idx === -1) {
+        window._selectedPhotos.push(id);
+        if (el) el.classList.add('photo-item-selected');
+    } else {
+        window._selectedPhotos.splice(idx, 1);
+        if (el) el.classList.remove('photo-item-selected');
+    }
+    const count = document.getElementById('gallery-select-count');
+    if (count) count.textContent = window._selectedPhotos.length;
+    if (window._selectedPhotos.length === 0) {
+        window.disableSelectionMode();
+    }
+};
+
+window.exitSelectionMode = function() {
+    window.disableSelectionMode();
+};
+
+window.showGallerySettings = function() {
+    alert('Настройки галереи (в разработке)');
+};
+
+window._longPressTimer = null;
+
+window.startPhotoLongPress = function(id, el) {
+    window._longPressTimer = setTimeout(() => {
+        window._longPressTimer = null;
+        if (!window._selectionMode) {
+            window.enableSelectionMode();
+        }
+        const circle = el.querySelector('.photo-select-circle');
+        if (circle) circle.style.display = 'block';
+        el.classList.add('photo-item-selected');
+        if (window._selectedPhotos.indexOf(id) === -1) {
+            window._selectedPhotos.push(id);
+        }
+        const count = document.getElementById('gallery-select-count');
+        if (count) count.textContent = window._selectedPhotos.length;
+    }, 500);
+};
+
+window.cancelPhotoLongPress = function() {
+    if (window._longPressTimer) {
+        clearTimeout(window._longPressTimer);
+        window._longPressTimer = null;
+    }
+};
+
+window.handlePhotoClick = function(globalIdx, id, el) {
+    if (window._selectionMode) {
+        const idx = window._selectedPhotos.indexOf(id);
+        const circle = el.querySelector('.photo-select-circle');
+        if (idx === -1) {
+            window._selectedPhotos.push(id);
+            if (circle) circle.style.display = 'block';
+            el.classList.add('photo-item-selected');
+        } else {
+            window._selectedPhotos.splice(idx, 1);
+            if (circle) circle.style.display = 'none';
+            el.classList.remove('photo-item-selected');
+        }
+        const count = document.getElementById('gallery-select-count');
+        if (count) count.textContent = window._selectedPhotos.length;
+        if (window._selectedPhotos.length === 0) {
+            window.disableSelectionMode();
+        }
+    } else {
+        window.openFullGallery(globalIdx);
+    }
 };
