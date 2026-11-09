@@ -244,6 +244,7 @@ window._longPressTimer = null;
 
 window.enableSelectionMode = function() {
     window._selectionMode = true;
+    if (window.showSelectionSheet) window.showSelectionSheet();
     document.body.classList.add('selection-mode');
     const info = document.getElementById('gallery-select-info');
     if (info) info.style.display = 'flex';
@@ -253,6 +254,7 @@ window.enableSelectionMode = function() {
 
 window.disableSelectionMode = function() {
     window._selectionMode = false;
+    if (window.hideSelectionSheet) window.hideSelectionSheet();
     window._selectedPhotos = [];
     document.body.classList.remove('selection-mode');
     const info = document.getElementById('gallery-select-info');
@@ -466,4 +468,102 @@ window.openFolder = function(id) {
 window.switchGalleryTab = function(tab) {
     window._galleryTab = tab;
     renderPhotos();
+};
+
+// === ШТОРКА ВЫДЕЛЕНИЯ ===
+window.showSelectionSheet = function() {
+    const old = document.getElementById('selection-sheet');
+    if (old) old.remove();
+
+    const sheet = document.createElement('div');
+    sheet.id = 'selection-sheet';
+    sheet.style.cssText = 'position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg2); border-top: 1px solid var(--bg3); border-radius: 20px 20px 0 0; padding: 15px; z-index: 10003; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.4);';
+
+    sheet.innerHTML = `
+        <button onclick="window.shareSelected()" style="background: transparent; border: none; color: var(--fg); display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; font-size: 11px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            Поделиться
+        </button>
+        <button onclick="window.addSelectedToAlbum()" style="background: transparent; border: none; color: var(--fg); display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; font-size: 11px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+            В альбом
+        </button>
+        <button onclick="window.deleteSelectedPhotos()" style="background: transparent; border: none; color: #ff3b30; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; font-size: 11px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            Удалить
+        </button>
+    `;
+
+    document.body.appendChild(sheet);
+};
+
+window.hideSelectionSheet = function() {
+    const sheet = document.getElementById('selection-sheet');
+    if (sheet) sheet.remove();
+};
+
+// === ДОБАВИТЬ В АЛЬБОМ ===
+window.addSelectedToAlbum = async function() {
+    if (!window._selectedPhotos || window._selectedPhotos.length === 0) return;
+    try {
+        const albums = await fetchAlbums();
+        if (!albums || albums.length === 0) {
+            alert('Сначала создайте альбом');
+            return;
+        }
+
+        const old = document.getElementById('album-picker-modal');
+        if (old) old.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'album-picker-modal';
+        overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px;';
+
+        const modal = document.createElement('div');
+        modal.style.cssText = 'background: var(--bg2); border-radius: 16px; padding: 20px; width: 100%; max-width: 400px; border: 1px solid var(--border); max-height: 80vh; overflow-y: auto;';
+
+        let html = '<h3 style="color: var(--fg); margin: 0 0 15px 0;">Выберите альбом</h3>';
+        albums.forEach(a => {
+            html += `<div onclick="window.addPhotosToAlbum(${a.id})" style="padding: 12px; background: var(--bg3); border-radius: 8px; margin-bottom: 8px; cursor: pointer; color: var(--fg);">${a.name}</div>`;
+        });
+        html += '<button onclick="document.getElementById(\'album-picker-modal\').remove()" style="width: 100%; padding: 12px; background: transparent; color: var(--fg-dim); border: none; margin-top: 10px; cursor: pointer;">Отмена</button>';
+        modal.innerHTML = html;
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+    } catch (err) {
+        alert('Ошибка: ' + err.message);
+    }
+};
+
+window.addPhotosToAlbum = async function(albumId) {
+    try {
+        const { error } = await db.from('album_photos').insert(
+            window._selectedPhotos.map(pid => ({ album_id: albumId, photo_id: pid }))
+        );
+        if (error) throw error;
+        document.getElementById('album-picker-modal').remove();
+        window.disableSelectionMode();
+        window.hideSelectionSheet();
+        alert('Фото добавлены в альбом');
+    } catch (err) {
+        alert('Ошибка добавления: ' + err.message);
+    }
+};
+
+// === УДАЛИТЬ ВЫДЕЛЕННЫЕ ===
+window.deleteSelectedPhotos = async function() {
+    if (!window._selectedPhotos || window._selectedPhotos.length === 0) return;
+    if (!confirm('Удалить ' + window._selectedPhotos.length + ' фото?')) return;
+    try {
+        for (const pid of window._selectedPhotos) {
+            await db.from('task_photos').delete().eq('id', pid);
+        }
+        window._selectedPhotos = [];
+        window.disableSelectionMode();
+        window.hideSelectionSheet();
+        renderPhotos();
+    } catch (err) {
+        alert('Ошибка удаления: ' + err.message);
+    }
 };
