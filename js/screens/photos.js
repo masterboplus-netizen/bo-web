@@ -5,7 +5,7 @@ import { fetchAlbums, fetchFolders, createAlbum, createFolder, fetchAlbumPreview
 
 window.safePhotoId = function(id, source) {
     if (id === null || id === undefined || id === 'null' || id === 'undefined' || isNaN(Number(id))) {
-        console.error('❌ NULL PHOTO ID from:', source, '| value:', id);
+        alert('❌ NULL PHOTO ID from: ' + source + ' | value: ' + id);
         console.trace('Trace for null photoId');
         return null;
     }
