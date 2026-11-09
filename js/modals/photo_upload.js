@@ -94,7 +94,7 @@ export async function deleteTaskPhoto(photoId, taskId) {
         try {
             const { error } = await db.from('task_photos').delete().eq('id', photoId);
             if (error) throw error;
-            if (window.openTaskDetail) window.openTaskDetail(taskId);
+            if (window.openTaskDetail && taskId) window.openTaskDetail(taskId);
         } catch (err) {
             alert('Ошибка удаления: ' + err.message);
         }
