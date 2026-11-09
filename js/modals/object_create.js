@@ -35,18 +35,28 @@ export function openNewObject() {
     `;
 }
 
+let isSavingObject = false;
+
 export async function saveNewObject() {
+    if (isSavingObject) return;
+    isSavingObject = true;
+
     const name = document.getElementById('new-obj-name').value.trim();
     const address = document.getElementById('new-obj-address').value.trim();
     const budget = document.getElementById('new-obj-budget').value;
 
-    if (!name) return alert('Введите название объекта!');
+    if (!name) {
+        alert('Введите название объекта!');
+        isSavingObject = false;
+        return;
+    }
 
     try {
         await createObject(name, address, budget);
         window.openObjects();
     } catch (err) {
         alert('Ошибка сохранения: ' + err.message);
+        isSavingObject = false;
     }
 }
 
