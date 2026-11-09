@@ -41,18 +41,19 @@ export function openNewTask() {
                 </div>
                 <div id="new-deadline-single" style="display: block;">
                     <div id="new-task-deadline-start" onclick="window.openCustomCalendar('new-task')" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">${today.split('-').reverse().join('.')}</div>
-                </div>
-                <div id="new-deadline-range" style="display: none;">
-                    <div style="display: flex; gap: 10px;">
-                        <div id="new-task-deadline-start-range" onclick="window.openCustomCalendar('new-task-range')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">Начало</div>
-                        <div id="new-task-deadline-end" onclick="window.openCustomCalendar('new-task-end')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">Конец</div>
-                    </div>
                     <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px;">
                         <button onclick="window.setNewTaskQuickDate('today')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 11px; cursor: pointer;">Сегодня</button>
                         <button onclick="window.setNewTaskQuickDate('tomorrow')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 11px; cursor: pointer;">Завтра</button>
                         <button onclick="window.setNewTaskQuickDate('plus3')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 11px; cursor: pointer;">+3</button>
                         <button onclick="window.setNewTaskQuickDate('plus7')" style="padding: 6px 10px; border-radius: 16px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); font-size: 11px; cursor: pointer;">+7</button>
                     </div>
+                </div>
+                <div id="new-deadline-range" style="display: none;">
+                    <div style="display: flex; gap: 10px;">
+                        <div id="new-task-deadline-start-range" onclick="window.openCustomCalendar('new-task-range')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">Начало</div>
+                        <div id="new-task-deadline-end" onclick="window.openCustomCalendar('new-task-end')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">Конец</div>
+                    </div>
+
                 </div>
             </div>
 
