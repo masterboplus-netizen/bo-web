@@ -119,7 +119,15 @@ export async function openEditField(field, currentValue, taskId) {
         setTimeout(() => overlay.remove(), 200);
     }
 
-        overlay.onclick = (e) => { if (e.target === overlay) close(); };
+        overlay.onclick = (e) => { 
+        if (e.target === overlay) {
+            if (field === 'description' || field === 'deadline') {
+                window.saveEditField(field, taskId);
+            } else {
+                close();
+            }
+        }
+    };
 }
 
 export async function saveEditField(field, taskId) {
