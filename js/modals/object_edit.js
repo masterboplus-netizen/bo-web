@@ -83,6 +83,19 @@ export async function openEditAddress(id) {
         const modal = document.createElement('div');
         modal.style.cssText = 'width: calc(100% - 32px); max-width: 400px; max-height: 80vh; overflow-y: auto; margin: 0 auto; background: var(--bg2); border-radius: 16px; padding: 16px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); box-sizing: border-box;';
 
+        // Парсим существующий адрес
+        const addrParts = (obj.address || '').split(',').map(p => p.trim());
+        const addr = { city: '', street: '', house: '', block: '', entrance: '', floor: '', flat: '' };
+        addrParts.forEach(part => {
+            if (part.startsWith('д. ')) addr.house = part.replace('д. ', '');
+            else if (part.startsWith('корп. ')) addr.block = part.replace('корп. ', '');
+            else if (part.startsWith('подъезд ')) addr.entrance = part.replace('подъезд ', '');
+            else if (part.startsWith('этаж ')) addr.floor = part.replace('этаж ', '');
+            else if (part.startsWith('кв. ')) addr.flat = part.replace('кв. ', '');
+            else if (!addr.city) addr.city = part;
+            else if (!addr.street) addr.street = part;
+        });
+
         modal.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: var(--fg); font-size: 16px;">Редактировать адрес</h3>
@@ -92,13 +105,13 @@ export async function openEditAddress(id) {
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-                <input type="text" id="addr-city" placeholder="Город" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                <input type="text" id="addr-street" placeholder="Улица" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                <input type="text" id="addr-house" placeholder="Дом" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                <input type="text" id="addr-block" placeholder="Корпус" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                <input type="text" id="addr-entrance" placeholder="Подъезд" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                <input type="text" id="addr-floor" placeholder="Этаж" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                <input type="text" id="addr-flat" placeholder="Кв" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <input type="text" id="addr-city" value="${addr.city}" placeholder="Город" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <input type="text" id="addr-street" value="${addr.street}" placeholder="Улица" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <input type="text" id="addr-house" value="${addr.house}" placeholder="Дом" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <input type="text" id="addr-block" value="${addr.block}" placeholder="Корпус" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <input type="text" id="addr-entrance" value="${addr.entrance}" placeholder="Подъезд" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <input type="text" id="addr-floor" value="${addr.floor}" placeholder="Этаж" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                <input type="text" id="addr-flat" value="${addr.flat}" placeholder="Кв" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
             </div>
 
             <div style="display: flex; gap: 10px;">
