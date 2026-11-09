@@ -2,6 +2,16 @@ import { db } from '../api/supabase.js';
 import { fetchAllPhotos } from '../api/photos.js';
 import { fetchAlbums, fetchFolders, createAlbum, createFolder, fetchAlbumPreview } from '../api/albums_folders.js';
 
+
+window.safePhotoId = function(id, source) {
+    if (id === null || id === undefined || id === 'null' || id === 'undefined' || isNaN(Number(id))) {
+        console.error('❌ NULL PHOTO ID from:', source, '| value:', id);
+        console.trace('Trace for null photoId');
+        return null;
+    }
+    return Number(id);
+};
+
 function escapeHtml(text) {
     return String(text).replace(/[&<>"']/g, function(m) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
@@ -212,13 +222,11 @@ window.gallerySwitchCategory = async function(catId) {
 };
 
 window.galleryDeletePhoto = function(photoId) {
-    if (!photoId || photoId === 'null' || photoId === 'undefined') {
-        alert('Ошибка: неверный ID фото');
-        return;
-    }
+    const safeId = window.safePhotoId(photoId, 'galleryDeletePhoto');
+    if (!safeId) return;
     window.showConfirm('Удалить это фото?', async () => {
         try {
-            const { error } = await db.from('task_photos').delete().eq('id', photoId);
+            const { error } = await db.from('task_photos').delete().eq('id', safeId);
             if (error) throw error;
             window.openPhotos();
         } catch (err) {

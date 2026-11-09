@@ -1,5 +1,15 @@
 import { db } from '../api/supabase.js';
 
+
+window.safePhotoId = function(id, source) {
+    if (id === null || id === undefined || id === 'null' || id === 'undefined' || isNaN(Number(id))) {
+        console.error('❌ NULL PHOTO ID from:', source, '| value:', id);
+        console.trace('Trace for null photoId');
+        return null;
+    }
+    return Number(id);
+};
+
 function escapeHtml(text) {
     return String(text).replace(/[&<>"']/g, function(m) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
@@ -170,14 +180,12 @@ window.galleryPhotoActions = function(photoId) {
 };
 
 window.galleryDeletePhoto = function(photoId) {
-    if (!photoId || photoId === 'null' || photoId === 'undefined') {
-        alert('Ошибка: неверный ID фото');
-        return;
-    }
+    const safeId = window.safePhotoId(photoId, 'task_gallery.galleryDeletePhoto');
+    if (!safeId) return;
     window.showConfirm('Удалить это фото?', async () => {
         try {
             const state = window._galleryState;
-            const { error } = await db.from('task_photos').delete().eq('id', photoId);
+            const { error } = await db.from('task_photos').delete().eq('id', safeId);
             if (error) throw error;
             if (state.photos.length <= 1) {
                 window.openTaskDetail(state.taskId);
@@ -201,7 +209,7 @@ window.galleryDeletePhoto = function(photoId) {
 window.galleryMovePhoto = function(photoId) {
     window.openCategoryPicker(async (newCategory) => {
         try {
-            const { error } = await db.from('task_photos').update({ category: newCategory }).eq('id', photoId);
+            const { error } = await db.from('task_photos').update({ category: newCategory }).eq('id', safeId);
             if (error) throw error;
             const state = window._galleryState;
             const { data: allPhotos } = await db.from('task_photos').select('*').eq('task_id', state.taskId);
@@ -231,7 +239,7 @@ window.galleryReplacePhoto = function(photoId) {
             const { error: uploadError } = await db.storage.from('photos').upload(fileName, file);
             if (uploadError) throw uploadError;
             const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
-            const { error: dbError } = await db.from('task_photos').update({ photo_url: urlData.publicUrl }).eq('id', photoId);
+            const { error: dbError } = await db.from('task_photos').update({ photo_url: urlData.publicUrl }).eq('id', safeId);
             if (dbError) throw dbError;
             const updatedPhotos = state.photos.map(p => p.id === photoId ? { ...p, photo_url: urlData.publicUrl } : p);
             window._galleryState.photos = updatedPhotos;
