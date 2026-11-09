@@ -166,7 +166,7 @@ function renderFullGallery() {
                 <button onclick="window.openPhotos()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
-                <button onclick="window.galleryDeletePhoto(${photo.id})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
+                <button onclick="window.galleryDeletePhoto(${window.safePhotoId(photo.id, 'renderFullGallery') || 'null'})" style="background: transparent; border: none; color: #ff3b30; cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
             </div>
