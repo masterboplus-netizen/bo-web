@@ -344,8 +344,6 @@ window.handlePhotoClick = function(globalIdx, id, el) {
     }
 };
 
-// === ВКЛАДКА "АЛЬБОМЫ" ===
-// === ВКЛАДКА "ПАПКИ" ===
 window.openFolder = function(id) {
     alert('Открытие папки ' + id + ' (в разработке)');
 };
