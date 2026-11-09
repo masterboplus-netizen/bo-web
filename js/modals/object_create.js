@@ -18,9 +18,15 @@ export function openNewObject() {
                     <input type="text" id="new-obj-name" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;" placeholder="Название объекта">
                 </div>
 
-                <div>
-                    <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Адрес</label>
-                    <input type="text" id="new-obj-address" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;" placeholder="Город, улица, дом">
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <label style="display: block; color: var(--fg-dim);">Адрес</label>
+                    <input type="text" id="new-addr-city" placeholder="Город" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="text" id="new-addr-street" placeholder="Улица" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="text" id="new-addr-house" placeholder="Дом" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="text" id="new-addr-block" placeholder="Корпус" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="text" id="new-addr-entrance" placeholder="Подъезд" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="text" id="new-addr-floor" placeholder="Этаж" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <input type="text" id="new-addr-flat" placeholder="Кв" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
                 </div>
 
                 <div>
@@ -42,8 +48,25 @@ export async function saveNewObject() {
     isSavingObject = true;
 
     const name = document.getElementById('new-obj-name').value.trim();
-    const address = document.getElementById('new-obj-address').value.trim();
     const budget = document.getElementById('new-obj-budget').value;
+    
+    const city = document.getElementById('new-addr-city').value.trim();
+    const street = document.getElementById('new-addr-street').value.trim();
+    const house = document.getElementById('new-addr-house').value.trim();
+    const block = document.getElementById('new-addr-block').value.trim();
+    const entrance = document.getElementById('new-addr-entrance').value.trim();
+    const floor = document.getElementById('new-addr-floor').value.trim();
+    const flat = document.getElementById('new-addr-flat').value.trim();
+    
+    let parts = [];
+    if (city) parts.push(city);
+    if (street) parts.push(street);
+    if (house) parts.push('д. ' + house);
+    if (block) parts.push('корп. ' + block);
+    if (entrance) parts.push('подъезд ' + entrance);
+    if (floor) parts.push('этаж ' + floor);
+    if (flat) parts.push('кв. ' + flat);
+    const address = parts.join(', ');
 
     if (!name) {
         alert('Введите название объекта!');
