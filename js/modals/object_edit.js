@@ -30,13 +30,13 @@ export async function openEditObject(id) {
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <label style="display: block; color: var(--fg-dim);">Адрес</label>
-                        <input type="text" id="edit-obj-city" placeholder="Город" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                        <input type="text" id="edit-obj-street" placeholder="Улица" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                        <input type="text" id="edit-obj-house" placeholder="Дом" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                        <input type="text" id="edit-obj-block" placeholder="Корпус" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                        <input type="text" id="edit-obj-entrance" placeholder="Подъезд" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                        <input type="text" id="edit-obj-floor" placeholder="Этаж" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                        <input type="text" id="edit-obj-flat" placeholder="Кв" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="edit-obj-city" value="${addr.city}" placeholder="Город" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="edit-obj-street" value="${addr.street}" placeholder="Улица" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="edit-obj-house" value="${addr.house}" placeholder="Дом" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="edit-obj-block" value="${addr.block}" placeholder="Корпус" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="edit-obj-entrance" value="${addr.entrance}" placeholder="Подъезд" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="edit-obj-floor" value="${addr.floor}" placeholder="Этаж" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="edit-obj-flat" value="${addr.flat}" placeholder="Кв" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
                     </div>
                     <div>
                         <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Бюджет (₽)</label>
@@ -105,6 +105,23 @@ export async function openEditAddress(id) {
 
         const modal = document.createElement('div');
         modal.style.cssText = 'width: calc(100% - 32px); max-width: 400px; max-height: 80vh; overflow-y: auto; margin: 0 auto; background: var(--bg2); border-radius: 16px; padding: 16px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); box-sizing: border-box;';
+
+        // Парсим существующий адрес в поля
+        const addr = { city: '', street: '', house: '', block: '', entrance: '', floor: '', flat: '' };
+        const rawAddr = (obj.address || '').trim();
+        if (rawAddr) {
+            const parts = rawAddr.split(',').map(p => p.trim());
+            parts.forEach(part => {
+                if (part.startsWith('д. ')) addr.house = part.replace('д. ', '');
+                else if (part.startsWith('корп. ')) addr.block = part.replace('корп. ', '');
+                else if (part.startsWith('подъезд ')) addr.entrance = part.replace('подъезд ', '');
+                else if (part.startsWith('этаж ')) addr.floor = part.replace('этаж ', '');
+                else if (part.startsWith('кв. ')) addr.flat = part.replace('кв. ', '');
+                else if (!addr.city) addr.city = part;
+                else if (!addr.street) addr.street = part;
+                else if (!addr.house) addr.house = part;
+            });
+        }
 
         modal.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
