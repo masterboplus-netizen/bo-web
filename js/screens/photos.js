@@ -1,5 +1,6 @@
 import { db } from '../api/supabase.js';
 import { fetchAllPhotos } from '../api/photos.js';
+import { fetchAlbums, fetchFolders, createAlbum, createFolder } from '../api/albums_folders.js';
 
 function escapeHtml(text) {
     return String(text).replace(/[&<>"']/g, function(m) {
@@ -14,6 +15,14 @@ window._galleryPhotos = [];
 window._galleryIndex = 0;
 
 export async function renderPhotos() {
+    const currentTab = window._galleryTab || 'photos';
+    if (currentTab === 'albums') {
+        return renderAlbumsTab();
+    }
+    if (currentTab === 'folders') {
+        return renderFoldersTab();
+    }
+
     if (window.setNavActive) window.setNavActive('photos');
     const container = document.getElementById('app-content');
     container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка галереи...</div>';
@@ -318,4 +327,74 @@ window.handlePhotoClick = function(globalIdx, id, el) {
     } else {
         window.openFullGallery(globalIdx);
     }
+};
+
+// === ВКЛАДКА "АЛЬБОМЫ" ===
+async function renderAlbumsTab() {
+    const container = document.getElementById('app-content');
+    container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка альбомов...</div>';
+    try {
+        const albums = await fetchAlbums();
+        let html = '<div style="padding: 80px 15px 100px 15px; max-width: 800px; margin: 0 auto;">';
+        html += `<button onclick="window.createNewAlbum()" style="width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 20px;">+ Создать альбом</button>`;
+        if (!albums || albums.length === 0) {
+            html += '<div style="text-align: center; color: var(--fg-dim); margin-top: 30px;">Альбомов пока нет.</div>';
+        } else {
+            html += '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">';
+            albums.forEach(a => {
+                html += `<div onclick="window.openAlbum(${a.id})" style="background: var(--bg2); border-radius: 12px; padding: 20px; border: 1px solid var(--bg3); cursor: pointer; text-align: center; color: var(--fg);">📁 ${a.name}</div>`;
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+        container.innerHTML = html;
+    } catch (err) {
+        container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${err.message}</div>`;
+    }
+}
+
+window.createNewAlbum = async function() {
+    const name = prompt('Название альбома:');
+    if (!name) return;
+    await createAlbum(name, null);
+    renderAlbumsTab();
+};
+
+window.openAlbum = function(id) {
+    alert('Открытие альбома ' + id + ' (в разработке)');
+};
+
+// === ВКЛАДКА "ПАПКИ" ===
+async function renderFoldersTab() {
+    const container = document.getElementById('app-content');
+    container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка папок...</div>';
+    try {
+        const folders = await fetchFolders();
+        let html = '<div style="padding: 80px 15px 100px 15px; max-width: 800px; margin: 0 auto;">';
+        html += `<button onclick="window.createNewFolder()" style="width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 20px;">+ Создать папку</button>`;
+        if (!folders || folders.length === 0) {
+            html += '<div style="text-align: center; color: var(--fg-dim); margin-top: 30px;">Папок пока нет.</div>';
+        } else {
+            html += '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">';
+            folders.forEach(f => {
+                html += `<div onclick="window.openFolder(${f.id})" style="background: var(--bg2); border-radius: 12px; padding: 20px; border: 1px solid var(--bg3); cursor: pointer; text-align: center; color: var(--fg);">📁 ${f.name}</div>`;
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+        container.innerHTML = html;
+    } catch (err) {
+        container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${err.message}</div>`;
+    }
+}
+
+window.createNewFolder = async function() {
+    const name = prompt('Название папки:');
+    if (!name) return;
+    await createFolder(name);
+    renderFoldersTab();
+};
+
+window.openFolder = function(id) {
+    alert('Открытие папки ' + id + ' (в разработке)');
 };
