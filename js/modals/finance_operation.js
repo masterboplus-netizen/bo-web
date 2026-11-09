@@ -116,7 +116,7 @@ window.deleteFinanceInline = function(id) {
     });
 };
 
-window.openEditFinanceInline = function(id, amount, desc) {
+window.openEditFinanceInline = function(id, amount, desc, type) {
     const oldModal = document.getElementById('edit-finance-modal');
     if (oldModal) oldModal.remove();
 
@@ -133,6 +133,11 @@ window.openEditFinanceInline = function(id, amount, desc) {
             <button id="close-edit-fin" style="background: var(--bg3); border: none; color: var(--fg-dim); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
+        </div>
+
+        <div style="display: flex; background: var(--bg2); border-radius: 12px; padding: 4px; margin-bottom: 15px;">
+            <button onclick="window.setEditFinanceType('income')" id="edit-fin-btn-income" style="flex: 1; padding: 10px; border-radius: 10px; border: none; background: ${type === 'income' ? '#34c759' : 'transparent'}; color: ${type === 'income' ? 'white' : 'var(--fg-dim)'}; font-weight: bold; cursor: pointer;">ПРИХОД</button>
+            <button onclick="window.setEditFinanceType('expense')" id="edit-fin-btn-expense" style="flex: 1; padding: 10px; border-radius: 10px; border: none; background: ${type === 'expense' ? '#ff3b30' : 'transparent'}; color: ${type === 'expense' ? 'white' : 'var(--fg-dim)'}; cursor: pointer;">РАСХОД</button>
         </div>
 
         <div style="margin-bottom: 15px;">
@@ -180,7 +185,8 @@ window.saveFinanceInline = async function(id) {
     try {
         const { error } = await db.from('finance').update({
             amount: Number(amount),
-            description: desc || null
+            description: desc || null,
+            type: window._editFinanceType || 'income'
         }).eq('id', id);
 
         if (error) throw error;

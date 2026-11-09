@@ -81,7 +81,7 @@ export async function renderCashFlow() {
                     const expVal = !isIncome ? Number(op.amount).toLocaleString('ru-RU') : '';
 
                     html += `
-                        <div onclick="window.openEditFinanceInline(${op.id}, ${op.amount}, '${escapeHtml(op.description || '')}')" style="display: grid; grid-template-columns: 70px 70px 70px 1fr; padding: 12px 8px; font-size: 14px; border-bottom: 1px solid var(--bg3); text-align: center; align-items: center; cursor: pointer;">
+                        <div onclick="window.openEditFinanceInline(${op.id}, ${op.amount}, '${escapeHtml(op.description || '')}', '${op.type}')" style="display: grid; grid-template-columns: 70px 70px 70px 1fr; padding: 12px 8px; font-size: 14px; border-bottom: 1px solid var(--bg3); text-align: center; align-items: center; cursor: pointer;">
                             <div style="color: #34c759; font-weight: bold;">${isIncome ? incVal : ''}</div>
                             <div style="color: #ff3b30; font-weight: bold;">${!isIncome ? expVal : ''}</div>
                             <div></div>
