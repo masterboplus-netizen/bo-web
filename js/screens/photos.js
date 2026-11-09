@@ -378,6 +378,21 @@ async function renderAlbumsTab() {
             html += '</div>';
         }
         html += '</div>';
+        
+        // Капсула внизу
+        html += `
+            <div style="position: fixed; bottom: 100px; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 15px; box-sizing: border-box; z-index: 10002; pointer-events: none;">
+                <div style="display: flex; background: var(--bg2); border-radius: 24px; padding: 4px; border: 1px solid var(--bg3); flex: 0 1 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.4); pointer-events: auto;">
+                    <button onclick="window.switchGalleryTab('photos')" style="flex: 1; padding: 10px 12px; border-radius: 20px; border: none; background: transparent; color: var(--fg-dim); font-size: 13px; cursor: pointer;">Фото</button>
+                    <button onclick="window.switchGalleryTab('albums')" style="flex: 1; padding: 10px 12px; border-radius: 20px; border: none; background: var(--accent); color: white; font-size: 13px; font-weight: bold; cursor: pointer;">Альбомы</button>
+                    <button onclick="window.switchGalleryTab('folders')" style="flex: 1; padding: 10px 12px; border-radius: 20px; border: none; background: transparent; color: var(--fg-dim); font-size: 13px; cursor: pointer;">Папки</button>
+                </div>
+                <button style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg2); border: 1px solid var(--bg3); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.4); pointer-events: auto;" onclick="alert('Поиск в разработке')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--fg)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+            </div>
+        `;
+        
         container.innerHTML = html;
     } catch (err) {
         container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${err.message}</div>`;
@@ -416,6 +431,21 @@ async function renderFoldersTab() {
             html += '</div>';
         }
         html += '</div>';
+        
+        // Капсула внизу
+        html += `
+            <div style="position: fixed; bottom: 100px; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 15px; box-sizing: border-box; z-index: 10002; pointer-events: none;">
+                <div style="display: flex; background: var(--bg2); border-radius: 24px; padding: 4px; border: 1px solid var(--bg3); flex: 0 1 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.4); pointer-events: auto;">
+                    <button onclick="window.switchGalleryTab('photos')" style="flex: 1; padding: 10px 12px; border-radius: 20px; border: none; background: transparent; color: var(--fg-dim); font-size: 13px; cursor: pointer;">Фото</button>
+                    <button onclick="window.switchGalleryTab('albums')" style="flex: 1; padding: 10px 12px; border-radius: 20px; border: none; background: transparent; color: var(--fg-dim); font-size: 13px; cursor: pointer;">Альбомы</button>
+                    <button onclick="window.switchGalleryTab('folders')" style="flex: 1; padding: 10px 12px; border-radius: 20px; border: none; background: var(--accent); color: white; font-size: 13px; font-weight: bold; cursor: pointer;">Папки</button>
+                </div>
+                <button style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg2); border: 1px solid var(--bg3); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.4); pointer-events: auto;" onclick="alert('Поиск в разработке')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--fg)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+            </div>
+        `;
+        
         container.innerHTML = html;
     } catch (err) {
         container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${err.message}</div>`;
