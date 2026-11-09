@@ -75,7 +75,7 @@ export async function renderPhotos() {
                 if (!p) return;
                 // Находим индекс в общем массиве (для листания)
                 const globalIdx = window._galleryPhotos.findIndex(ph => ph.id === p.id);
-                html += `<div class="photo-cell" data-photo-id="${p.id}" onmousedown="window.startPhotoLongPress(${p.id}, this)" onmouseup="window.cancelPhotoLongPress()" onmouseleave="window.cancelPhotoLongPress()" ontouchstart="window.startPhotoLongPress(${p.id}, this)" ontouchend="window.cancelPhotoLongPress()" onclick="window.handlePhotoClick(${globalIdx}, ${p.id}, this)" style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; background: #000;"><img src="${p.photo_url}" draggable="false" oncontextmenu="return false;" style="width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;"><div class="photo-select-circle" style="display: none; position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid white; background: rgba(0,0,0,0.3);"></div></div>`;
+                html += `<div class="photo-cell" data-photo-id="${p.id}" onmousedown="window.startPhotoLongPress(${p.id}, this)" onmouseup="window.cancelPhotoLongPress()" onmouseleave="window.cancelPhotoLongPress()" ontouchstart="window.startPhotoLongPress(${p.id}, this)" ontouchend="window.cancelPhotoLongPress()" onclick="window.handlePhotoClick(${globalIdx}, ${p.id}, this)" style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; background: #000; transition: transform 0.2s ease, opacity 0.2s ease;"><img src="${p.photo_url}" draggable="false" oncontextmenu="return false;" style="width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;"><div class="photo-select-circle" style="display: none; position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid white; background: rgba(0,0,0,0.3);"></div></div>`;
             });
             html += '</div>';
         }
@@ -245,8 +245,7 @@ window.enableSelectionMode = function() {
     document.body.classList.add('selection-mode');
     const info = document.getElementById('gallery-select-info');
     if (info) info.style.display = 'flex';
-    const grid = document.getElementById('photo-grid');
-    if (grid) grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+    // Сетка остается 4 колонки
 };
 
 window.disableSelectionMode = function() {
@@ -258,8 +257,7 @@ window.disableSelectionMode = function() {
     if (info) info.style.display = 'none';
     const count = document.getElementById('gallery-select-count');
     if (count) count.textContent = '0';
-    const grid = document.getElementById('photo-grid');
-    if (grid) grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+    // Сетка остается 4 колонки
     document.querySelectorAll('.photo-select-circle').forEach(c => c.remove());
     document.querySelectorAll('.photo-item-selected').forEach(c => c.classList.remove('photo-item-selected'));
 };
@@ -300,8 +298,9 @@ window.startPhotoLongPress = function(id, el) {
             window.enableSelectionMode();
         }
         const circle = el.querySelector('.photo-select-circle');
-        if (circle) circle.style.display = 'block';
+        if (circle) { circle.style.display = 'block'; circle.style.background = '#007aff'; circle.style.borderColor = '#007aff'; circle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="position:absolute; top:2px; left:2px;"><polyline points="20 6 9 17 4 12"></polyline></svg>'; }
         el.classList.add('photo-item-selected');
+        el.style.transform = 'scale(0.85)'; // Уменьшаем ячейку
         if (window._selectedPhotos.indexOf(id) === -1) {
             window._selectedPhotos.push(id);
         }
