@@ -22,13 +22,11 @@ export async function openEditField(field, currentValue, taskId) {
                 if (type === 'single') {
             if (single) single.style.display = 'block';
             if (range) range.style.display = 'none';
-            if (quickBtns) quickBtns.style.display = 'flex';
             if (btnSingle) { btnSingle.style.background = 'var(--accent)'; btnSingle.style.color = 'white'; }
             if (btnRange) { btnRange.style.background = 'transparent'; btnRange.style.color = 'var(--fg-dim)'; }
         } else {
             if (single) single.style.display = 'none';
             if (range) range.style.display = 'block';
-            if (quickBtns) quickBtns.style.display = 'none';
             if (btnRange) { btnRange.style.background = 'var(--accent)'; btnRange.style.color = 'white'; }
             if (btnSingle) { btnSingle.style.background = 'transparent'; btnSingle.style.color = 'var(--fg-dim)'; }
         }
