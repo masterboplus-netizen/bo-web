@@ -17,7 +17,11 @@
     <script>
     window.onerror = function(msg, url, line) {
         console.error('ОШИБКА:', msg, 'строка:', line);
+        document.body.innerHTML = '<div style="color:red; padding:20px; font-size:18px;"><b>ОШИБКА:</b><br>' + msg + '<br><br>Файл: ' + url + '<br>Строка: ' + line + '</div>';
     };
+    window.addEventListener('unhandledrejection', function(event) {
+        document.body.innerHTML = '<div style="color:red; padding:20px; font-size:18px;"><b>PROMISE ERROR:</b><br>' + event.reason + '</div>';
+    });
     </script>
 
     <div id="app-header">
