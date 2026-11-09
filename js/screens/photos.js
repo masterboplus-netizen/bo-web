@@ -32,13 +32,13 @@ export async function renderPhotos() {
 
         // Рендер
         let html = `
-            <div id="gallery-top-overlay" style="position: fixed; top: 60px; left: 0; width: 100%; z-index: 100; padding: 10px 15px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; pointer-events: none; background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);">
+            <div id="gallery-top-overlay" style="position: fixed; top: 110px; left: 0; width: 100%; z-index: 100; padding: 10px 15px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; pointer-events: none; background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);">
                 <div id="gallery-select-info" style="display: none; align-items: center; gap: 10px; pointer-events: auto;">
                     <button onclick="window.exitSelectionMode()" style="background: rgba(255,255,255,0.15); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
                     <span id="gallery-select-count" style="color: var(--fg); font-size: 18px; font-weight: bold;">0</span>
                 </div>
                 <div style="flex: 1; text-align: center; pointer-events: none;">
-                    <span id="gallery-current-month" style="color: var(--fg); font-size: 16px; font-weight: bold; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 12px;">Месяц</span>
+                    <span id="gallery-current-month" style="color: var(--fg); font-size: 16px; font-weight: bold; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 12px;">${new Date().toLocaleString('ru-RU', { month: 'long' }).replace(/^./, c => c.toUpperCase())}</span>
                 </div>
                 <button onclick="window.showGallerySettings()" style="background: rgba(255,255,255,0.15); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; pointer-events: auto;">⋮</button>
             </div>
@@ -65,7 +65,7 @@ export async function renderPhotos() {
         // Плавающая капсула внизу
         const currentTab = window._galleryTab || 'photos';
         html += `
-            <div style="position: fixed; bottom: 80px; left: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0; z-index: 100; pointer-events: none;">
+            <div style="position: fixed; bottom: 100px; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 15px; box-sizing: border-box; z-index: 100; pointer-events: none;">
                 <div style="display: flex; background: var(--bg2); border-radius: 24px; padding: 4px; border: 1px solid var(--bg3); flex: 0 1 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.4); pointer-events: auto;">
                     <button onclick="window.switchGalleryTab('photos')" style="flex: 1; padding: 10px 12px; border-radius: 20px; border: none; background: ${currentTab === 'photos' ? 'var(--accent)' : 'transparent'}; color: ${currentTab === 'photos' ? 'white' : 'var(--fg-dim)'}; font-size: 13px; font-weight: ${currentTab === 'photos' ? 'bold' : 'normal'}; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
