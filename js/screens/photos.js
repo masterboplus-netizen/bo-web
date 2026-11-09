@@ -1,6 +1,6 @@
 import { db } from '../api/supabase.js';
 import { fetchAllPhotos } from '../api/photos.js';
-import { fetchAlbums, fetchFolders, createAlbum, createFolder } from '../api/albums_folders.js';
+import { fetchAlbums, fetchFolders, createAlbum, createFolder, fetchAlbumPreview } from '../api/albums_folders.js';
 
 function escapeHtml(text) {
     return String(text).replace(/[&<>"']/g, function(m) {
@@ -341,9 +341,28 @@ async function renderAlbumsTab() {
             html += '<div style="text-align: center; color: var(--fg-dim); margin-top: 30px;">Альбомов пока нет.</div>';
         } else {
             html += '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">';
-            albums.forEach(a => {
-                html += `<div onclick="window.openAlbum(${a.id})" style="background: var(--bg2); border-radius: 12px; padding: 20px; border: 1px solid var(--bg3); cursor: pointer; text-align: center; color: var(--fg);">📁 ${a.name}</div>`;
-            });
+            for (const a of albums) {
+                const previews = await fetchAlbumPreview(a.id);
+                const p = previews || [];
+                let mosaic = '';
+                if (p.length === 0) {
+                    mosaic = '<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); font-size: 40px;">📁</div>';
+                } else {
+                    mosaic = '<div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; width: 100%; height: 100%; gap: 2px;">';
+                    for (let i = 0; i < 4; i++) {
+                        if (p[i]) {
+                            mosaic += `<img src="${p[i]}" style="width: 100%; height: 100%; object-fit: cover; display: block;">`;
+                        } else {
+                            mosaic += `<div style="background: var(--bg3);"></div>`;
+                        }
+                    }
+                    mosaic += '</div>';
+                }
+                html += `<div onclick="window.openAlbum(${a.id})" style="background: var(--bg2); border-radius: 12px; border: 1px solid var(--bg3); cursor: pointer; overflow: hidden;">
+                    <div style="width: 100%; aspect-ratio: 1; overflow: hidden;">${mosaic}</div>
+                    <div style="padding: 10px; color: var(--fg); font-size: 14px; text-align: center;">${a.name}</div>
+                </div>`;
+            }
             html += '</div>';
         }
         html += '</div>';
@@ -375,9 +394,12 @@ async function renderFoldersTab() {
         if (!folders || folders.length === 0) {
             html += '<div style="text-align: center; color: var(--fg-dim); margin-top: 30px;">Папок пока нет.</div>';
         } else {
-            html += '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">';
+            html += '<div style="display: flex; flex-direction: column; gap: 10px;">';
             folders.forEach(f => {
-                html += `<div onclick="window.openFolder(${f.id})" style="background: var(--bg2); border-radius: 12px; padding: 20px; border: 1px solid var(--bg3); cursor: pointer; text-align: center; color: var(--fg);">📁 ${f.name}</div>`;
+                html += `<div onclick="window.openFolder(${f.id})" style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3); cursor: pointer; display: flex; align-items: center; gap: 12px; color: var(--fg);">
+                    <span style="font-size: 24px;">📁</span>
+                    <span style="font-size: 16px;">${f.name}</span>
+                </div>`;
             });
             html += '</div>';
         }

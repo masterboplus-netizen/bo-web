@@ -53,3 +53,9 @@ export async function addPhotoToFolder(folderId, photoId) {
     const { error } = await db.from('folder_photos').insert([{ folder_id: folderId, photo_id: photoId }]);
     if (error) throw error;
 }
+
+export async function fetchAlbumPreview(albumId) {
+    const { data, error } = await db.from('album_photos').select('photo_id, task_photos(photo_url)').eq('album_id', albumId).limit(4);
+    if (error) throw error;
+    return (data || []).map(l => l.task_photos?.photo_url).filter(Boolean);
+}
