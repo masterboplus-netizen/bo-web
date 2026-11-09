@@ -179,12 +179,14 @@ window.galleryPhotoActions = function(photoId) {
     }, 10);
 };
 
-window.galleryDeletePhoto = function(photoId) {
+window.taskGalleryDeletePhoto = function(photoId) {
     const safeId = window.safePhotoId(photoId, 'task_gallery.galleryDeletePhoto');
+    const state = window._galleryState;
+    if (!state || !state.taskId) { window.openPhotos(); return; }
     if (!safeId) return;
     window.showConfirm('Удалить это фото?', async () => {
         try {
-            const state = window._galleryState;
+            // state is already defined above
             const { error } = await db.from('task_photos').delete().eq('id', safeId);
             if (error) throw error;
             if (state.photos.length <= 1) {
