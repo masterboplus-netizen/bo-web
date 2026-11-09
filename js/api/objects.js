@@ -35,3 +35,15 @@ export async function deleteObject(id) {
     const { error } = await db.from('objects').delete().eq('id', id);
     if (error) throw error;
 }
+
+export async function fetchObject(id) {
+    const { data, error } = await db.from('objects').select(`
+        *,
+        locations (
+            *,
+            addresses (*)
+        )
+    `).eq('id', id).single();
+    if (error) throw error;
+    return data;
+}
