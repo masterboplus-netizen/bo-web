@@ -232,7 +232,7 @@ window.galleryDeletePhoto = function(photoId) {
             const { error } = await db.from('task_photos').delete().eq('id', safeId);
             if (error) throw error;
             window._galleryIndex = 0;
-                setTimeout(() => { renderPhotos(); }, 5000);
+                renderPhotos();
             return;
         } catch (err) {
             alert('Ошибка удаления: ' + err.message);

@@ -31,12 +31,9 @@ import './modals/photo_title.js';
 import './modals/photo_upload.js';
 import './screens/task_gallery.js';
 
-
-
 function saveCurrentScreen(screen) {
     localStorage.setItem('currentScreen', screen);
 }
-
 
 window.openObject = openObject;
 
@@ -64,20 +61,18 @@ window.openNewTask = openNewTask;
 window.saveNewTask = saveNewTask;
 window.openAddMenu = openAddMenu;
 
-
-
-
 export function setNavActive(tabId) {
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
     const el = document.getElementById('nav-' + tabId);
     if (el) el.classList.add('active');
 }
 
-document.addEventListener('DOMContentLoaded', () => { const savedScreen = localStorage.getItem('currentScreen');
-    setTimeout(() => initFloatingMenu(), 100);
+document.addEventListener('DOMContentLoaded', () => {
     window.renderMainMenu();
     initAudioButton();
+    setTimeout(() => initFloatingMenu(), 100);
 });
+
 window.openCalendar = function() { saveCurrentScreen('calendar'); renderCalendar(); };
 window.openPhotos = function() { saveCurrentScreen('photos'); renderPhotos(); };
 window.openDiary = function() { saveCurrentScreen('diary'); renderDiary(); };
@@ -85,24 +80,3 @@ window.openNotepad = function() { saveCurrentScreen('notepad'); renderNotepad();
 window.saveCurrentScreen = saveCurrentScreen;
 window.openFinance = function() { saveCurrentScreen('finance'); renderFinance(); };
 window.setNavActive = setNavActive;
-window.setNavActive = setNavActive;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// При загрузке страницы проверяем сохраненную вкладку и открываем её
-
-// Восстанавливаем последнюю открытую вкладку при загрузке
-
