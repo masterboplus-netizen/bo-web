@@ -59,10 +59,10 @@ export async function renderAlbumsTab() {
 }
 
 export async function createNewAlbum() {
-    const name = prompt('Название альбома:');
-    if (!name) return;
-    await createAlbum(name, null);
-    renderAlbumsTab();
+    window.showPrompt('Создать альбом', 'Введите название...', async (name) => {
+        await createAlbum(name, null);
+        renderAlbumsTab();
+    });
 }
 
 export async function openAlbum(id) {

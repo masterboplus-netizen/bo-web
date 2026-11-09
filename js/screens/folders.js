@@ -43,10 +43,10 @@ export async function renderFoldersTab() {
 }
 
 export async function createNewFolder() {
-    const name = prompt('Название папки:');
-    if (!name) return;
-    await createFolder(name);
-    renderFoldersTab();
+    window.showPrompt('Создать папку', 'Введите название...', async (name) => {
+        await createFolder(name);
+        renderFoldersTab();
+    });
 };
 
 
