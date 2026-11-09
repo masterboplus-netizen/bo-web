@@ -237,7 +237,8 @@ window.galleryDeletePhoto = function(photoId) {
         } catch (err) {
             alert('Ошибка удаления: ' + err.message);
         }
-    });
+        });
+    }, 100);
 };
 
 // === РЕЖИМ ВЫДЕЛЕНИЯ ===
