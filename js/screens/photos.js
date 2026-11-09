@@ -70,7 +70,7 @@ export async function renderPhotos() {
         if (filtered.length === 0) {
             html += `<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Фото пока нет.</div>`;
         } else {
-            html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; user-select: none; -webkit-user-select: none;">';
+            html += '<div id="photo-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; user-select: none; -webkit-user-select: none;">';
             filtered.forEach((p, idx) => {
                 if (!p) return;
                 // Находим индекс в общем массиве (для листания)
@@ -245,8 +245,8 @@ window.enableSelectionMode = function() {
     document.body.classList.add('selection-mode');
     const info = document.getElementById('gallery-select-info');
     if (info) info.style.display = 'flex';
-    const grid = document.querySelector('#app-content div[style*="grid-template-columns"]');
-    if (grid) grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    const grid = document.getElementById('photo-grid');
+    if (grid) grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
 };
 
 window.disableSelectionMode = function() {
@@ -258,8 +258,8 @@ window.disableSelectionMode = function() {
     if (info) info.style.display = 'none';
     const count = document.getElementById('gallery-select-count');
     if (count) count.textContent = '0';
-    const grid = document.querySelector('#app-content div[style*="grid-template-columns"]');
-    if (grid) grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    const grid = document.getElementById('photo-grid');
+    if (grid) grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
     document.querySelectorAll('.photo-select-circle').forEach(c => c.remove());
     document.querySelectorAll('.photo-item-selected').forEach(c => c.classList.remove('photo-item-selected'));
 };
