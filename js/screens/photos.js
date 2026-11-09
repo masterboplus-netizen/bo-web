@@ -249,7 +249,7 @@ window.enableSelectionMode = function() {
     const info = document.getElementById('gallery-select-info');
     if (info) info.style.display = 'flex';
     const grid = document.querySelector('#app-content div[style*="grid-template-columns"]');
-    if (grid) grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+    if (grid) grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
 };
 
 window.disableSelectionMode = function() {
@@ -477,7 +477,7 @@ window.showSelectionSheet = function() {
 
     const sheet = document.createElement('div');
     sheet.id = 'selection-sheet';
-    sheet.style.cssText = 'position: fixed; bottom: 60px; left: 0; width: 100%; background: var(--bg2); border-top: 1px solid var(--bg3); border-radius: 20px 20px 0 0; padding: 15px; z-index: 10004; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.4);';
+    sheet.style.cssText = 'position: fixed; bottom: 70px; left: 0; width: 100%; background: var(--bg2); border-top: 1px solid var(--bg3); border-radius: 20px 20px 0 0; padding: 15px; z-index: 10005; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.4);';
 
     sheet.innerHTML = `
         <button onclick="window.shareSelected()" style="background: transparent; border: none; color: var(--fg); display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; font-size: 11px;">
