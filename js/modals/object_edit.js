@@ -79,7 +79,8 @@ window.saveObject = async function(objId) {
         }
 
         document.querySelector('div[style*="z-index: 100000"]').remove();
-        if (window.openObjects) window.openObjects();
+        if (objId && window.openObject) window.openObject(objId);
+        else if (window.openObjects) window.openObjects();
         else if (window.renderObjects) {
              const objects = await fetchObjects();
              renderObjects(objects);
