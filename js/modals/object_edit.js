@@ -29,17 +29,17 @@ window.openObjectEdit = async function(objOrId) {
         
 
         <div style="margin-bottom: 15px;">
-            <input type="text" id="obj-city" placeholder="Город" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <input type="text" id="obj-street" placeholder="Улица" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <input type="text" id="obj-house" placeholder="Дом" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <input type="text" id="obj-building" placeholder="Корпус" style="width: 100%; padding: 10px; box-sizing: border-box; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-city" value="${obj && obj.locations && obj.locations.addresses ? escapeHtml(obj.locations.addresses.city || '') : ''}" placeholder="Город" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-street" value="${obj && obj.locations && obj.locations.addresses ? escapeHtml(obj.locations.addresses.street || '') : ''}" placeholder="Улица" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-house" value="${obj && obj.locations && obj.locations.addresses ? escapeHtml(obj.locations.addresses.house || '') : ''}" placeholder="Дом" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-building" value="${obj && obj.locations && obj.locations.addresses ? escapeHtml(obj.locations.addresses.building || '') : ''}" placeholder="Корпус" style="width: 100%; padding: 10px; box-sizing: border-box; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
         </div>
 
         <div style="margin-bottom: 15px;">
-            <input type="text" id="obj-entrance" placeholder="Подъезд" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <input type="text" id="obj-floor" placeholder="Этаж" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <input type="text" id="obj-apartment" placeholder="Квартира" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <textarea id="obj-access-notes" placeholder="Ключ, код домофона..." style="width: 100%; padding: 10px; box-sizing: border-box; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; height: 60px;"></textarea>
+            <input type="text" id="obj-entrance" value="${obj && obj.locations ? escapeHtml(obj.locations.entrance || '') : ''}" placeholder="Подъезд" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-floor" value="${obj && obj.locations ? escapeHtml(obj.locations.floor || '') : ''}" placeholder="Этаж" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-apartment" value="${obj && obj.locations ? escapeHtml(obj.locations.apartment || '') : ''}" placeholder="Квартира" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <textarea id="obj-access-notes" value="${obj && obj.locations ? escapeHtml(obj.locations.access_notes || '') : ''}" placeholder="Ключ, код домофона..." style="width: 100%; padding: 10px; box-sizing: border-box; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; height: 60px;"></textarea>
         </div>
 
         <div style="display: flex; gap: 10px; margin-top: 10px;">
