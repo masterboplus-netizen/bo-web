@@ -60,7 +60,7 @@ window.openObjectEdit = async function(objOrId) {
 
 window.saveObject = async function(objId) {
     try {
-        const name = document.getElementById('object-name') ? document.getElementById('object-name').value : 'Объект';
+        const name = (obj && obj.name) ? obj.name : 'Объект';
         const city = document.getElementById('obj-city').value;
         const street = document.getElementById('obj-street').value;
         const house = document.getElementById('obj-house').value;
