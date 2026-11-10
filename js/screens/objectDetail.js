@@ -14,7 +14,12 @@ export async function openObject(objectId) {
 
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
-        let address = obj.address || obj.addres || 'Адрес не указан';
+        let address = 'Адрес не указан';
+        if (obj.locations && obj.locations.addresses) {
+            const a = obj.locations.addresses;
+            const l = obj.locations;
+            address = `${a.city || ''}, ул. ${a.street || ''}, д. ${a.house || ''}${a.building ? ' к. ' + a.building : ''}${l.entrance ? ', подъезд ' + l.entrance : ''}${l.floor ? ', этаж ' + l.floor : ''}${l.apartment ? ', кв. ' + l.apartment : ''}`.replace(/^, /, '');
+        }
         let yandexLink = 'https://yandex.ru/maps/?text=' + encodeURIComponent(address);
         let gisLink = 'https://2gis.ru/search/' + encodeURIComponent(address);
 
