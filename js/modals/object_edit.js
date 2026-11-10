@@ -18,7 +18,6 @@ window.openObjectEdit = function(obj) {
         </div>
 
         <div style="margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 15px;">
-            <h4 style="color: var(--fg); margin: 0 0 10px 0;">Адрес (География)</h4>
             <input type="text" id="obj-city" placeholder="Город" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
             <input type="text" id="obj-street" placeholder="Улица" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
             <input type="text" id="obj-house" placeholder="Дом" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
@@ -26,7 +25,6 @@ window.openObjectEdit = function(obj) {
         </div>
 
         <div style="margin-bottom: 15px;">
-            <h4 style="color: var(--fg); margin: 0 0 10px 0;">Доступ (Локация)</h4>
             <input type="text" id="obj-entrance" placeholder="Подъезд" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
             <input type="text" id="obj-floor" placeholder="Этаж" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
             <input type="text" id="obj-apartment" placeholder="Квартира" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
