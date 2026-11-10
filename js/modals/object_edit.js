@@ -2,7 +2,21 @@ import { db } from '../api/supabase.js';
 import { fetchObjects } from '../api/objects.js';
 import { renderObjects } from '../screens/objects.js';
 
-window.openObjectEdit = function(obj) {
+window.openObjectEdit = async function(objOrId) {
+    let obj = objOrId;
+    if (typeof objOrId === 'number' || typeof objOrId === 'string') {
+        // Если пришел ID, загружаем объект
+        const { data, error } = await db.from('objects').select(`
+            *,
+            locations (
+                *,
+                addresses (*)
+            )
+        `).eq('id', objOrId).single();
+        if (error) { alert('Ошибка загрузки объекта: ' + error.message); return; }
+        obj = data;
+    }
+
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; opacity: 0; transition: opacity 0.2s ease;';
 

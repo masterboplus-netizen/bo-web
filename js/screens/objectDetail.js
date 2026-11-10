@@ -42,7 +42,7 @@ export async function openObject(objectId) {
                         <span class="badge" style="background: ${statusColor}; margin-top: 8px; display: inline-block;">${statusText}</span>
                     </div>
                     
-                    <div onclick="window.openObjectEdit(obj)" style="color: var(--fg-dim); font-size: 14px; margin-bottom: 15px; cursor: pointer; text-decoration: underline;">${escapeHtml(address)}</div>
+                    <div onclick="window.openObjectEdit(${obj.id})" style="color: var(--fg-dim); font-size: 14px; margin-bottom: 15px; cursor: pointer; text-decoration: underline;">${escapeHtml(address)}</div>
                     
                     <div style="display: flex; gap: 8px; margin-bottom: 20px;">
                         <a href="${yandexLink}" target="_blank" style="flex: 1; text-align: center; padding: 10px; background: var(--bg3); border-radius: 10px; color: var(--fg); text-decoration: none; font-size: 13px;">Яндекс</a>
