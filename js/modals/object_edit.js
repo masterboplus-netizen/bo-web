@@ -29,7 +29,7 @@ window.openObjectEdit = function(obj) {
         </div>
 
         <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button onclick="this.closest('div[style*=\"z-index: 100000\"]').remove()" style="flex: 1; padding: 12px; background: var(--bg3); color: var(--fg); border: none; border-radius: 10px; font-size: 15px; cursor: pointer;">Отмена</button>
+            <button onclick="window.closeObjectEdit()" style="flex: 1; padding: 12px; background: var(--bg3); color: var(--fg); border: none; border-radius: 10px; font-size: 15px; cursor: pointer;">Отмена</button>
             <button onclick="window.saveObject(${obj ? obj.id : 'null'})" style="flex: 1; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer;">Сохранить</button>
         </div>
     `;
