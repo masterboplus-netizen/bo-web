@@ -7,7 +7,7 @@ window.openObjectEdit = function(obj) {
     overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; opacity: 0; transition: opacity 0.2s ease;';
 
     const modal = document.createElement('div');
-    modal.style.cssText = 'width: calc(100% - 20px); max-width: 500px; max-height: 90vh; margin: 0 auto; background: var(--bg2); border-radius: 16px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); box-sizing: border-box; overflow-y: auto;';
+    modal.style.cssText = 'width: calc(100% - 32px); max-width: 500px; max-height: 90vh; margin: 0 auto; background: var(--bg2); border-radius: 16px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); box-sizing: border-box; overflow-y: auto;';
 
     modal.innerHTML = `
         <h3 style="color: var(--fg); margin: 0 0 15px 0; font-size: 18px;">${obj ? 'Редактировать объект' : 'Новый объект'}</h3>
@@ -17,7 +17,7 @@ window.openObjectEdit = function(obj) {
             <input type="text" id="object-name" value="${obj ? escapeHtml(obj.name || '') : ''}" style="width: 100%; padding: 10px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;" placeholder="Название">
         </div>
 
-        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--bg3); padding-bottom: 15px;">
+        <div style="margin-bottom: 15px;">
             <input type="text" id="obj-city" placeholder="Город" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
             <input type="text" id="obj-street" placeholder="Улица" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
             <input type="text" id="obj-house" placeholder="Дом" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
