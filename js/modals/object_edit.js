@@ -12,23 +12,20 @@ window.openObjectEdit = function(obj) {
     modal.innerHTML = `
         <h3 style="color: var(--fg); margin: 0 0 15px 0; font-size: 18px;">${obj ? 'Редактировать объект' : 'Новый объект'}</h3>
         
+        
+
         <div style="margin-bottom: 15px;">
-            <label style="display: block; color: var(--fg-dim); margin-bottom: 5px;">Название объекта</label>
-            <input type="text" id="object-name" value="${obj ? escapeHtml(obj.name || '') : ''}" style="width: 100%; padding: 10px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;" placeholder="Название">
+            <input type="text" id="obj-city" placeholder="Город" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-street" placeholder="Улица" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-house" placeholder="Дом" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-building" placeholder="Корпус" style="width: 100%; padding: 10px; box-sizing: border-box; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
         </div>
 
         <div style="margin-bottom: 15px;">
-            <input type="text" id="obj-city" placeholder="Город" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <input type="text" id="obj-street" placeholder="Улица" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <input type="text" id="obj-house" placeholder="Дом" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <input type="text" id="obj-building" placeholder="Корпус" style="width: 100%; padding: 10px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <input type="text" id="obj-entrance" placeholder="Подъезд" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <input type="text" id="obj-floor" placeholder="Этаж" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <input type="text" id="obj-apartment" placeholder="Квартира" style="width: 100%; padding: 10px; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
-            <textarea id="obj-access-notes" placeholder="Ключ, код домофона..." style="width: 100%; padding: 10px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; height: 60px;"></textarea>
+            <input type="text" id="obj-entrance" placeholder="Подъезд" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-floor" placeholder="Этаж" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <input type="text" id="obj-apartment" placeholder="Квартира" style="width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 8px; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px;">
+            <textarea id="obj-access-notes" placeholder="Ключ, код домофона..." style="width: 100%; padding: 10px; box-sizing: border-box; background: var(--bg3); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; height: 60px;"></textarea>
         </div>
 
         <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -49,7 +46,7 @@ window.openObjectEdit = function(obj) {
 
 window.saveObject = async function(objId) {
     try {
-        const name = document.getElementById('object-name').value;
+        const name = document.getElementById('object-name') ? document.getElementById('object-name').value : (obj ? obj.name : 'Без названия');
         const city = document.getElementById('obj-city').value;
         const street = document.getElementById('obj-street').value;
         const house = document.getElementById('obj-house').value;
