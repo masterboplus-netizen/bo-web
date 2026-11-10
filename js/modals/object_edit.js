@@ -99,3 +99,9 @@ function escapeHtml(text) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
     });
 }
+
+
+window.closeObjectEdit = function() {
+    const overlay = document.querySelector('div[style*="z-index: 100000"]');
+    if (overlay) overlay.remove();
+};
