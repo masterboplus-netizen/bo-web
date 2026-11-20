@@ -1,22 +1,58 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Тест MasterBoss Brain</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Тест MasterBoss Brain + Tools</title>
 <style>body{font-family:monospace;background:#0d1117;color:#c9d1d9;padding:20px}textarea{width:100%;height:100px;background:#161b22;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:10px;font-family:monospace}button{background:#238636;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;margin-top:10px}pre{background:#161b22;padding:15px;border-radius:6px;overflow-x:auto;white-space:pre-wrap}</style>
 </head>
 <body>
-<h2>🧠 Тест MasterBoss Brain</h2>
+<h2>🧠 Тест MasterBoss Brain + Tools</h2>
 <textarea id="input" placeholder="Введите фразу...">от левой стены 24, снизу 187, щиток 60×40</textarea><br>
-<button id="btn">Разобрать</button>
-<h3>Результат:</h3>
+<button id="btn">Разобрать и выполнить</button>
+<h3>План (JSON):</h3>
 <pre id="output">Здесь будет JSON...</pre>
-<script src="js/brain_engine.js"></script>
+<h3>Результат выполнения:</h3>
+<pre id="result">Здесь будет результат...</pre>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-document.getElementById('btn').addEventListener('click', function() {
+  // Инициализация Supabase (URL и ключ из твоего проекта)
+  const SUPABASE_URL = "https://ruomhtlvyqmaqhqqsfqn.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1b21odGx2eXFtYXFocXFzZnFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzOTQwMjUsImV4cCI6MjEwODk3MDAyNX0.7FWm5KVmMqyVxNjXMhcGhgzb6nD8aLfie7cxBlohIO4";
+  window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+<script src="js/brain_engine.js"></script>
+<script src="js/brain_tools.js"></script>
+<script>
+document.getElementById('btn').addEventListener('click', async function() {
   try {
     var text = document.getElementById('input').value;
     var context = { object_id: 1, room_id: 5, user_id: 3, role: 'master' };
-    var result = MasterBossBrain.plan(text, context);
-    document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+    
+    // 1. Мозг разбирает фразу
+    var plan = MasterBossBrain.plan(text, context);
+    document.getElementById('output').textContent = JSON.stringify(plan, null, 2);
+    
+    if (plan.status !== 'ok') {
+      document.getElementById('result').textContent = 'План не готов к выполнению: ' + plan.status;
+      return;
+    }
+
+    // 2. Tools выполняют действия
+    var results = [];
+    for (var i = 0; i < plan.plan.intents.length; i++) {
+      var intent = plan.plan.intents[i];
+      // Добавляем room_id в payload, если его нет
+      if (!intent.payload.room_id && context.room_id) {
+        intent.payload.room_id = context.room_id;
+      }
+      try {
+        var res = await BrainTools.execute(intent.action, intent.payload);
+        results.push({ action: intent.action, status: 'ok', data: res });
+      } catch (e) {
+        results.push({ action: intent.action, status: 'error', error: e.message });
+      }
+    }
+    
+    document.getElementById('result').textContent = JSON.stringify(results, null, 2);
   } catch (e) {
     document.getElementById('output').textContent = 'ОШИБКА: ' + e.message;
   }
