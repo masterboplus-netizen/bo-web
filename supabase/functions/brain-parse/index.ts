@@ -46,7 +46,7 @@ serve(async (req) => {
 
     const data = await response.json()
     const content = JSON.parse(data.choices[0].message.content)
-    
+
     return new Response(JSON.stringify(content), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
