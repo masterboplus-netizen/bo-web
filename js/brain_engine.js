@@ -1,4 +1,4 @@
-// МОДУЛЬ: MASTERBOSS BRAIN (ЕДИНОЕ ЯДРО)
+// МОДУЛЬ: MASTERBOSS BRAIN (РАСШИРЕННОЕ ЯДРО)
 var MasterBossBrain = (function() {
     'use strict';
 
@@ -10,28 +10,45 @@ var MasterBossBrain = (function() {
     function understand(text) {
         var intents = [];
         var t = text.toLowerCase();
-        var measureMatch, commMatch, taskMatch, objectMatch;
 
-        measureMatch = t.match(/(?:от\s+)?(левой|правой|верхней|нижней|передней|задней)?\s*стены\s+(\d+(?:[.,]\d+)?)(?:\s*(?:см|мм|м))?(?:,?\s*снизу\s+(\d+(?:[.,]\d+)?))?/i);
+        // 1. ЗАМЕРЫ (геометрия)
+        var measureMatch = t.match(/(?:от\s+)?(левой|правой|верхней|нижней|передней|задней)?\s*стены\s+(\d+(?:[.,]\d+)?)(?:\s*(?:см|мм|м))?(?:,?\s*(?:сверху|снизу)\s+(\d+(?:[.,]\d+)?))?/i);
         if (measureMatch) {
             intents.push({ action: 'add_measure', entity: 'room_measures', payload: { wall: measureMatch[1] || 'left', offset_x: parseFloat(measureMatch[2].replace(',', '.')) || 0, offset_y: parseFloat(measureMatch[3]?.replace(',', '.')) || 0 }, confidence: 0.9 });
         }
 
-        commMatch = t.match(/(щиток|розетка|выключатель|светильник|счетчик|счётчик)\s*(?:(\d+)\s*[хx]\s*(\d+))?/i);
+        // 2. КОММУНИКАЦИИ (розетки, щитки, выключатели, светильники, счётчики)
+        var commMatch = t.match(/(щиток|розетка|выключатель|светильник|счетчик|счётчик|кондиционер|труба|кран)\s*(?:(\d+)\s*[хx]\s*(\d+))?/i);
         if (commMatch) {
             var type = commMatch[1].toLowerCase();
             var size = commMatch[2] && commMatch[3] ? (commMatch[2] + 'x' + commMatch[3]) : null;
             intents.push({ action: 'add_comm', entity: 'room_comms', payload: { comm_type: type, size: size, wall: 'left', offset_x: 0, offset_y: 0 }, confidence: 0.85 });
         }
 
-        taskMatch = t.match(/(?:создай|добавь|надо|нужно)\s*(?:задачу\s*)?(.+)/i);
-        if (taskMatch && !measureMatch && !commMatch) {
+        // 3. РАСХОДЫ (траты, расходы, оплата, купил, потратил)
+        var expenseMatch = t.match(/(?:добавь|запиши|создай|потратил|купил|оплатил|расход|трата)\s*(?:(\d+(?:[.,]\d+)?)\s*(?:руб|р|₽)?)?\s*(?:на\s+)?(.+)/i);
+        if (expenseMatch && !measureMatch && !commMatch) {
+            var amount = parseFloat(expenseMatch[1]?.replace(',', '.')) || 0;
+            var desc = expenseMatch[2]?.trim() || 'Без описания';
+            intents.push({ action: 'add_expense', entity: 'finance', payload: { amount: amount, category: desc, type: 'expense', date: new Date().toISOString().split('T')[0] }, confidence: 0.8 });
+        }
+
+        // 4. ЗАДАЧИ
+        var taskMatch = t.match(/(?:создай|добавь|надо|нужно|поставь)\s*(?:задачу\s*)?(.+)/i);
+        if (taskMatch && !measureMatch && !commMatch && !expenseMatch) {
             intents.push({ action: 'create_task', entity: 'tasks', payload: { title: taskMatch[1].trim(), status: 'todo', priority: 'medium' }, confidence: 0.8 });
         }
 
-        objectMatch = t.match(/(?:создай|добавь)\s*объект\s+(.+)/i);
+        // 5. ОБЪЕКТЫ
+        var objectMatch = t.match(/(?:создай|добавь)\s*объект\s+(.+)/i);
         if (objectMatch) {
             intents.push({ action: 'create_object', entity: 'objects', payload: { name: objectMatch[1].trim(), address: '' }, confidence: 0.85 });
+        }
+
+        // 6. КОМНАТЫ
+        var roomMatch = t.match(/(?:создай|добавь)\s*комнату\s+(.+)/i);
+        if (roomMatch) {
+            intents.push({ action: 'create_room', entity: 'rooms', payload: { name: roomMatch[1].trim() }, confidence: 0.85 });
         }
 
         if (intents.length === 0) {
@@ -50,7 +67,7 @@ var MasterBossBrain = (function() {
         for (var i = 0; i < intents.length; i++) {
             var intent = intents[i];
             if (intent.action === 'unknown') { errors.push('Не понял фразу: "' + intent.payload.raw + '". Уточните.'); continue; }
-            if (intent.action === 'add_measure' || intent.action === 'add_comm') { if (!context.room_id) clarifications.push('Уточните комнату для "' + intent.action + '".'); }
+            if (['add_measure', 'add_comm'].includes(intent.action)) { if (!context.room_id) clarifications.push('Уточните комнату для "' + intent.action + '".'); }
         }
         return { clarifications: clarifications, errors: errors };
     }
@@ -60,7 +77,7 @@ var MasterBossBrain = (function() {
         var forbidden = [];
         for (var i = 0; i < intents.length; i++) {
             var intent = intents[i];
-            if (intent.action === 'create_task' || intent.action === 'create_object' || intent.action === 'add_measure' || intent.action === 'add_comm') { if (context.role === 'guest') { requiresConfirmation.push(intent); } }
+            if (['create_task', 'create_object', 'add_measure', 'add_comm', 'add_expense', 'create_room'].includes(intent.action)) { if (context.role === 'guest') { requiresConfirmation.push(intent); } }
         }
         return { requiresConfirmation: requiresConfirmation, forbidden: forbidden };
     }
@@ -74,8 +91,8 @@ var MasterBossBrain = (function() {
         return { intents: result, context: context };
     }
 
-    function saveToMemory(text, plan) { console.log('[Memory] Фраза:', text); console.log('[Memory] План:', JSON.stringify(plan, null, 2)); }
-    function logResult(plan, result) { console.log('[Monitoring] Результат:', result); }
+    function saveToMemory(text, plan) { console.log('[Memory] Фраза:', text); }
+    function logResult(plan, result) { console.log('[Monitoring]', result); }
 
     function plan(text, context) {
         if (!context) context = {};
@@ -98,6 +115,4 @@ var MasterBossBrain = (function() {
     return { plan: plan };
 })();
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = MasterBossBrain;
-}
+if (typeof module !== 'undefined' && module.exports) { module.exports = MasterBossBrain; }
