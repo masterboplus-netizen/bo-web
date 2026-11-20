@@ -2,8 +2,8 @@
 const BrainTools = {
     // Замеры
     add_measure: async function(payload) {
-        if (!window.supabase) throw new Error('Supabase не подключён');
-        const { error } = await window.supabase.from('room_measures').insert([{
+        if (!window.db) throw new Error('Supabase не подключён');
+        const { error } = await window.db.from('room_measures').insert([{
             room_id: payload.room_id, tenant_id: 1, category: 'wall',
             wall_pos: payload.wall || 'left', length: payload.offset_x || 0, width: payload.offset_y || 0
         }]);
@@ -13,8 +13,8 @@ const BrainTools = {
 
     // Коммуникации
     add_comm: async function(payload) {
-        if (!window.supabase) throw new Error('Supabase не подключён');
-        const { error } = await window.supabase.from('room_comms').insert([{
+        if (!window.db) throw new Error('Supabase не подключён');
+        const { error } = await window.db.from('room_comms').insert([{
             room_id: payload.room_id, tenant_id: 1, comm_type: payload.comm_type,
             wall: payload.wall || 'left', offset_x: payload.offset_x || 0, offset_y: payload.offset_y || 0, size: payload.size || null
         }]);
@@ -24,8 +24,8 @@ const BrainTools = {
 
     // Задачи
     create_task: async function(payload) {
-        if (!window.supabase) throw new Error('Supabase не подключён');
-        const { error } = await window.supabase.from('tasks').insert([{
+        if (!window.db) throw new Error('Supabase не подключён');
+        const { error } = await window.db.from('tasks').insert([{
             title: payload.title, status: 'todo', description: payload.description || ''
         }]);
         if (error) throw error;
@@ -34,8 +34,8 @@ const BrainTools = {
 
     // Объекты (используем name, так как address нет в схеме)
     create_object: async function(payload) {
-        if (!window.supabase) throw new Error('Supabase не подключён');
-        const { error } = await window.supabase.from('objects').insert([{
+        if (!window.db) throw new Error('Supabase не подключён');
+        const { error } = await window.db.from('objects').insert([{
             name: payload.name, city: payload.city || '', tenant_id: 1, created_by: 1
         }]);
         if (error) throw error;
@@ -44,10 +44,10 @@ const BrainTools = {
 
     // Расходы (Добавлено!)
     add_expense: async function(payload) {
-        if (!window.supabase) throw new Error('Supabase не подключён');
+        if (!window.db) throw new Error('Supabase не подключён');
         // Пока пишем в tasks, так как структуру finance мы не видели
         // В будущем заменим на таблицу finance
-        const { error } = await window.supabase.from('tasks').insert([{
+        const { error } = await window.db.from('tasks').insert([{
             title: 'Расход: ' + (payload.category || 'Без названия') + ' - ' + (payload.amount || 0) + ' руб.',
             status: 'todo'
         }]);
