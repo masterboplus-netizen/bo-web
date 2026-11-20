@@ -15,7 +15,7 @@
 </head>
 <body style="user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
     <script>
-    window.onerror = function(msg, url, line) {
+    // window.onerror = function(msg, url, line) {
         console.error('ОШИБКА:', msg, 'строка:', line);
         document.body.innerHTML = '<div style="color:red; padding:20px; font-size:18px;"><b>ОШИБКА:</b><br>' + msg + '<br><br>Файл: ' + url + '<br>Строка: ' + line + '</div>';
     };
