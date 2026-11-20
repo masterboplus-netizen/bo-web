@@ -15,18 +15,22 @@
 <h2>🧠 Тест MasterBoss Brain</h2>
 <textarea id="input" placeholder="Введите фразу...">от левой стены 24, снизу 187, щиток 60×40</textarea>
 <br>
-<button onclick="testBrain()">Разобрать</button>
+<button id="btn">Разобрать</button>
 <h3>Результат:</h3>
 <pre id="output">Здесь будет JSON...</pre>
 
 <script src="js/brain_engine.js"></script>
 <script>
-function testBrain() {
-  const text = document.getElementById('input').value;
-  const context = { object_id: 1, room_id: 5, user_id: 3, role: 'master' };
-  const result = MasterBossBrain.plan(text, context);
-  document.getElementById('output').textContent = JSON.stringify(result, null, 2);
-}
+document.getElementById('btn').addEventListener('click', function() {
+  try {
+    var text = document.getElementById('input').value;
+    var context = { object_id: 1, room_id: 5, user_id: 3, role: 'master' };
+    var result = MasterBossBrain.plan(text, context);
+    document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+  } catch (e) {
+    document.getElementById('output').textContent = 'ОШИБКА: ' + e.message;
+  }
+});
 </script>
 </body>
 </html>
