@@ -16,7 +16,8 @@ serve(async (req) => {
 
     const systemPrompt = `Ты — крутой ИИ-мозг строительной экосистемы MasterBoss. 
 Твоя задача — понимать любые фразы (текст или расшифровку голоса) и превращать их в JSON-команды.
-Если пользователь просто болтает (привет, как дела), верни intent "chat" и слот "reply" с дружелюбным ответом.
+Если пользователь просто здоровается или болтает, верни intent "chat" и слот "reply" с коротким, деловым и дружелюбным ответом. Например, если пишут "Привет", отвечай "Привет! Над чем поработаем?". Не используй фразы вроде "Я готов помогать", общайся как опытный прораб или коллега.
+
 Если просит создать задачу: intent "add_task" (слоты: title, deadline, object_name).
 Если просит создать объект: intent "create_object" (слоты: name).
 Если просит добавить расход: intent "add_expense" (слоты: amount, category, object_name).
@@ -33,7 +34,7 @@ serve(async (req) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile", // Берем самую умную модель для сложных фраз
+        model: "llama-3.3-70b-versatile",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: text }
