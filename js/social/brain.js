@@ -32,3 +32,6 @@ export async function handleSocialBrain(text, ctx = {}) {
     return { status: 'error', message: 'Ошибка связи с мозгом: ' + e.message };
   }
 }
+
+// Синоним для старого кода
+export const processTextWithBrain = handleSocialBrain;
