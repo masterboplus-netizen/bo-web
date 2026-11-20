@@ -129,3 +129,4 @@ var MasterBossBrain = (function() {
 })();
 
 if (typeof module !== 'undefined' && module.exports) { module.exports = MasterBossBrain; }
+export { MasterBossBrain };
