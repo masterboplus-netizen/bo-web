@@ -1,34 +1,32 @@
-import { parseWithGroq } from '../brain/nlu/groq.js';
+import { MasterBossBrain } from '../brain/index.js';
 
 export async function handleSocialBrain(text, ctx = {}) {
-  // 1. Пытаемся понять через старые правила (если есть)
-  // Но так как мы хотим использовать Groq, сразу идем в него
-  
   try {
-    console.log('[Social Brain] Отправляю в Groq:', text);
-    const intents = await parseWithGroq(text);
-    
-    console.log('[Social Brain] Ответ от Groq:', JSON.stringify(intents));
-    if (intents && intents.length > 0) {
-      const intent = intents[0];
-      console.log('[Social Brain] Первый интент:', JSON.stringify(intent));
-      
-      // Если это команда (задача, расход, объект)
-      if (intent.intent === 'add_task' || intent.intent === 'add_expense' || intent.intent === 'create_object') {
-        return { 
-          status: 'ok', 
-          message: `Понял: ${intent.intent}. Данные: ${JSON.stringify(intent.slots)}` 
-        };
+    console.log('[Social Brain] Отправляю в MasterBossBrain:', text);
+    const result = await MasterBossBrain.handle(text, ctx);
+    console.log('[Social Brain] Ответ от мозга:', JSON.stringify(result));
+
+    // Если мозг понял команду
+    if (result.status === 'ok' || result.status === 'completed') {
+      let message = '✅ Готово!';
+      if (result.results && result.results.length > 0) {
+        message = result.results.map(r => r.message).join('\n');
       }
-      
-      // Если это просто чат (болтовня)
-      if (intent.intent === 'chat' || intent.message) {
-        return { status: 'chat', message: intent.message || 'Привет! Чем могу помочь?' };
-      }
+      return { status: 'ok', message: message };
     }
-    
+
+    // Если мозг не понял — отвечаем как чат (приветствие)
+    if (result.status === 'error') {
+      // Проверяем, не приветствие ли это
+      const lower = text.toLowerCase().trim();
+      if (['привет', 'здравствуй', 'хай', 'hello', 'hi'].includes(lower)) {
+        return { status: 'chat', message: 'Привет! Я MasterBoss. Могу создавать задачи, расходы, объекты, замеры. Что делаем?' };
+      }
+      return { status: 'chat', message: 'Я не понял запрос. Попробуй переформулировать (например: "создай задачу позвонить заказчику").' };
+    }
+
     return { status: 'chat', message: 'Я не понял запрос. Попробуй переформулировать.' };
-    
+
   } catch (e) {
     console.error('[Social Brain] Ошибка:', e);
     return { status: 'error', message: 'Ошибка связи с мозгом: ' + e.message };
