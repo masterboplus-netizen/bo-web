@@ -39,7 +39,7 @@ function saveCurrentScreen(screen) {
 window.openObject = openObject;
 
 window.renderMainMenu = function() {
-    document.getElementById('app-content').innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
+    document.getElementById('content').innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
         <h3 style="color: var(--fg);">Добро пожаловать в MasterBoss!</h3>
         <p>Выберите раздел в меню внизу.</p>
     </div>`;
@@ -47,12 +47,12 @@ window.renderMainMenu = function() {
 };
 
 window.openObjects = async function() { saveCurrentScreen('objects');
-    document.getElementById('app-content').innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);"></div>';
+    document.getElementById('content').innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);"></div>';
     try {
         const objects = await fetchObjects();
         renderObjects(objects);
     } catch (e) {
-        document.getElementById('app-content').innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${e.message}</div>`;
+        document.getElementById('content').innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${e.message}</div>`;
     }
     setNavActive('objects');
 };
