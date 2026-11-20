@@ -1,31 +1,28 @@
-import { MasterBossBrain } from '../brain/index.js';
+import { MasterBossBrain } from '../brain_engine.js';
+import { BrainTools } from '../brain_tools.js';
 
 export async function handleSocialBrain(text, ctx = {}) {
   try {
-    console.log('[Social Brain] Отправляю в MasterBossBrain:', text);
-    const result = await MasterBossBrain.handle(text, ctx);
-    console.log('[Social Brain] Ответ от мозга:', JSON.stringify(result));
+    console.log('[Social Brain] Отправляю в brain_engine:', text);
+    const plan = MasterBossBrain.plan(text, ctx);
+    console.log('[Social Brain] План:', JSON.stringify(plan));
 
-    // Если мозг понял команду
-    if (result.status === 'ok' || result.status === 'completed') {
-      let message = '✅ Готово!';
-      if (result.results && result.results.length > 0) {
-        message = result.results.map(r => r.message).join('\n');
-      }
-      return { status: 'ok', message: message };
-    }
-
-    // Если мозг не понял — отвечаем как чат (приветствие)
-    if (result.status === 'error') {
-      // Проверяем, не приветствие ли это
-      const lower = text.toLowerCase().trim();
-      if (['привет', 'здравствуй', 'хай', 'hello', 'hi'].includes(lower)) {
-        return { status: 'chat', message: 'Привет! Я MasterBoss. Могу создавать задачи, расходы, объекты, замеры. Что делаем?' };
-      }
+    if (plan.status !== 'ok') {
       return { status: 'chat', message: 'Я не понял запрос. Попробуй переформулировать (например: "создай задачу позвонить заказчику").' };
     }
 
-    return { status: 'chat', message: 'Я не понял запрос. Попробуй переформулировать.' };
+    const results = [];
+    for (const intent of plan.plan.intents) {
+      try {
+        const res = await BrainTools.execute(intent.action, intent.payload);
+        results.push({ action: intent.action, status: 'ok', data: res });
+      } catch (e) {
+        results.push({ action: intent.action, status: 'error', error: e.message });
+      }
+    }
+
+    const message = results.map(r => r.status === 'ok' ? '✅ Готово: ' + r.action : '❌ Ошибка: ' + r.error).join('\n');
+    return { status: 'ok', message: message };
 
   } catch (e) {
     console.error('[Social Brain] Ошибка:', e);
@@ -33,5 +30,4 @@ export async function handleSocialBrain(text, ctx = {}) {
   }
 }
 
-// Синоним для старого кода
 export const processTextWithBrain = handleSocialBrain;
