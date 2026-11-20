@@ -1,6 +1,6 @@
 // js/social/brain.js
-// Связка с MasterBossBrain и BrainTools
 export async function processTextWithBrain(text) {
+    // 1. Пробуем выполнить как команду через MasterBossBrain
     if (window.MasterBossBrain && window.BrainTools) {
         const ctx = { object_id: 1, room_id: 5, user_id: 3, role: 'master' };
         const plan = window.MasterBossBrain.plan(text, ctx);
@@ -13,15 +13,21 @@ export async function processTextWithBrain(text) {
                 }
                 try {
                     await window.BrainTools.execute(intent.action, intent.payload);
-                    results.push({ action: intent.action, status: 'ok' });
+                    results.push(intent.action);
                 } catch (e) {
-                    results.push({ action: intent.action, status: 'error', error: e.message });
+                    return { status: 'error', message: 'Ошибка выполнения: ' + e.message };
                 }
             }
-            return { status: 'ok', results };
-        } else {
-            return { status: 'error', message: plan.errors.join('; ') || 'Не понял фразу' };
+            // Если сработало как команда, возвращаем успех
+            return { status: 'ok', message: 'Выполнено действий: ' + results.length };
         }
     }
-    return { status: 'error', message: 'Мозг не подключен' };
+
+    // 2. Если не команда или не понял — отдаем в Groq (LLM)
+    // Пока Groq не подключен, возвращаем заглушку.
+    // Когда ты пришлешь код Groq, мы заменим этот блок на реальный вызов.
+    return { 
+        status: 'chat', 
+        message: 'Я пока не умею поддерживать беседу, но я учусь! Пока я могу только выполнять команды (задачи, замеры, расходы).' 
+    };
 }
