@@ -1,6 +1,5 @@
 // МОДУЛЬ: MASTERBOSS BRAIN (ЕДИНОЕ ЯДРО)
-// Работает и в браузере, и в Node.js.
-(function(global) {
+var MasterBossBrain = (function() {
     'use strict';
 
     function cleanInput(text) {
@@ -9,27 +8,28 @@
     }
 
     function understand(text) {
-        const intents = [];
-        const t = text.toLowerCase();
+        var intents = [];
+        var t = text.toLowerCase();
+        var measureMatch, commMatch, taskMatch, objectMatch;
 
-        const measureMatch = t.match(/(?:от\s+)?(левой|правой|верхней|нижней|передней|задней)?\s*стены\s+(\d+(?:[.,]\d+)?)(?:\s*(?:см|мм|м))?(?:,?\s*снизу\s+(\d+(?:[.,]\d+)?))?/i);
+        measureMatch = t.match(/(?:от\s+)?(левой|правой|верхней|нижней|передней|задней)?\s*стены\s+(\d+(?:[.,]\d+)?)(?:\s*(?:см|мм|м))?(?:,?\s*снизу\s+(\d+(?:[.,]\d+)?))?/i);
         if (measureMatch) {
             intents.push({ action: 'add_measure', entity: 'room_measures', payload: { wall: measureMatch[1] || 'left', offset_x: parseFloat(measureMatch[2].replace(',', '.')) || 0, offset_y: parseFloat(measureMatch[3]?.replace(',', '.')) || 0 }, confidence: 0.9 });
         }
 
-        const commMatch = t.match(/(щиток|розетка|выключатель|светильник|счетчик|счётчик)\s*(?:(\d+)\s*[хx]\s*(\d+))?/i);
+        commMatch = t.match(/(щиток|розетка|выключатель|светильник|счетчик|счётчик)\s*(?:(\d+)\s*[хx]\s*(\d+))?/i);
         if (commMatch) {
-            const type = commMatch[1].toLowerCase();
-            const size = commMatch[2] && commMatch[3] ? `${commMatch[2]}x${commMatch[3]}` : null;
+            var type = commMatch[1].toLowerCase();
+            var size = commMatch[2] && commMatch[3] ? (commMatch[2] + 'x' + commMatch[3]) : null;
             intents.push({ action: 'add_comm', entity: 'room_comms', payload: { comm_type: type, size: size, wall: 'left', offset_x: 0, offset_y: 0 }, confidence: 0.85 });
         }
 
-        const taskMatch = t.match(/(?:создай|добавь|надо|нужно)\s*(?:задачу\s*)?(.+)/i);
+        taskMatch = t.match(/(?:создай|добавь|надо|нужно)\s*(?:задачу\s*)?(.+)/i);
         if (taskMatch && !measureMatch && !commMatch) {
             intents.push({ action: 'create_task', entity: 'tasks', payload: { title: taskMatch[1].trim(), status: 'todo', priority: 'medium' }, confidence: 0.8 });
         }
 
-        const objectMatch = t.match(/(?:создай|добавь)\s*объект\s+(.+)/i);
+        objectMatch = t.match(/(?:создай|добавь)\s*объект\s+(.+)/i);
         if (objectMatch) {
             intents.push({ action: 'create_object', entity: 'objects', payload: { name: objectMatch[1].trim(), address: '' }, confidence: 0.85 });
         }
@@ -45,44 +45,59 @@
     }
 
     function reason(intents, context) {
-        const clarifications = [];
-        const errors = [];
-        for (const intent of intents) {
-            if (intent.action === 'unknown') { errors.push(`Не понял фразу: "${intent.payload.raw}". Уточните.`); continue; }
-            if (['add_measure', 'add_comm'].includes(intent.action)) { if (!context.room_id) clarifications.push(`Уточните комнату для "${intent.action}".`); }
+        var clarifications = [];
+        var errors = [];
+        for (var i = 0; i < intents.length; i++) {
+            var intent = intents[i];
+            if (intent.action === 'unknown') { errors.push('Не понял фразу: "' + intent.payload.raw + '". Уточните.'); continue; }
+            if (intent.action === 'add_measure' || intent.action === 'add_comm') { if (!context.room_id) clarifications.push('Уточните комнату для "' + intent.action + '".'); }
         }
-        return { clarifications, errors };
+        return { clarifications: clarifications, errors: errors };
     }
 
     function checkPermission(intents, context) {
-        const requiresConfirmation = [];
-        const forbidden = [];
-        for (const intent of intents) {
-            if (['create_task', 'create_object', 'add_measure', 'add_comm'].includes(intent.action)) { if (context.role === 'guest') { requiresConfirmation.push(intent); } }
+        var requiresConfirmation = [];
+        var forbidden = [];
+        for (var i = 0; i < intents.length; i++) {
+            var intent = intents[i];
+            if (intent.action === 'create_task' || intent.action === 'create_object' || intent.action === 'add_measure' || intent.action === 'add_comm') { if (context.role === 'guest') { requiresConfirmation.push(intent); } }
         }
-        return { requiresConfirmation, forbidden };
+        return { requiresConfirmation: requiresConfirmation, forbidden: forbidden };
     }
 
     function buildPlan(intents, context) {
-        return { intents: intents.map(i => ({ action: i.action, entity: i.entity, payload: i.payload, confidence: i.confidence })), context: context };
+        var result = [];
+        for (var i = 0; i < intents.length; i++) {
+            var intent = intents[i];
+            result.push({ action: intent.action, entity: intent.entity, payload: intent.payload, confidence: intent.confidence });
+        }
+        return { intents: result, context: context };
     }
 
     function saveToMemory(text, plan) { console.log('[Memory] Фраза:', text); console.log('[Memory] План:', JSON.stringify(plan, null, 2)); }
     function logResult(plan, result) { console.log('[Monitoring] Результат:', result); }
 
-    function plan(text, context = {}) {
-        const cleanText = cleanInput(text);
+    function plan(text, context) {
+        if (!context) context = {};
+        var cleanText = cleanInput(text);
         if (!cleanText) return { error: 'Пустой ввод' };
-        const intents = understand(cleanText);
-        const ctx = getContext(context);
-        const { clarifications, errors } = reason(intents, ctx);
-        const { requiresConfirmation, forbidden } = checkPermission(intents, ctx);
-        const plan = buildPlan(intents, ctx);
+        var intents = understand(cleanText);
+        var ctx = getContext(context);
+        var reasonResult = reason(intents, ctx);
+        var clarifications = reasonResult.clarifications;
+        var errors = reasonResult.errors;
+        var permissionResult = checkPermission(intents, ctx);
+        var requiresConfirmation = permissionResult.requiresConfirmation;
+        var forbidden = permissionResult.forbidden;
+        var plan = buildPlan(intents, ctx);
         saveToMemory(cleanText, plan);
-        logResult(plan, { clarifications, errors, requiresConfirmation, forbidden });
+        logResult(plan, { clarifications: clarifications, errors: errors, requiresConfirmation: requiresConfirmation, forbidden: forbidden });
         return { status: errors.length > 0 ? 'error' : (clarifications.length > 0 ? 'needs_clarification' : 'ok'), plan: plan, clarifications: clarifications, errors: errors, requires_confirmation: requiresConfirmation.length > 0, forbidden: forbidden };
     }
 
-    const MasterBossBrain = { plan };
-    if (typeof module !== 'undefined' && module.exports) { module.exports = MasterBossBrain; } else { global.MasterBossBrain = MasterBossBrain; }
-})(typeof window !== 'undefined' ? window : global);
+    return { plan: plan };
+})();
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = MasterBossBrain;
+}
