@@ -1,8 +1,8 @@
 import { db } from '../api/supabase.js';
 
 // ID Бота и текущего пользователя (замени на те, что выдал Supabase)
-export const BOT_ID = 'ID_БОТА';
-export const CURRENT_USER_ID = 'ID_МАСТЕРА';
+export const BOT_ID = '1d4c5ee8-abff-4eb3-9ad2-e90f80434e54';
+export const CURRENT_USER_ID = '52454226-b4c5-4d97-94ef-df3fa5ad71a2';
 
 // Поиск или создание личного чата с Бо
 export async function getOrCreateBotChat() {
