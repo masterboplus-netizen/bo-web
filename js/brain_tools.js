@@ -71,3 +71,4 @@ const BrainTools = {
 };
 
 window.BrainTools = BrainTools;
+export { BrainTools };
