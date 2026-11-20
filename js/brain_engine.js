@@ -10,6 +10,13 @@ var MasterBossBrain = (function() {
     function understand(text) {
         var intents = [];
         var t = text.toLowerCase();
+        // 0. ОБЪЕКТЫ (Высший приоритет)
+        var objectMatch = t.match(/(?:создай|добавь)\s*объект\s+(.+)/i);
+        if (objectMatch) {
+            intents.push({ action: 'create_object', entity: 'objects', payload: { name: objectMatch[1].trim() }, confidence: 0.95 });
+            return intents; // Сразу выходим, чтобы не сработали другие правила
+        }
+
 
         // 1. ЗАМЕРЫ (геометрия)
         var measureMatch = t.match(/(?:от\s+)?(левой|правой|верхней|нижней|передней|задней)?\s*стены\s+(\d+(?:[.,]\d+)?)(?:\s*(?:см|мм|м))?(?:,?\s*(?:сверху|снизу)\s+(\d+(?:[.,]\d+)?))?/i);
@@ -39,11 +46,6 @@ var MasterBossBrain = (function() {
             intents.push({ action: 'create_task', entity: 'tasks', payload: { title: taskMatch[1].trim(), status: 'todo', priority: 'medium' }, confidence: 0.8 });
         }
 
-        // 5. ОБЪЕКТЫ
-        var objectMatch = t.match(/(?:создай|добавь)\s*объект\s+(.+)/i);
-        if (objectMatch) {
-            intents.push({ action: 'create_object', entity: 'objects', payload: { name: objectMatch[1].trim(), address: '' }, confidence: 0.85 });
-        }
 
         // 6. КОМНАТЫ
         var roomMatch = t.match(/(?:создай|добавь)\s*комнату\s+(.+)/i);
