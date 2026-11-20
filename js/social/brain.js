@@ -1,33 +1,34 @@
-// js/social/brain.js
-export async function processTextWithBrain(text) {
-    // 1. Пробуем выполнить как команду через MasterBossBrain
-    if (window.MasterBossBrain && window.BrainTools) {
-        const ctx = { object_id: 1, room_id: 5, user_id: 3, role: 'master' };
-        const plan = window.MasterBossBrain.plan(text, ctx);
-        
-        if (plan.status === 'ok') {
-            const results = [];
-            for (const intent of plan.plan.intents) {
-                if (!intent.payload.room_id && ctx.room_id) {
-                    intent.payload.room_id = ctx.room_id;
-                }
-                try {
-                    await window.BrainTools.execute(intent.action, intent.payload);
-                    results.push(intent.action);
-                } catch (e) {
-                    return { status: 'error', message: 'Ошибка выполнения: ' + e.message };
-                }
-            }
-            // Если сработало как команда, возвращаем успех
-            return { status: 'ok', message: 'Выполнено действий: ' + results.length };
-        }
-    }
+import { parseWithGroq } from '../brain/nlu/groq.js';
 
-    // 2. Если не команда или не понял — отдаем в Groq (LLM)
-    // Пока Groq не подключен, возвращаем заглушку.
-    // Когда ты пришлешь код Groq, мы заменим этот блок на реальный вызов.
-    return { 
-        status: 'chat', 
-        message: 'Я пока не умею поддерживать беседу, но я учусь! Пока я могу только выполнять команды (задачи, замеры, расходы).' 
-    };
+export async function handleSocialBrain(text, ctx = {}) {
+  // 1. Пытаемся понять через старые правила (если есть)
+  // Но так как мы хотим использовать Groq, сразу идем в него
+  
+  try {
+    console.log('[Social Brain] Отправляю в Groq:', text);
+    const intents = await parseWithGroq(text);
+    
+    if (intents && intents.length > 0) {
+      const intent = intents[0];
+      
+      // Если это команда (задача, расход, объект)
+      if (intent.intent === 'add_task' || intent.intent === 'add_expense' || intent.intent === 'create_object') {
+        return { 
+          status: 'ok', 
+          message: `Понял: ${intent.intent}. Данные: ${JSON.stringify(intent.slots)}` 
+        };
+      }
+      
+      // Если это просто чат (болтовня)
+      if (intent.intent === 'chat' || intent.message) {
+        return { status: 'chat', message: intent.message || 'Привет! Чем могу помочь?' };
+      }
+    }
+    
+    return { status: 'chat', message: 'Я не понял запрос. Попробуй переформулировать.' };
+    
+  } catch (e) {
+    console.error('[Social Brain] Ошибка:', e);
+    return { status: 'error', message: 'Ошибка связи с мозгом: ' + e.message };
+  }
 }
