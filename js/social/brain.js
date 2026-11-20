@@ -8,8 +8,10 @@ export async function handleSocialBrain(text, ctx = {}) {
     console.log('[Social Brain] Отправляю в Groq:', text);
     const intents = await parseWithGroq(text);
     
+    console.log('[Social Brain] Ответ от Groq:', JSON.stringify(intents));
     if (intents && intents.length > 0) {
       const intent = intents[0];
+      console.log('[Social Brain] Первый интент:', JSON.stringify(intent));
       
       // Если это команда (задача, расход, объект)
       if (intent.intent === 'add_task' || intent.intent === 'add_expense' || intent.intent === 'create_object') {
