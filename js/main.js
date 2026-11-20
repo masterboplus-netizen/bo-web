@@ -1,28 +1,28 @@
-// import { renderDiary } from './screens/diary.js';
-// import './modals/diary_edit.js';
-// import { renderNotepad } from './screens/notepad.js';
-// import { renderSocialScreen } from './social/index.js';
-// import { renderFinance } from './screens/finance.js';
-// import { renderCashFlow } from './screens/cashflow.js';
-// import './modals/finance_operation.js';
-// import { openMenu } from './screens/menu.js';
-// import { showStub } from './ui/stub.js';
-// import { showConfirm } from './ui/confirm.js';
-// import { openSettings, openMenuSettings, openWidgetSettings } from './screens/settings.js';
-// import { renderCalendar } from './screens/calendar.js';
-// import { renderPhotos } from './screens/photos.js';
-// import { renderObjects } from './screens/objects.js';
-// import { initFloatingMenu, renderCapsule, CAPSULE_ITEMS } from './ui/floating_menu.js';
-// import { fetchObjects } from './api/objects.js';
-// import { openAddMenu } from './modals/add_menu.js';
-// import { initAudioButton } from './modals/audio_modal.js';
-// import './modals/camera_modal.js';
-// import { renderTasks } from './screens/tasks.js';
-// import { openNewTask, saveNewTask } from './modals/task_create.js';
-// import { openObject } from './screens/objectDetail.js';
-// import './modals/object_edit.js';
-// import './modals/object_create.js';
-// import './screens/taskDetail.js';
+import { renderDiary } from './screens/diary.js';
+import './modals/diary_edit.js';
+import { renderNotepad } from './screens/notepad.js';
+import { renderSocialScreen } from './social/index.js';
+import { renderFinance } from './screens/finance.js';
+import { renderCashFlow } from './screens/cashflow.js';
+import './modals/finance_operation.js';
+import { openMenu } from './screens/menu.js';
+import { showStub } from './ui/stub.js';
+import { showConfirm } from './ui/confirm.js';
+import { openSettings, openMenuSettings, openWidgetSettings } from './screens/settings.js';
+import { renderCalendar } from './screens/calendar.js';
+import { renderPhotos } from './screens/photos.js';
+import { renderObjects } from './screens/objects.js';
+import { initFloatingMenu, renderCapsule, CAPSULE_ITEMS } from './ui/floating_menu.js';
+import { fetchObjects } from './api/objects.js';
+import { openAddMenu } from './modals/add_menu.js';
+import { initAudioButton } from './modals/audio_modal.js';
+import './modals/camera_modal.js';
+import { renderTasks } from './screens/tasks.js';
+import { openNewTask, saveNewTask } from './modals/task_create.js';
+import { openObject } from './screens/objectDetail.js';
+import './modals/object_edit.js';
+import './modals/object_create.js';
+import './screens/taskDetail.js';
 import './screens/taskEdit.js';
 import './modals/task_actions.js';
 
@@ -39,7 +39,7 @@ function saveCurrentScreen(screen) {
 window.openObject = openObject;
 
 window.renderMainMenu = function() {
-    document.getElementById('content').innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
+    document.getElementById('app-content').innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
         <h3 style="color: var(--fg);">Добро пожаловать в MasterBoss!</h3>
         <p>Выберите раздел в меню внизу.</p>
     </div>`;
@@ -47,12 +47,12 @@ window.renderMainMenu = function() {
 };
 
 window.openObjects = async function() { saveCurrentScreen('objects');
-    document.getElementById('content').innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);"></div>';
+    document.getElementById('app-content').innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);"></div>';
     try {
         const objects = await fetchObjects();
         renderObjects(objects);
     } catch (e) {
-        document.getElementById('content').innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${e.message}</div>`;
+        document.getElementById('app-content').innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${e.message}</div>`;
     }
     setNavActive('objects');
 };
