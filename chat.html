@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест Мозга</title>
+    <style>
+        body { margin: 0; padding: 0; background: #121212; color: white; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="chat-container" style="height: 100vh;"></div>
+    <script type="module">
+        import { renderChat } from './js/screens/chat.js';
+        renderChat(document.getElementById('chat-container'));
+    </script>
+</body>
+</html>
