@@ -1,6 +1,7 @@
 import { renderDiary } from './screens/diary.js';
 import './modals/diary_edit.js';
 import { renderNotepad } from './screens/notepad.js';
+import { renderSocialScreen } from './social/index.js';
 import { renderFinance } from './screens/finance.js';
 import { renderCashFlow } from './screens/cashflow.js';
 import './modals/finance_operation.js';
@@ -76,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 window.openCalendar = function() { saveCurrentScreen('calendar'); renderCalendar(); };
 window.openPhotos = function() { saveCurrentScreen('photos'); renderPhotos(); };
 window.openDiary = function() { saveCurrentScreen('diary'); renderDiary(); };
+window.openSocial = function() { saveCurrentScreen('social'); renderSocialScreen(); };
 window.openNotepad = function() { saveCurrentScreen('notepad'); renderNotepad(); };
 window.saveCurrentScreen = saveCurrentScreen;
 window.openFinance = function() { saveCurrentScreen('finance'); renderFinance(); };

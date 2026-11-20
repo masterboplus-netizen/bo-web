@@ -5,6 +5,10 @@ export function openMenu() {
     let html = `
         <div style="padding: 15px; max-width: 100%; margin: 0 auto; padding-bottom: 80px;">
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                                <div onclick="window.openSocial()" style="background: var(--bg2); border-radius: 12px; border: 1px solid var(--bg3); padding: 12px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 10h.01M12 10h.01M16 10h.01"></path></svg>
+                    <span style="color: var(--fg); font-size: 10px; text-align: center;">Бо</span>
+                </div>
                 <div onclick="window.openObjects()" style="background: var(--bg2); border-radius: 12px; border: 1px solid var(--bg3); padding: 12px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
                     <span style="color: var(--fg); font-size: 10px; text-align: center;">Объекты</span>
