@@ -102,7 +102,10 @@ async function renderChatScreen(container, chatId) {
                 });
                 document.getElementById('chat-loading')?.remove();
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('SUPABASE EDGE ERROR:', error);
+                    throw new Error(error.message + ' (' + (error.context?.status || 'no status') + ')');
+                }
                 
                 // Парсим ответ от Groq
                 if (data && data.intents && data.intents.length > 0) {
