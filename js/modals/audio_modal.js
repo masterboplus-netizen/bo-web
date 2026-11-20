@@ -6,7 +6,6 @@ export function initAudioButton() {
   let audioChunks = [];
   let isRecording = false;
   let timerId = null;
-  let startTime = 0;
 
   const sheet = document.createElement('div');
   sheet.id = 'audio-sheet';
@@ -63,14 +62,38 @@ export function initAudioButton() {
           if (!response.ok) throw new Error('Ошибка сервера');
 
           const data = await response.json();
-          
+          const recognizedText = data.text;
+
           sheet.style.bottom = '-300px';
           micBtn.style.transform = 'scale(1)';
           micBtn.style.color = 'var(--fg)';
-          
-          setTimeout(() => {
-            showTaskConfirm(data.text);
-          }, 300);
+
+          // === ПОДКЛЮЧЕНИЕ К МОЗГУ ===
+          if (window.MasterBossBrain && window.BrainTools) {
+            const ctx = { object_id: 1, room_id: 5, user_id: 3, role: 'master' };
+            const plan = window.MasterBossBrain.plan(recognizedText, ctx);
+
+            if (plan.status === 'ok') {
+              const results = [];
+              for (const intent of plan.plan.intents) {
+                if (!intent.payload.room_id && ctx.room_id) {
+                  intent.payload.room_id = ctx.room_id;
+                }
+                try {
+                  const res = await window.BrainTools.execute(intent.action, intent.payload);
+                  results.push({ action: intent.action, status: 'ok', data: res });
+                } catch (e) {
+                  results.push({ action: intent.action, status: 'error', error: e.message });
+                }
+              }
+              console.log('Brain results:', results);
+              alert('Готово! Выполнено действий: ' + results.length);
+            } else {
+              alert('Мозг не понял: ' + (plan.errors.join('; ') || plan.status));
+            }
+          } else {
+            setTimeout(() => { showTaskConfirm(recognizedText); }, 300);
+          }
 
         } catch (err) {
           sheet.style.bottom = '-300px';
@@ -82,7 +105,7 @@ export function initAudioButton() {
 
       mediaRecorder.start();
       isRecording = true;
-      
+
       micBtn.style.transform = 'scale(1.2)';
       micBtn.style.color = '#007aff';
 
@@ -113,31 +136,11 @@ export function initAudioButton() {
     }
   }
 
-  // ЗАЖАТИЕ (Тач)
-  micBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    startRecording();
-  }, { passive: false });
-
-  micBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    stopRecording();
-  }, { passive: false });
-
-  micBtn.addEventListener('touchcancel', (e) => {
-    e.preventDefault();
-    stopRecording();
-  }, { passive: false });
-
-  // ЗАЖАТИЕ (Мышь)
-  micBtn.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    startRecording();
-  });
-
-  window.addEventListener('mouseup', () => {
-    if (isRecording) stopRecording();
-  });
+  micBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); }, { passive: false });
+  micBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopRecording(); }, { passive: false });
+  micBtn.addEventListener('touchcancel', (e) => { e.preventDefault(); stopRecording(); }, { passive: false });
+  micBtn.addEventListener('mousedown', (e) => { e.preventDefault(); startRecording(); });
+  window.addEventListener('mouseup', () => { if (isRecording) stopRecording(); });
 }
 
 function showTaskConfirm(text) {
@@ -153,7 +156,6 @@ function showTaskConfirm(text) {
       </div>
     </div>`;
   document.body.appendChild(confirm);
-
   document.getElementById('task-confirm-no').onclick = () => confirm.remove();
   document.getElementById('task-confirm-yes').onclick = () => {
       console.log('TASK CREATE:', text);
