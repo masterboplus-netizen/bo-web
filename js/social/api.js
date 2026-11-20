@@ -1,10 +1,58 @@
-// js/social/api.js
-// Здесь будет работа с Supabase (сохранение истории сообщений)
-export async function fetchMessages() {
-    // Заглушка. Позже добавим запрос к таблице.
-    return [];
+import { db } from '../api/supabase.js';
+
+// ID Бота и текущего пользователя (замени на те, что выдал Supabase)
+export const BOT_ID = 'ТВОЙ_UUID_БОТА';
+export const CURRENT_USER_ID = 'ТВОЙ_UUID_ПОЛЬЗОВАТЕЛЯ';
+
+// Поиск или создание личного чата с Бо
+export async function getOrCreateBotChat() {
+    // 1. Ищем чат, где есть Бот и текущий пользователь
+    const { data: existingChats, error } = await db
+        .from('chat_members')
+        .select('chat_id, chats!inner(type)')
+        .eq('profile_id', CURRENT_USER_ID)
+        .eq('chats.type', 'bot');
+
+    if (existingChats && existingChats.length > 0) {
+        return existingChats[0].chat_id;
+    }
+
+    // 2. Если нет — создаем новый чат
+    const { data: newChat, error: chatError } = await db
+        .from('chats')
+        .insert([{ type: 'bot' }])
+        .select()
+        .single();
+
+    if (chatError) throw chatError;
+
+    // 3. Добавляем участников (Пользователь + Бот)
+    await db.from('chat_members').insert([
+        { chat_id: newChat.id, profile_id: CURRENT_USER_ID },
+        { chat_id: newChat.id, profile_id: BOT_ID }
+    ]);
+
+    return newChat.id;
 }
-export async function sendMessageToDB(text, role) {
-    // Заглушка. Позже добавим insert.
-    console.log('DB Save:', role, text);
+
+// Загрузка последних 50 сообщений
+export async function fetchMessages(chatId) {
+    const { data, error } = await db
+        .from('messages')
+        .select('*')
+        .eq('chat_id', chatId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+    if (error) throw error;
+    return data.reverse(); // Возвращаем в правильном порядке (старые сверху)
+}
+
+// Отправка сообщения
+export async function sendMessageToDB(chatId, senderId, text) {
+    const { error } = await db
+        .from('messages')
+        .insert([{ chat_id: chatId, sender_id: senderId, text: text }]);
+    
+    if (error) throw error;
 }
