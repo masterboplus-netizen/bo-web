@@ -1,13 +1,37 @@
 import { db } from '../api/supabase.js';
 
-// ID Бота и текущего пользователя (замени на те, что выдал Supabase)
 export const BOT_ID = '1d4c5ee8-abff-4eb3-9ad2-e90f80434e54';
 export const CURRENT_USER_ID = '52454226-b4c5-4d97-94ef-df3fa5ad71a2';
 
+// Загружаем все чаты, в которых состоит пользователь
+export async function fetchUserChats() {
+    const { data, error } = await db
+        .from('chat_members')
+        .select(`
+            chat_id,
+            chats (
+                id,
+                title,
+                type
+            )
+        `)
+        .eq('profile_id', CURRENT_USER_ID);
+
+    if (error) throw error;
+
+    // Если нет личного чата с Ботом — создаем его
+    const hasBotChat = data.find(c => c.chats && c.chats.type === 'bot');
+    if (!hasBotChat) {
+        await getOrCreateBotChat();
+        return fetchUserChats(); // Перезапрашиваем, чтобы он появился в списке
+    }
+
+    return data.map(item => item.chats).filter(Boolean);
+}
+
 // Поиск или создание личного чата с Бо
 export async function getOrCreateBotChat() {
-    // 1. Ищем чат, где есть Бот и текущий пользователь
-    const { data: existingChats, error } = await db
+    const { data: existingChats } = await db
         .from('chat_members')
         .select('chat_id, chats!inner(type)')
         .eq('profile_id', CURRENT_USER_ID)
@@ -17,7 +41,6 @@ export async function getOrCreateBotChat() {
         return existingChats[0].chat_id;
     }
 
-    // 2. Если нет — создаем новый чат
     const { data: newChat, error: chatError } = await db
         .from('chats')
         .insert([{ type: 'bot' }])
@@ -26,7 +49,6 @@ export async function getOrCreateBotChat() {
 
     if (chatError) throw chatError;
 
-    // 3. Добавляем участников (Пользователь + Бот)
     await db.from('chat_members').insert([
         { chat_id: newChat.id, profile_id: CURRENT_USER_ID },
         { chat_id: newChat.id, profile_id: BOT_ID }
@@ -35,7 +57,7 @@ export async function getOrCreateBotChat() {
     return newChat.id;
 }
 
-// Загрузка последних 50 сообщений
+// Загрузка истории
 export async function fetchMessages(chatId) {
     const { data, error } = await db
         .from('messages')
@@ -45,10 +67,10 @@ export async function fetchMessages(chatId) {
         .limit(50);
 
     if (error) throw error;
-    return data.reverse(); // Возвращаем в правильном порядке (старые сверху)
+    return data.reverse();
 }
 
-// Отправка сообщения
+// Сохранение
 export async function sendMessageToDB(chatId, senderId, text) {
     const { error } = await db
         .from('messages')
