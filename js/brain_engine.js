@@ -10,21 +10,21 @@ var MasterBossBrain = (function() {
     function understand(text) {
         var intents = [];
         var t = text.toLowerCase();
+
         // 0. ОБЪЕКТЫ (Высший приоритет)
-        var objectMatch = t.match(/(?:создай|добавь)\s*объект\s+(.+)/i);
+        var objectMatch = t.match(/(?:создай|добавь|новый)\s*объект\s+(.+)/i);
         if (objectMatch) {
             intents.push({ action: 'create_object', entity: 'objects', payload: { name: objectMatch[1].trim() }, confidence: 0.95 });
-            return intents; // Сразу выходим, чтобы не сработали другие правила
+            return intents;
         }
 
-
-        // 1. ЗАМЕРЫ (геометрия)
+        // 1. ЗАМЕРЫ
         var measureMatch = t.match(/(?:от\s+)?(левой|правой|верхней|нижней|передней|задней)?\s*стены\s+(\d+(?:[.,]\d+)?)(?:\s*(?:см|мм|м))?(?:,?\s*(?:сверху|снизу)\s+(\d+(?:[.,]\d+)?))?/i);
         if (measureMatch) {
             intents.push({ action: 'add_measure', entity: 'room_measures', payload: { wall: measureMatch[1] || 'left', offset_x: parseFloat(measureMatch[2].replace(',', '.')) || 0, offset_y: parseFloat(measureMatch[3]?.replace(',', '.')) || 0 }, confidence: 0.9 });
         }
 
-        // 2. КОММУНИКАЦИИ (розетки, щитки, выключатели, светильники, счётчики)
+        // 2. КОММУНИКАЦИИ
         var commMatch = t.match(/(щиток|розетка|выключатель|светильник|счетчик|счётчик|кондиционер|труба|кран)\s*(?:(\d+)\s*[хx]\s*(\d+))?/i);
         if (commMatch) {
             var type = commMatch[1].toLowerCase();
@@ -32,7 +32,7 @@ var MasterBossBrain = (function() {
             intents.push({ action: 'add_comm', entity: 'room_comms', payload: { comm_type: type, size: size, wall: 'left', offset_x: 0, offset_y: 0 }, confidence: 0.85 });
         }
 
-        // 3. РАСХОДЫ (траты, расходы, оплата, купил, потратил)
+        // 3. РАСХОДЫ
         var expenseMatch = t.match(/(?:добавь|запиши|создай|потратил|купил|оплатил|расход|трата)\s*(?:(\d+(?:[.,]\d+)?)\s*(?:руб|р|₽)?)?\s*(?:на\s+)?(.+)/i);
         if (expenseMatch && !measureMatch && !commMatch) {
             var amount = parseFloat(expenseMatch[1]?.replace(',', '.')) || 0;
@@ -46,11 +46,25 @@ var MasterBossBrain = (function() {
             intents.push({ action: 'create_task', entity: 'tasks', payload: { title: taskMatch[1].trim(), status: 'todo', priority: 'medium' }, confidence: 0.8 });
         }
 
-
-        // 6. КОМНАТЫ
+        // 5. КОМНАТЫ
         var roomMatch = t.match(/(?:создай|добавь)\s*комнату\s+(.+)/i);
         if (roomMatch) {
             intents.push({ action: 'create_room', entity: 'rooms', payload: { name: roomMatch[1].trim() }, confidence: 0.85 });
+        }
+
+        // 6. БОЛТАЛКА (Ответы на вопросы)
+        if (intents.length === 0) {
+            var chatMatch = t.match(/(привет|здравствуй|здорово|добрый день|добрый вечер|хай|как дела|что делаешь|помощь|что ты умеешь|кто ты)/i);
+            if (chatMatch) {
+                var replies = [
+                    'Привет! Бо на связи. Готов к работе. Какие задачи на сегодня?',
+                    'Здорово! Я на месте. Что делаем?',
+                    'Приветствую! Чем могу помочь?',
+                    'Всё отлично, работаю в штатном режиме. Какие планы?'
+                ];
+                var randomReply = replies[Math.floor(Math.random() * replies.length)];
+                intents.push({ action: 'chat_reply', entity: null, payload: { text: randomReply }, confidence: 0.9 });
+            }
         }
 
         if (intents.length === 0) {
@@ -68,7 +82,7 @@ var MasterBossBrain = (function() {
         var errors = [];
         for (var i = 0; i < intents.length; i++) {
             var intent = intents[i];
-            if (intent.action === 'unknown') { errors.push('Не понял фразу: "' + intent.payload.raw + '". Уточните.'); continue; }
+            if (intent.action === 'unknown') { errors.push('Я пока не умею поддерживать беседу, но я учусь! Пока я могу выполнять команды (задачи, замеры, расходы).'); continue; }
             if (['add_measure', 'add_comm'].includes(intent.action)) { if (!context.room_id) clarifications.push('Уточните комнату для "' + intent.action + '".'); }
         }
         return { clarifications: clarifications, errors: errors };
@@ -76,12 +90,11 @@ var MasterBossBrain = (function() {
 
     function checkPermission(intents, context) {
         var requiresConfirmation = [];
-        var forbidden = [];
         for (var i = 0; i < intents.length; i++) {
             var intent = intents[i];
             if (['create_task', 'create_object', 'add_measure', 'add_comm', 'add_expense', 'create_room'].includes(intent.action)) { if (context.role === 'guest') { requiresConfirmation.push(intent); } }
         }
-        return { requiresConfirmation: requiresConfirmation, forbidden: forbidden };
+        return { requiresConfirmation: requiresConfirmation, forbidden: [] };
     }
 
     function buildPlan(intents, context) {
@@ -93,9 +106,6 @@ var MasterBossBrain = (function() {
         return { intents: result, context: context };
     }
 
-    function saveToMemory(text, plan) { console.log('[Memory] Фраза:', text); }
-    function logResult(plan, result) { console.log('[Monitoring]', result); }
-
     function plan(text, context) {
         if (!context) context = {};
         var cleanText = cleanInput(text);
@@ -103,15 +113,16 @@ var MasterBossBrain = (function() {
         var intents = understand(cleanText);
         var ctx = getContext(context);
         var reasonResult = reason(intents, ctx);
-        var clarifications = reasonResult.clarifications;
-        var errors = reasonResult.errors;
         var permissionResult = checkPermission(intents, ctx);
-        var requiresConfirmation = permissionResult.requiresConfirmation;
-        var forbidden = permissionResult.forbidden;
         var plan = buildPlan(intents, ctx);
-        saveToMemory(cleanText, plan);
-        logResult(plan, { clarifications: clarifications, errors: errors, requiresConfirmation: requiresConfirmation, forbidden: forbidden });
-        return { status: errors.length > 0 ? 'error' : (clarifications.length > 0 ? 'needs_clarification' : 'ok'), plan: plan, clarifications: clarifications, errors: errors, requires_confirmation: requiresConfirmation.length > 0, forbidden: forbidden };
+        return { 
+            status: reasonResult.errors.length > 0 ? 'error' : (reasonResult.clarifications.length > 0 ? 'needs_clarification' : 'ok'), 
+            plan: plan, 
+            clarifications: reasonResult.clarifications, 
+            errors: reasonResult.errors, 
+            requires_confirmation: permissionResult.requiresConfirmation.length > 0, 
+            forbidden: permissionResult.forbidden 
+        };
     }
 
     return { plan: plan };

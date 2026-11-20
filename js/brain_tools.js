@@ -55,6 +55,11 @@ const BrainTools = {
         return { status: 'ok' };
     },
 
+    // Дружелюбный ответ (Болталка)
+    chat_reply: async function(payload) {
+        return { status: "ok", message: payload.text };
+    },
+
     // Универсальный исполнитель
     execute: async function(action, payload) {
         if (this[action]) {
