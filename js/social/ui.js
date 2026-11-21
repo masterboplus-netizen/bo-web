@@ -37,7 +37,8 @@ async function renderChatList(container) {
         container.innerHTML = html;
         window.openChat = (chatId) => { currentChat = chatId; renderUI(container); };
     } catch (e) {
-        container.innerHTML = `<div style="color: red; padding: 20px;">Ошибка: ${e.message}</div>`;
+        console.error('CHAT LIST ERROR:', e);
+        container.innerHTML = `<div style="color: red; padding: 20px; font-size: 14px;"><b>Ошибка загрузки чатов:</b><br>${e.message}<br><br><pre>${JSON.stringify(e, null, 2)}</pre></div>`;
     }
 }
 
