@@ -1,4 +1,5 @@
 import { MasterBossBrain } from '../brain/index.js';
+import { db } from '../api/supabase.js';
 
 export function renderChat(container) {
   container.innerHTML = `
@@ -45,14 +46,30 @@ export function renderChat(container) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
     try {
-      const result = await MasterBossBrain.handle(text, { tenant_id: 1 });
+      // Берем первый объект и комнату для контекста (временно)
+      const { data: objects } = await db.from('objects').select('id, name').limit(1);
+      const { data: rooms } = await db.from('rooms').select('id').limit(1);
+      
+      const context = { 
+        tenant_id: 1, 
+        object_id: objects && objects[0] ? objects[0].id : null,
+        room_id: rooms && rooms[0] ? rooms[0].id : null
+      };
+
+      const result = await MasterBossBrain.handle(text, context);
       document.getElementById('chat-loading')?.remove();
 
-      // Если это просто чат (болтовня)
+      // ОБРАБОТКА УТОЧНЕНИЯ
+      if (result.status === 'clarification') {
+        addMessage('🤔 ' + result.clarifications[0].question, false);
+        // Можно вывести кнопки с объектами, но пока просто текст
+        addMessage('(Пожалуйста, уточните объект или комнату в следующем сообщении)', false);
+        return;
+      }
+
       if (result.results && result.results[0] && result.results[0].message) {
          addMessage(result.results[0].message, false);
       } 
-      // Если это создание чего-то
       else if (result.status === 'completed') {
         const msg = result.results ? result.results.map(r => r.message).join('<br>') : 'Готово';
         addMessage('✅ ' + msg, false);
