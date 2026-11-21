@@ -53,6 +53,5 @@ export function applyRules(text) {
     return intents;
   }
 
-  // Если ничего не нашли
   return [{ intent: 'unknown', confidence: 0.1, slots: { raw: text } }];
 }
