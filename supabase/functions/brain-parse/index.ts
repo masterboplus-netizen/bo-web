@@ -45,6 +45,10 @@ serve(async (req) => {
     })
 
     const data = await response.json()
+    
+        throw new Error('Groq Error: ' + JSON.stringify(data));
+    }
+
     const content = JSON.parse(data.choices[0].message.content)
 
     return new Response(JSON.stringify(content), {
