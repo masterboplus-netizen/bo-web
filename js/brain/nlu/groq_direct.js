@@ -1,7 +1,9 @@
 export async function parseWithGroq(text) {
-  const apiKey = window.GROQ_API_KEY;
+  // Берем ключ из localStorage или из глобальной переменной
+  const apiKey = window.GROQ_API_KEY || localStorage.getItem('GROQ_API_KEY');
+  
   if (!apiKey) {
-    console.warn('[Groq Direct] Нет API ключа');
+    console.warn('[Groq Direct] Нет API ключа. Задайте его в localStorage: localStorage.setItem("GROQ_API_KEY", "gsk_...")');
     return [];
   }
 
