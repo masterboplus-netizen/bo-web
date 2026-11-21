@@ -104,7 +104,9 @@ async function renderChatScreen(container, chatId) {
                 
                 if (error) {
                     console.error('SUPABASE EDGE ERROR:', error);
-                    throw new Error(error.message + ' (' + (error.context?.status || 'no status') + ')');
+                    // Пытаемся достать текст ответа от функции
+                    const body = await error.context?.json().catch(() => null);
+                    throw new Error(error.message + ' | Детали: ' + JSON.stringify(body));
                 }
                 
                 // Парсим ответ от Groq
