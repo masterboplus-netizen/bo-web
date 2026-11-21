@@ -3,11 +3,11 @@ export function applyRules(text) {
   const t = text.toLowerCase();
 
   // 1. Задачи (создай задачу X)
-  const taskMatches = t.matchAll(/(?:создай|добавь|надо|нужно|поставь)\s*задачу\s*(.+?)(?:\s+и\s+|\s*$)/gi);
+  const taskMatches = t.matchAll(/(?:создай|добавь|надо|нужно|поставь)\s*задачу(?:\s+(.+?))?(?:\s+и\s+|\s*$)/gi);
   for (const match of taskMatches) {
-    if (match[1].trim()) {
-      intents.push({ intent: 'add_task', confidence: 0.9, slots: { title: match[1].trim() } });
-    }
+    // Если названия нет — ставим дефолт
+    const title = match[1] ? match[1].trim() : 'Без названия';
+    intents.push({ intent: 'add_task', confidence: 0.9, slots: { title } });
   }
 
   // 2. Замеры стен (от левой стены 24)
@@ -45,11 +45,10 @@ export function applyRules(text) {
   }
 
   // 4. Объекты (создай объект X)
-  const objectMatches = t.matchAll(/(?:создай|добавь|новый)\s*объект\s*(.+?)(?:\s+и\s+|\s*$)/gi);
+  const objectMatches = t.matchAll(/(?:создай|добавь|новый)\s*объект(?:\s+(.+?))?(?:\s+и\s+|\s*$)/gi);
   for (const match of objectMatches) {
-    if (match[1].trim()) {
-      intents.push({ intent: 'create_object', confidence: 0.9, slots: { name: match[1].trim() } });
-    }
+    const name = match[1] ? match[1].trim() : 'Новый объект ' + new Date().toLocaleDateString();
+    intents.push({ intent: 'create_object', confidence: 0.9, slots: { name } });
   }
 
   // Если ничего не нашли
