@@ -18,9 +18,10 @@ export const MasterBossBrain = {
     return await this.execute(plan, context);
   }
 };
+
 window.brainTest = async (text) => {
   console.log(`[ТЕСТ] Отправляю в мозг: "${text}"`);
-  const result = await MasterBossBrain.handle(text, { tenant_id: 1 });
+  const result = await MasterBossBrain.handle(text, { tenant_id: 1, object_id: 1, room_id: 5 });
   console.log('[РЕЗУЛЬТАТ]', result);
   return result;
 };
