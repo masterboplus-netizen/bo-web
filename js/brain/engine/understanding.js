@@ -4,11 +4,8 @@ import { parseWithGroq } from '../nlu/groq_direct.js';
 
 export async function understand(text, context) {
   const cleanText = normalizeText(text);
-  
-  // Сначала пробуем правила (для простых фраз)
   let intents = applyRules(cleanText);
 
-  // Если правила не справились (unknown), идем в Groq
   if (intents.length === 1 && intents[0].intent === 'unknown') {
     try {
       const groqIntents = await parseWithGroq(cleanText);
