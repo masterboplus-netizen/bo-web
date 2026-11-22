@@ -25,7 +25,6 @@ import './modals/object_create.js';
 import './screens/taskDetail.js';
 import './screens/taskEdit.js';
 import './modals/task_actions.js';
-
 import './modals/task_field_edit.js';
 import './ui/calendar_modal.js';
 import './modals/photo_title.js';
@@ -73,14 +72,12 @@ export function setNavActive(tabId) {
     if (el) el.classList.add('active');
 }
 
-// ФУНКЦИЯ ЗАПУСКА
 function startApp() {
     window.renderMainMenu();
     initAudioButton();
     setTimeout(() => initFloatingMenu(), 100);
 }
 
-// ЗАПУСК (ПРАВИЛЬНЫЙ, С УЧЕТОМ МОДУЛЕЙ)
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', startApp);
 } else {
