@@ -97,7 +97,7 @@ async function renderChatScreen(container, chatId) {
 
             let botResponse = '';
             try {
-                const result = await MasterBossBrain.handle(text, { tenant_id: 1 });
+                const result = { status: 'ok', results: [{ status: 'ok', message: 'Мозг отключен для отладки' }] };
                 document.getElementById('chat-loading')?.remove();
                 
                 if (result.status === 'error') {
