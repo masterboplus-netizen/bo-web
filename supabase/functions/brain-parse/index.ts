@@ -13,22 +13,16 @@ serve(async (req) => {
     const apiKey = Deno.env.get('GROQ_API_KEY')
     if (!apiKey) throw new Error("GROQ_API_KEY не найден")
 
-    const systemPrompt = `Ты — крутой ИИ-мозг строительной экосистемы MasterBoss. 
-Твоя задача — понимать любые фразы и превращать их в МАССИВ JSON-команд (если пользователь просит сделать несколько дел сразу).
-Если пользователь просто здоровается (привет, как дела), верни intent "chat" и слот "reply" с коротким деловым ответом (например, "Привет! Над чем поработаем?").
-Если просит создать задачи: intent "add_task" (слоты: title, deadline, object_name). Если просит несколько задач, верни несколько объектов add_task.
-Если просит создать объект: intent "create_object" (слоты: name).
-Если просит добавить расход: intent "add_expense" (слоты: amount, category, object_name).
-
-ОБЯЗАТЕЛЬНО верни СТРОГО JSON в формате: 
-{ "intents": [ { "intent": "название", "confidence": 0.9, "slots": { ... } }, { "intent": "название2", "confidence": 0.9, "slots": { ... } } ] }`
+    const systemPrompt = `Ты — ИИ-мозг. Преврати текст пользователя в массив JSON-команд.
+Ответ должен быть СТРОГО в формате:
+{ "intents": [ { "intent": "add_task", "confidence": 0.9, "slots": { "title": "..." } } ] }
+- Для болтовни (привет) используй intent "chat" и слот "reply".
+- Для создания задач используй intent "add_task".
+- Если задач несколько, верни несколько объектов в массиве "intents".`
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [
@@ -36,11 +30,22 @@ serve(async (req) => {
           { role: "user", content: text }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.2
+        temperature: 0.1
       })
     })
 
+    if (!response.ok) {
+        const errText = await response.text();
+        throw new Error("Groq API Error: " + errText);
+    }
+
     const data = await response.json()
+    
+    // Проверка, что структура правильная
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error("Некорректный ответ от Groq: " + JSON.stringify(data));
+    }
+
     const content = JSON.parse(data.choices[0].message.content)
     
     return new Response(JSON.stringify(content), {
