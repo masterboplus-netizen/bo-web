@@ -9,14 +9,17 @@ export async function executeActions(plan, context) {
       const tenant_id = context.tenant_id || 1;
 
       if (!action || !action.payload) continue;
+      
+      // Приводим к нижнему регистру и убираем пробелы на всякий случай
+      const tool = (action.tool || '').toLowerCase().trim();
 
-      if (action.tool === 'chat') {
+      if (tool === 'chat') {
         results.push({ status: 'ok', message: action.payload.reply || 'Я вас слушаю!' });
         continue;
       }
 
       // НАВИГАЦИЯ
-      if (action.tool === 'navigate') {
+      if (tool === 'navigate') {
         const screen = action.payload.screen;
         if (screen === 'tasks' && window.openTasks) { window.openTasks(); results.push({ status: 'ok', message: 'Открываю задачи' }); }
         else if (screen === 'objects' && window.openObjects) { window.openObjects(); results.push({ status: 'ok', message: 'Открываю объекты' }); }
@@ -25,7 +28,7 @@ export async function executeActions(plan, context) {
         continue;
       }
 
-      if (action.tool === 'add_task') {
+      if (tool === 'add_task') {
         const title = action.payload.title || 'Без названия';
         result = await db.from('tasks').insert([{
           title: title,
@@ -35,7 +38,7 @@ export async function executeActions(plan, context) {
         }]).select();
         results.push({ status: 'ok', message: `Задача создана: ${title}` });
       } 
-      else if (action.tool === 'add_expense') {
+      else if (tool === 'add_expense') {
         result = await db.from('finance').insert([{
           amount: action.payload.amount || 0,
           category: action.payload.category || 'Прочее',
@@ -45,15 +48,17 @@ export async function executeActions(plan, context) {
         }]).select();
         results.push({ status: 'ok', message: `Расход добавлен: ${action.payload.amount}` });
       }
-      else if (action.tool === 'create_object') {
+      else if (tool === 'create_object') {
+        // Если имя не названо, даем дефолтное
+        const name = action.payload.name || 'Новый объект ' + new Date().toLocaleDateString();
         result = await db.from('objects').insert([{
-          name: action.payload.name || 'Новый объект',
+          name: name,
           tenant_id
         }]).select();
-        results.push({ status: 'ok', message: `Объект создан: ${action.payload.name}` });
+        results.push({ status: 'ok', message: `Объект создан: ${name}` });
       }
       else {
-        results.push({ status: 'error', message: `Инструмент ${action.tool} пока не подключен` });
+        results.push({ status: 'error', message: `Инструмент ${tool} пока не подключен` });
       }
     } catch (error) {
       results.push({ status: 'error', message: error.message });
