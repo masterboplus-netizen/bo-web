@@ -39,7 +39,9 @@ function saveCurrentScreen(screen) {
 window.openObject = openObject;
 
 window.renderMainMenu = function() {
-    document.getElementById('app-content').innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
+    const content = document.getElementById('app-content');
+    if (!content) return;
+    content.innerHTML = `<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">
         <h3 style="color: var(--fg);">Добро пожаловать в MasterBoss!</h3>
         <p>Выберите раздел в меню внизу.</p>
     </div>`;
@@ -47,12 +49,14 @@ window.renderMainMenu = function() {
 };
 
 window.openObjects = async function() { saveCurrentScreen('objects');
-    document.getElementById('app-content').innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);"></div>';
+    const content = document.getElementById('app-content');
+    if (!content) return;
+    content.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);"></div>';
     try {
         const objects = await fetchObjects();
         renderObjects(objects);
     } catch (e) {
-        document.getElementById('app-content').innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${e.message}</div>`;
+        content.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка: ${e.message}</div>`;
     }
     setNavActive('objects');
 };
@@ -63,15 +67,25 @@ window.saveNewTask = saveNewTask;
 window.openAddMenu = openAddMenu;
 
 export function setNavActive(tabId) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
     const el = document.getElementById('nav-' + tabId);
     if (el) el.classList.add('active');
 }
 
-// ЗАПУСК (БЕЗ DOMContentLoaded, ТАК КАК МОДУЛИ ЗАГРУЖАЮТСЯ ПОСЛЕ HTML)
-window.renderMainMenu();
-initAudioButton();
-setTimeout(() => initFloatingMenu(), 100);
+// ФУНКЦИЯ ЗАПУСКА
+function startApp() {
+    window.renderMainMenu();
+    initAudioButton();
+    setTimeout(() => initFloatingMenu(), 100);
+}
+
+// ЗАПУСК (ПРАВИЛЬНЫЙ, С УЧЕТОМ МОДУЛЕЙ)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startApp);
+} else {
+    startApp();
+}
 
 window.openCalendar = function() { saveCurrentScreen('calendar'); renderCalendar(); };
 window.openPhotos = function() { saveCurrentScreen('photos'); renderPhotos(); };
