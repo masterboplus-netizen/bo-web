@@ -1,5 +1,5 @@
 import { fetchUserChats, fetchMessages, sendMessageToDB, BOT_ID, CURRENT_USER_ID } from './api.js';
-import { db } from '../api/supabase.js';
+import { MasterBossBrain } from '../brain/index.js';
 
 let currentChat = null;
 
@@ -38,7 +38,7 @@ async function renderChatList(container) {
         window.openChat = (chatId) => { currentChat = chatId; renderUI(container); };
     } catch (e) {
         console.error('CHAT LIST ERROR:', e);
-        container.innerHTML = `<div style="color: red; padding: 20px; font-size: 14px;"><b>Ошибка загрузки чатов:</b><br>${e.message}<br><br><pre>${JSON.stringify(e, null, 2)}</pre></div>`;
+        container.innerHTML = `<div style="color: red; padding: 20px; font-size: 14px;"><b>Ошибка загрузки чатов:</b><br>${e.message}</div>`;
     }
 }
 
@@ -97,48 +97,25 @@ async function renderChatScreen(container, chatId) {
 
             let botResponse = '';
             try {
-                // ОТПРАВЛЯЕМ В EDGE FUNCTION
-                const { data, error } = await db.functions.invoke('brain-parse', {
-                    body: { text: text, context: { tenant_id: 1 } }
-                });
+                // ВЫЗЫВАЕМ НАШ СУПЕР-МОЗГ
+                const result = await MasterBossBrain.handle(text, { tenant_id: 1 });
                 document.getElementById('chat-loading')?.remove();
                 
-                if (error) {
-                    console.error('SUPABASE EDGE ERROR:', error);
-                    // Пытаемся достать текст ответа от функции
-                    const body = await error.context?.json().catch(() => null);
-                    throw new Error(error.message + ' | Детали: ' + JSON.stringify(body));
-                }
-                
-                // Парсим ответ от Groq
-                if (data && data.intents && data.intents.length > 0) {
-                    const intentData = data.intents[0];
-                    if (intentData.intent === 'chat') {
-                        botResponse = intentData.slots.reply || 'Над чем поработаем?';
-                    } else if (intentData.intent === 'add_task') {
-                        const title = intentData.slots.title || 'Без названия';
-                        const deadline = intentData.slots.deadline || '';
-                        const { error: dbErr } = await db.from('tasks').insert([{ title: title, status: 'todo' }]);
-                        botResponse = dbErr ? '❌ Ошибка БД: ' + dbErr.message : `✅ Задача создана: ${title}${deadline ? ' до ' + deadline : ''}`;
-                    } else if (intentData.intent === 'add_expense') {
-                        const amount = intentData.slots.amount || 0;
-                        const cat = intentData.slots.category || 'Расход';
-                        const { error: dbErr } = await db.from('tasks').insert([{ title: 'Расход: ' + cat + ' - ' + amount + ' руб.', status: 'todo' }]);
-                        botResponse = dbErr ? '❌ Ошибка БД: ' + dbErr.message : `✅ Расход записан: ${cat} (${amount} ₽)`;
-                    } else {
-                        botResponse = '🤔 Неизвестная команда: ' + intentData.intent;
-                    }
+                if (result.status === 'error') {
+                    botResponse = '⚠️ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка');
+                } else if (result.results && result.results.length > 0) {
+                    botResponse = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('<br>');
                 } else {
-                    botResponse = '🤔 Мозг не вернул интентов.';
+                    botResponse = '🤔 Мозг не вернул действий.';
                 }
             } catch (e) {
                 document.getElementById('chat-loading')?.remove();
-                botResponse = 'Ошибка связи с мозгом: ' + e.message;
+                botResponse = '❌ Ошибка связи с мозгом: ' + e.message;
             }
 
             const botDiv = document.createElement('div');
             botDiv.style.cssText = 'align-self: flex-start; background: var(--bg3); color: var(--fg); padding: 10px 14px; border-radius: 16px 16px 16px 0; max-width: 80%; word-wrap: break-word;';
-            botDiv.textContent = botResponse;
+            botDiv.innerHTML = botResponse;
             history.appendChild(botDiv);
             history.scrollTop = history.scrollHeight;
             await sendMessageToDB(chatId, BOT_ID, botResponse);
