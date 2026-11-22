@@ -1,5 +1,4 @@
 import { MasterBossBrain } from '../brain/index.js';
-import { db } from '../api/supabase.js';
 
 export function renderChat(container) {
   container.innerHTML = `
@@ -46,43 +45,27 @@ export function renderChat(container) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
     try {
-      // Берем первый объект и комнату для контекста (временно)
-      const { data: objects } = await db.from('objects').select('id, name').limit(1);
-      const { data: rooms } = await db.from('rooms').select('id').limit(1);
-      
-      const context = { 
-        tenant_id: 1, 
-        object_id: objects && objects[0] ? objects[0].id : null,
-        room_id: rooms && rooms[0] ? rooms[0].id : null
-      };
-
-      const result = await MasterBossBrain.handle(text, context);
+      const result = await MasterBossBrain.handle(text, { tenant_id: 1 });
       document.getElementById('chat-loading')?.remove();
 
-      // ОБРАБОТКА УТОЧНЕНИЯ
-      if (result.status === 'clarification') {
-        addMessage('🤔 ' + result.clarifications[0].question, false);
-        // Можно вывести кнопки с объектами, но пока просто текст
-        addMessage('(Пожалуйста, уточните объект или комнату в следующем сообщении)', false);
+      if (result.status === 'error') {
+        addMessage('⚠️ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка'), false);
         return;
       }
 
-      if (result.results && result.results[0] && result.results[0].message) {
-         addMessage(result.results[0].message, false);
-      } 
-      else if (result.status === 'completed') {
-        const msg = result.results ? result.results.map(r => r.message).join('<br>') : 'Готово';
-        addMessage('✅ ' + msg, false);
-      } 
-      else if (result.status === 'error') {
-        addMessage('⚠️ ' + (result.errors ? result.errors.join(', ') : 'Ошибка'), false);
-      } 
-      else {
+      if (result.results && result.results.length > 0) {
+        const messages = result.results.map(r => {
+           if (r.status === 'ok') return '✅ ' + r.message;
+           return '⚠️ ' + r.message;
+        }).join('<br>');
+        addMessage(messages, false);
+      } else {
         addMessage('🤔 ' + JSON.stringify(result), false);
       }
+
     } catch (err) {
       document.getElementById('chat-loading')?.remove();
-      addMessage('❌ Ошибка сети: ' + err.message, false);
+      addMessage('❌ Ошибка связи с мозгом: ' + err.message, false);
     }
   }
 
