@@ -19,7 +19,6 @@ export function renderChat(container) {
   const btnSend = container.querySelector('#chat-send');
   const btnMic = container.querySelector('#chat-mic');
   
-  // Память диалога
   let chatHistory = JSON.parse(localStorage.getItem('boss_chat_history') || '[]');
 
   function addMessage(text, isUser) {
@@ -34,7 +33,6 @@ export function renderChat(container) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   }
 
-  // Восстанавливаем историю при загрузке
   chatHistory.forEach(msg => addMessage(msg.text, msg.role === 'user'));
 
   async function sendText() {
@@ -43,9 +41,8 @@ export function renderChat(container) {
     input.value = '';
     addMessage(text, true);
     
-    // Сохраняем в историю
     chatHistory.push({ role: 'user', text });
-    if (chatHistory.length > 10) chatHistory.shift(); // храним последние 10
+    if (chatHistory.length > 10) chatHistory.shift();
 
     const loadingDiv = document.createElement('div');
     loadingDiv.id = 'chat-loading';
@@ -70,10 +67,10 @@ export function renderChat(container) {
         }).join('<br>');
         addMessage(messages, false);
         
-        // Сохраняем ответ мозга в историю
         chatHistory.push({ role: 'assistant', text: messages });
       } else {
-        addMessage('🤔 ' + JSON.stringify(result), false);
+        // ВЫВОДИМ ОТЛАДКУ ПРЯМО В ЧАТ, ЕСЛИ ПРИШЛО ЧТО-ТО НЕ ТО
+        addMessage('🤔 Отладка: ' + JSON.stringify(result), false);
       }
       
       localStorage.setItem('boss_chat_history', JSON.stringify(chatHistory));
