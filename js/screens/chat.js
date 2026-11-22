@@ -18,6 +18,9 @@ export function renderChat(container) {
   const input = container.querySelector('#chat-input');
   const btnSend = container.querySelector('#chat-send');
   const btnMic = container.querySelector('#chat-mic');
+  
+  // Память диалога
+  let chatHistory = JSON.parse(localStorage.getItem('boss_chat_history') || '[]');
 
   function addMessage(text, isUser) {
     const div = document.createElement('div');
@@ -31,11 +34,18 @@ export function renderChat(container) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   }
 
+  // Восстанавливаем историю при загрузке
+  chatHistory.forEach(msg => addMessage(msg.text, msg.role === 'user'));
+
   async function sendText() {
     const text = input.value.trim();
     if (!text) return;
     input.value = '';
     addMessage(text, true);
+    
+    // Сохраняем в историю
+    chatHistory.push({ role: 'user', text });
+    if (chatHistory.length > 10) chatHistory.shift(); // храним последние 10
 
     const loadingDiv = document.createElement('div');
     loadingDiv.id = 'chat-loading';
@@ -45,7 +55,7 @@ export function renderChat(container) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
     try {
-      const result = await MasterBossBrain.handle(text, { tenant_id: 1 });
+      const result = await MasterBossBrain.handle(text, { tenant_id: 1, history: chatHistory });
       document.getElementById('chat-loading')?.remove();
 
       if (result.status === 'error') {
@@ -59,9 +69,14 @@ export function renderChat(container) {
            return '⚠️ ' + r.message;
         }).join('<br>');
         addMessage(messages, false);
+        
+        // Сохраняем ответ мозга в историю
+        chatHistory.push({ role: 'assistant', text: messages });
       } else {
         addMessage('🤔 ' + JSON.stringify(result), false);
       }
+      
+      localStorage.setItem('boss_chat_history', JSON.stringify(chatHistory));
 
     } catch (err) {
       document.getElementById('chat-loading')?.remove();

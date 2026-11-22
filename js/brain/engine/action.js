@@ -3,7 +3,6 @@ import { db } from '../api/supabase.js';
 export async function executeActions(plan, context) {
   const results = [];
 
-  // Проходимся по ВСЕМ действиям в плане
   for (const action of plan.actions) {
     try {
       let result;
@@ -11,13 +10,21 @@ export async function executeActions(plan, context) {
 
       if (!action || !action.payload) continue;
 
-      // Обработка чата
       if (action.tool === 'chat') {
         results.push({ status: 'ok', message: action.payload.reply || 'Я вас слушаю!' });
         continue;
       }
 
-      // Обработка задач
+      // НАВИГАЦИЯ
+      if (action.tool === 'navigate') {
+        const screen = action.payload.screen;
+        if (screen === 'tasks' && window.openTasks) { window.openTasks(); results.push({ status: 'ok', message: 'Открываю задачи' }); }
+        else if (screen === 'objects' && window.openObjects) { window.openObjects(); results.push({ status: 'ok', message: 'Открываю объекты' }); }
+        else if (screen === 'finance' && window.openFinance) { window.openFinance(); results.push({ status: 'ok', message: 'Открываю финансы' }); }
+        else { results.push({ status: 'ok', message: 'Пока не умею открывать этот экран' }); }
+        continue;
+      }
+
       if (action.tool === 'add_task') {
         const title = action.payload.title || 'Без названия';
         result = await db.from('tasks').insert([{
@@ -28,7 +35,6 @@ export async function executeActions(plan, context) {
         }]).select();
         results.push({ status: 'ok', message: `Задача создана: ${title}` });
       } 
-      // Обработка расходов
       else if (action.tool === 'add_expense') {
         result = await db.from('finance').insert([{
           amount: action.payload.amount || 0,
@@ -39,7 +45,6 @@ export async function executeActions(plan, context) {
         }]).select();
         results.push({ status: 'ok', message: `Расход добавлен: ${action.payload.amount}` });
       }
-      // Обработка объектов
       else if (action.tool === 'create_object') {
         result = await db.from('objects').insert([{
           name: action.payload.name || 'Новый объект',
