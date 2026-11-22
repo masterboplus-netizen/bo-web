@@ -10,15 +10,19 @@ export async function executeActions(plan, context) {
 
       if (!action || !action.payload) continue;
       
-      // Приводим к нижнему регистру и убираем пробелы на всякий случай
-      const tool = (action.tool || '').toLowerCase().trim();
+      // Приводим к нижнему регистру и убираем пробелы
+      let tool = (action.tool || '').toLowerCase().trim();
+      
+      // ЖЕСТКАЯ ЗАМЕНА: если пришло create_object (или его вариации), принудительно делаем create_object
+      if (tool.includes('object') || tool === 'create_obj') {
+        tool = 'create_object';
+      }
 
       if (tool === 'chat') {
         results.push({ status: 'ok', message: action.payload.reply || 'Я вас слушаю!' });
         continue;
       }
 
-      // НАВИГАЦИЯ
       if (tool === 'navigate') {
         const screen = action.payload.screen;
         if (screen === 'tasks' && window.openTasks) { window.openTasks(); results.push({ status: 'ok', message: 'Открываю задачи' }); }
@@ -49,8 +53,7 @@ export async function executeActions(plan, context) {
         results.push({ status: 'ok', message: `Расход добавлен: ${action.payload.amount}` });
       }
       else if (tool === 'create_object') {
-        // Если имя не названо, даем дефолтное
-        const name = action.payload.name || 'Новый объект ' + new Date().toLocaleDateString();
+        const name = action.payload.name || 'Новый объект';
         result = await db.from('objects').insert([{
           name: name,
           tenant_id
