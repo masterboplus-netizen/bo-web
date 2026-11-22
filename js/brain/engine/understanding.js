@@ -14,6 +14,7 @@ export async function understand(text, context) {
       }
     } catch (e) {
       console.warn('[Мозг] Groq не ответил:', e.message);
+      intents = [{ intent: 'error', confidence: 0, slots: { message: e.message } }];
     }
   }
   return intents;

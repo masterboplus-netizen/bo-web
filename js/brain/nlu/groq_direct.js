@@ -31,6 +31,6 @@ export async function parseWithGroq(text) {
     return content.intents || [];
   } catch (err) {
     console.error('[Groq Direct] Ошибка:', err.message);
-    return [];
+    throw new Error('Ошибка API: ' + err.message);
   }
 }
