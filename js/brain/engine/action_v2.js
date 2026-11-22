@@ -1,4 +1,4 @@
-import { db } from '../api/supabase.js';
+import { db } from '../../api/supabase.js';
 
 export async function executeActions(plan, context) {
   const results = [];
