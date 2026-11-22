@@ -68,11 +68,10 @@ export function setNavActive(tabId) {
     if (el) el.classList.add('active');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    window.renderMainMenu();
-    initAudioButton();
-    setTimeout(() => initFloatingMenu(), 100);
-});
+// ЗАПУСК (БЕЗ DOMContentLoaded, ТАК КАК МОДУЛИ ЗАГРУЖАЮТСЯ ПОСЛЕ HTML)
+window.renderMainMenu();
+initAudioButton();
+setTimeout(() => initFloatingMenu(), 100);
 
 window.openCalendar = function() { saveCurrentScreen('calendar'); renderCalendar(); };
 window.openPhotos = function() { saveCurrentScreen('photos'); renderPhotos(); };
