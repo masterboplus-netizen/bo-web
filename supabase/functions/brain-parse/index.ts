@@ -13,24 +13,36 @@ serve(async (req) => {
     const apiKey = Deno.env.get('GROQ_API_KEY')
     if (!apiKey) throw new Error("GROQ_API_KEY не найден")
 
-    const systemPrompt = `Ты — ИИ-мозг. Преврати текст пользователя в массив JSON-команд.
-Ответ должен быть СТРОГО в формате:
-{ "intents": [ { "intent": "add_task", "confidence": 0.9, "slots": { "title": "..." } } ] }
-- Для болтовни (привет) используй intent "chat" и слот "reply".
-- Для создания задач используй intent "add_task".
-- Если задач несколько, верни несколько объектов в массиве "intents".`
+    // Если в context есть история, передаем её в модель
+    const history = context?.history || [];
+    
+    const systemPrompt = `Ты — крутой ИИ-мозг строительной экосистемы MasterBoss. 
+Твоя задача — понимать фразы и превращать их в МАССИВ JSON-команд. У тебя есть память о предыдущих сообщениях.
+Если пользователь просто болтает, верни intent "chat" и слот "reply" с коротким деловым ответом.
+Если просит открыть экран (задачи, объекты, финансы, календарь, галерея, дневник), верни intent "navigate" и слот "screen" (например: "tasks", "objects", "finance").
+Если просит создать задачи: intent "add_task" (слоты: title, deadline, object_name).
+Если просит создать объект: intent "create_object" (слоты: name). Если имя не названо — придумай "Объект 1", "Объект 2" и т.д.
+Если просит добавить расход: intent "add_expense" (слоты: amount, category).
+Если фраза непонятна: intent "unknown".
+
+ОБЯЗАТЕЛЬНО верни СТРОГО JSON в формате: 
+{ "intents": [ { "intent": "название", "confidence": 0.9, "slots": { ... } } ] }`
+
+    // Собираем сообщения для Groq (включая историю)
+    const messages = [
+      { role: "system", content: systemPrompt },
+      ...history.map(h => ({ role: h.role, content: h.text })),
+      { role: "user", content: text }
+    ];
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: "openai/gpt-oss-120b",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: text }
-        ],
+        messages: messages,
         response_format: { type: "json_object" },
-        temperature: 0.1
+        temperature: 0.2
       })
     })
 
@@ -40,12 +52,6 @@ serve(async (req) => {
     }
 
     const data = await response.json()
-    
-    // Проверка, что структура правильная
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-        throw new Error("Некорректный ответ от Groq: " + JSON.stringify(data));
-    }
-
     const content = JSON.parse(data.choices[0].message.content)
     
     return new Response(JSON.stringify(content), {
