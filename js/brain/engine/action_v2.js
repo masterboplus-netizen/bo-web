@@ -2,66 +2,45 @@ import { db } from '../api/supabase.js';
 
 export async function executeActions(plan, context) {
   const results = [];
+  const tenant_id = context.tenant_id || 1;
 
   for (const action of plan.actions) {
     try {
       let result;
-      const tenant_id = context.tenant_id || 1;
-
+      
       if (!action || !action.payload) continue;
       
-      // Приводим к нижнему регистру и убираем пробелы
-      let tool = (action.tool || '').toLowerCase().trim();
-      
-      // ЖЕСТКАЯ ЗАМЕНА: если пришло create_object (или его вариации), принудительно делаем create_object
-      if (tool.includes('object') || tool === 'create_obj') {
-        tool = 'create_object';
-      }
+      // Берем то, что пришло от мозга
+      const tool = action.tool;
 
       if (tool === 'chat') {
         results.push({ status: 'ok', message: action.payload.reply || 'Я вас слушаю!' });
-        continue;
-      }
-
-      if (tool === 'navigate') {
+      } 
+      else if (tool === 'navigate') {
         const screen = action.payload.screen;
         if (screen === 'tasks' && window.openTasks) { window.openTasks(); results.push({ status: 'ok', message: 'Открываю задачи' }); }
         else if (screen === 'objects' && window.openObjects) { window.openObjects(); results.push({ status: 'ok', message: 'Открываю объекты' }); }
         else if (screen === 'finance' && window.openFinance) { window.openFinance(); results.push({ status: 'ok', message: 'Открываю финансы' }); }
         else { results.push({ status: 'ok', message: 'Пока не умею открывать этот экран' }); }
-        continue;
       }
-
-      if (tool === 'add_task') {
+      else if (tool === 'add_task') {
         const title = action.payload.title || 'Без названия';
-        result = await db.from('tasks').insert([{
-          title: title,
-          status: 'open',
-          priority: 'medium',
-          tenant_id
-        }]).select();
+        await db.from('tasks').insert([{ title: title, status: 'open', priority: 'medium', tenant_id }]);
         results.push({ status: 'ok', message: `Задача создана: ${title}` });
       } 
       else if (tool === 'add_expense') {
-        result = await db.from('finance').insert([{
-          amount: action.payload.amount || 0,
-          category: action.payload.category || 'Прочее',
-          type: 'expense',
-          date: new Date().toISOString(),
-          tenant_id
-        }]).select();
+        await db.from('finance').insert([{ amount: action.payload.amount || 0, category: action.payload.category || 'Прочее', type: 'expense', date: new Date().toISOString(), tenant_id }]);
         results.push({ status: 'ok', message: `Расход добавлен: ${action.payload.amount}` });
       }
+      // САМОЕ ГЛАВНОЕ: Если пришло 'create_object', мы его ВЫПОЛНЯЕМ
       else if (tool === 'create_object') {
         const name = action.payload.name || 'Новый объект';
-        result = await db.from('objects').insert([{
-          name: name,
-          tenant_id
-        }]).select();
+        await db.from('objects').insert([{ name: name, tenant_id }]);
         results.push({ status: 'ok', message: `Объект создан: ${name}` });
       }
       else {
-        results.push({ status: 'error', message: `Инструмент ${tool} пока не подключен` });
+        // Если пришло что-то другое, мы все равно пишем, что это
+        results.push({ status: 'error', message: `Инструмент ${tool} пока не подключен (проверьте название)` });
       }
     } catch (error) {
       results.push({ status: 'error', message: error.message });
