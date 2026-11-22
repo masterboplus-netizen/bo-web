@@ -97,7 +97,6 @@ async function renderChatScreen(container, chatId) {
 
             let botResponse = '';
             try {
-                // ВЫЗЫВАЕМ НАШ СУПЕР-МОЗГ
                 const result = await MasterBossBrain.handle(text, { tenant_id: 1 });
                 document.getElementById('chat-loading')?.remove();
                 
