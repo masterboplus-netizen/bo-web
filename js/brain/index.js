@@ -1,6 +1,6 @@
 import { understand } from './engine/understanding.js';
 import { buildPlan } from './engine/reasoning.js';
-import { executeActions } from './engine/action.js';
+import { executeActions } from './engine/action_v2.js';
 
 export const MasterBossBrain = {
   plan: async function(text, context = {}) {
