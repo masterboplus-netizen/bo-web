@@ -2,47 +2,58 @@ import { db } from '../api/supabase.js';
 
 export async function executeActions(plan, context) {
   const results = [];
-  const tenant_id = context.tenant_id || 1;
 
   for (const action of plan.actions) {
     try {
       let result;
+      const tenant_id = context.tenant_id || 1;
 
-      if (action.tool === 'create_object') {
-        result = await db.from('objects').insert([{ name: action.payload.name, tenant_id }]).select();
-        results.push({ status: 'ok', message: 'Объект создан: ' + action.payload.name });
+      if (!action || !action.payload) {
+        results.push({ status: 'error', message: 'Пустой интент от мозга' });
+        continue;
+      }
 
-      } else if (action.tool === 'add_task') {
-        result = await db.from('tasks').insert([{ title: action.payload.title, status: 'open', priority: 'medium', tenant_id }]).select();
-        results.push({ status: 'ok', message: 'Задача создана: ' + action.payload.title });
+      if (action.tool === 'chat') {
+        results.push({ status: 'ok', message: action.payload.reply || 'Я вас слушаю!' });
+        continue;
+      }
 
-      } else if (action.tool === 'add_measure') {
-        result = await db.from('room_measures').insert([{
-          room_id: action.payload.room_id || 5,
-          tenant_id,
-          wall_pos: action.payload.wall || 'left',
-          length: action.payload.length || 0,
-          category: 'wall'
+      if (action.tool === 'add_task') {
+        // Проверка, что есть название
+        const title = action.payload.title || 'Без названия';
+        
+        result = await db.from('tasks').insert([{
+          title: title,
+          status: 'open',
+          priority: 'medium',
+          tenant_id
         }]).select();
-        results.push({ status: 'ok', message: 'Замер добавлен: ' + action.payload.wall + ' ' + action.payload.length + ' см' });
-
-      } else if (action.tool === 'add_comm') {
-        result = await db.from('room_comms').insert([{
-          room_id: action.payload.room_id || 5,
-          tenant_id,
-          comm_type: action.payload.comm_type,
-          wall: action.payload.wall || 'left',
-          offset_y: action.payload.offset_y || 0,
-          size: action.payload.size || null
+        results.push({ status: 'ok', message: `Задача создана: ${title}` });
+      } 
+      else if (action.tool === 'add_expense') {
+        result = await db.from('finance').insert([{
+          amount: action.payload.amount || 0,
+          category: action.payload.category || 'Прочее',
+          type: 'expense',
+          date: new Date().toISOString(),
+          tenant_id
         }]).select();
-        results.push({ status: 'ok', message: 'Коммуникация добавлена: ' + action.payload.comm_type });
-
-      } else {
-        results.push({ status: 'error', message: 'Инструмент ' + action.tool + ' не реализован' });
+        results.push({ status: 'ok', message: `Расход добавлен: ${action.payload.amount}` });
+      }
+      else if (action.tool === 'create_object') {
+        result = await db.from('objects').insert([{
+          name: action.payload.name || 'Новый объект',
+          tenant_id
+        }]).select();
+        results.push({ status: 'ok', message: `Объект создан: ${action.payload.name}` });
+      }
+      else {
+        results.push({ status: 'error', message: `Инструмент ${action.tool} пока не подключен` });
       }
     } catch (error) {
       results.push({ status: 'error', message: error.message });
     }
   }
+
   return { status: 'completed', results };
 }
