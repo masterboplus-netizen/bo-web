@@ -9,15 +9,27 @@ export function initAudioButton() {
     const micBtn = document.getElementById('main-mic-btn');
     if (!micBtn) return;
 
-    micBtn.onclick = (e) => {
+    // Старт записи при нажатии (касании)
+    const startHandler = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (isRecording) {
-            stopRecording();
-        } else {
-            startRecording();
-        }
+        if (!isRecording) startRecording();
     };
+
+    // Стоп записи при отпускании (или уходе пальца)
+    const stopHandler = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isRecording) stopRecording();
+    };
+
+    micBtn.addEventListener('mousedown', startHandler);
+    micBtn.addEventListener('touchstart', startHandler, { passive: false });
+
+    micBtn.addEventListener('mouseup', stopHandler);
+    micBtn.addEventListener('mouseleave', stopHandler);
+    micBtn.addEventListener('touchend', stopHandler);
+    micBtn.addEventListener('touchcancel', stopHandler);
 }
 
 async function startRecording() {
@@ -57,7 +69,8 @@ async function startRecording() {
 
     } catch (err) {
         console.error('Ошибка доступа к микрофону:', err);
-        alert('Нет доступа к микрофону');
+        // Если доступа нет, показываем ошибку, но не ломаем интерфейс
+        showToast('Нет доступа к микрофону');
     }
 }
 
@@ -73,14 +86,14 @@ function showDrawer() {
     if (drawer) return;
     drawer = document.createElement('div');
     drawer.id = 'audio-drawer';
+    // Высота 70px, чтобы не перекрывать левый виджет
     drawer.style.cssText = 'position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: var(--bg2); border-top: 1px solid var(--bg3); padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; z-index: 100000; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 -4px 20px rgba(0,0,0,0.6); cursor: pointer;';
     
     drawer.innerHTML = `
         <div style="font-size: 18px; font-weight: bold; color: var(--fg); font-family: monospace; letter-spacing: 2px;" id="recording-time">00:00</div>
         <div id="eq-bars" style="display: flex; gap: 3px; align-items: flex-end; height: 20px;">
-            ${Array(9).fill(0).map((_, i) => `<div class="eq-bar" style="width: 4px; background: var(--accent); border-radius: 4px; height: 10px; animation: eqAnim 0.4s infinite ease-in-out alternate; animation-delay: ${i * 0.1}s;"></div>`).join('')}
+            ${Array(9).fill(0).map((_, i) => `<div class="eq-bar" style="width: 4px; background: var(--accent); border-radius: 2px; height: 5px; animation: eqAnim 0.4s infinite ease-in-out alternate; animation-delay: ${i * 0.1}s;"></div>`).join('')}
         </div>
-        
     `;
 
     if (!document.getElementById('eq-style')) {
@@ -98,12 +111,6 @@ function showDrawer() {
     document.body.appendChild(drawer);
     
     setTimeout(() => drawer.style.transform = 'translateY(0)', 10);
-
-    drawer.onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        stopRecording();
-    };
 }
 
 function hideDrawer() {
@@ -111,6 +118,19 @@ function hideDrawer() {
         drawer.style.transform = 'translateY(100%)';
         setTimeout(() => { if (drawer) { drawer.remove(); drawer = null; } }, 300);
     }
+}
+
+// Функция для красивого уведомления (тоста)
+function showToast(message, duration = 3000) {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position: fixed; bottom: 200px; left: 50%; transform: translateX(-50%); background: var(--bg2); color: var(--fg); padding: 12px 24px; border-radius: 20px; font-size: 14px; z-index: 100000; box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 1px solid var(--border); text-align: center; transition: opacity 0.3s ease; max-width: 80%; white-space: pre-wrap;';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
 }
 
 async function processAudio(audioBlob) {
@@ -141,28 +161,31 @@ async function processAudio(audioBlob) {
         console.log('Распознано Groq:', text);
 
         if (!text || text.trim() === '') {
-            alert('Не удалось распознать речь. Попробуйте еще раз.');
+            showToast('🤷‍♂️ Не удалось распознать речь.');
             return;
         }
+
+        // Показываем, что услышали
+        showToast(`🗣 Вы: "${text}"`, 2000);
 
         // 2. Отдаем текст "Мозгу"
         if (window.MasterBossBrain && window.MasterBossBrain.handle) {
             const result = await window.MasterBossBrain.handle(text, { tenant_id: 1 });
             
             if (result.status === 'error') {
-                alert('Ошибка мозга: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка'));
+                showToast('❌ Ошибка мозга: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка'), 5000);
             } else if (result.results && result.results.length > 0) {
                 const msg = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('\n');
-                alert(msg);
+                showToast(`🤖 ${msg}`, 5000);
             } else {
-                alert('Мозг не вернул действий');
+                showToast('🤖 Мозг не вернул действий', 3000);
             }
         } else {
-            alert('Мозг не загружен');
+            showToast('❌ Мозг не загружен', 3000);
         }
 
     } catch (e) {
         console.error('Ошибка обработки аудио:', e);
-        alert('Ошибка: ' + e.message);
+        showToast('❌ Ошибка: ' + e.message, 5000);
     }
 }
