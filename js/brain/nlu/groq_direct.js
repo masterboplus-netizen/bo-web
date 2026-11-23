@@ -1,4 +1,4 @@
-export async function parseWithGroq(text) {
+export async function parseWithGroq(text, history = []) {
   const apiKey = window.GROQ_API_KEY || localStorage.getItem('GROQ_API_KEY');
   if (!apiKey) return [];
 
@@ -16,13 +16,20 @@ export async function parseWithGroq(text) {
 Формат ответа: { "intents": [ { "intent": "...", "confidence": 0.9, "slots": { ... } } ] }
 `
 
+  // Собираем сообщения для Groq (включая историю)
+  const messages = [
+    { role: "system", content: systemPrompt },
+    ...history.map(h => ({ role: h.role, content: h.text })),
+    { role: "user", content: text }
+  ];
+
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: "openai/gpt-oss-120b",
-        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: text }],
+        messages: messages,
         response_format: { type: "json_object" },
         temperature: 0.2
       })
