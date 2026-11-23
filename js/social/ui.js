@@ -96,14 +96,15 @@ async function renderChatScreen(container, chatId) {
                 filter: `chat_id=eq.${chatId}` 
             }, (payload) => {
                 const newMsg = payload.new;
-                // Если сообщение не от нас (чтобы не дублировать), добавляем в UI
-                if (newMsg.sender_id !== CURRENT_USER_ID) {
-                    const msgDiv = document.createElement('div');
-                    msgDiv.style.cssText = 'align-self: flex-start; background: var(--bg3); color: var(--fg); padding: 10px 14px; border-radius: 16px 16px 16px 0; max-width: 80%; word-wrap: break-word;';
-                    msgDiv.textContent = newMsg.text;
-                    history.appendChild(msgDiv);
-                    history.scrollTop = history.scrollHeight;
-                }
+                // Показываем все новые сообщения (и от пользователя, и от Бо)
+                const isUser = newMsg.sender_id === CURRENT_USER_ID;
+                const msgDiv = document.createElement('div');
+                msgDiv.style.cssText = isUser 
+                    ? 'align-self: flex-end; background: var(--accent); color: white; padding: 10px 14px; border-radius: 16px 16px 0 16px; max-width: 80%; word-wrap: break-word;'
+                    : 'align-self: flex-start; background: var(--bg3); color: var(--fg); padding: 10px 14px; border-radius: 16px 16px 16px 0; max-width: 80%; word-wrap: break-word;';
+                msgDiv.textContent = newMsg.text;
+                history.appendChild(msgDiv);
+                history.scrollTop = history.scrollHeight;
             })
             .subscribe();
 
