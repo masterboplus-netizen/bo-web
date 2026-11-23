@@ -9,7 +9,6 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
-    // Принимаем text и history напрямую
     const { text, history } = await req.json()
     const apiKey = Deno.env.get('GROQ_API_KEY')
     if (!apiKey) throw new Error("GROQ_API_KEY не найден")
@@ -34,7 +33,6 @@ serve(async (req) => {
 ОБЯЗАТЕЛЬНО верни СТРОГО JSON в формате: 
 { "intents": [ { "intent": "название", "confidence": 0.9, "slots": { ... } } ] }`
 
-    // Собираем сообщения для Groq (включая историю)
     const messages = [
       { role: "system", content: systemPrompt },
       ...(history || []).map(h => ({ role: h.role, content: h.text })),
