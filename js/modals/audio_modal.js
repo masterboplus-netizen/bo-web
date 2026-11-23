@@ -76,7 +76,7 @@ function showDrawer() {
     drawer.style.cssText = 'position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: var(--bg2); border-top: 1px solid var(--bg3); padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; z-index: 100000; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 -4px 20px rgba(0,0,0,0.6); cursor: pointer;';
     
     drawer.innerHTML = `
-        <div style="font-size: 28px; font-weight: bold; color: var(--fg); font-family: monospace; letter-spacing: 2px;" id="recording-time">00:00</span></div>
+        <div style="font-size: 28px; font-weight: bold; color: var(--fg); font-family: monospace; letter-spacing: 2px;" id="recording-time">00:00</div>
         <div id="eq-bars" style="display: flex; gap: 6px; align-items: flex-end; height: 50px;">
             ${Array(9).fill(0).map((_, i) => `<div class="eq-bar" style="width: 8px; background: var(--accent); border-radius: 4px; height: 10px; animation: eqAnim 0.4s infinite ease-in-out alternate; animation-delay: ${i * 0.1}s;"></div>`).join('')}
         </div>
@@ -117,42 +117,49 @@ async function processAudio(audioBlob) {
     try {
         console.log('Аудио записано, размер:', audioBlob.size);
         
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert('Ваш браузер не поддерживает распознавание речи');
+        // 1. Отправляем аудио в Groq (Whisper) для распознавания
+        const formData = new FormData();
+        formData.append('file', audioBlob, 'audio.webm');
+        formData.append('model', 'whisper-large-v3');
+        formData.append('language', 'ru');
+
+        const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${window.GROQ_API_KEY}`
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const err = await response.text();
+            throw new Error(`Groq API error: ${response.status} ${err}`);
+        }
+
+        const data = await response.json();
+        const text = data.text;
+        console.log('Распознано Groq:', text);
+
+        if (!text || text.trim() === '') {
+            alert('Не удалось распознать речь. Попробуйте еще раз.');
             return;
         }
 
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'ru-RU';
-        recognition.interimResults = false;
-
-        recognition.onresult = async (event) => {
-            const text = event.results[0][0].transcript;
-            console.log('Распознано:', text);
+        // 2. Отдаем текст "Мозгу"
+        if (window.MasterBossBrain && window.MasterBossBrain.handle) {
+            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1 });
             
-            if (window.MasterBossBrain && window.MasterBossBrain.handle) {
-                const result = await window.MasterBossBrain.handle(text, { tenant_id: 1 });
-                
-                if (result.status === 'error') {
-                    alert('Ошибка мозга: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка'));
-                } else if (result.results && result.results.length > 0) {
-                    const msg = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('\n');
-                    alert(msg);
-                } else {
-                    alert('Мозг не вернул действий');
-                }
+            if (result.status === 'error') {
+                alert('Ошибка мозга: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка'));
+            } else if (result.results && result.results.length > 0) {
+                const msg = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('\n');
+                alert(msg);
             } else {
-                alert('Мозг не загружен');
+                alert('Мозг не вернул действий');
             }
-        };
-
-        recognition.onerror = (event) => {
-            console.error('Ошибка распознавания:', event.error);
-            alert('Ошибка распознавания: ' + event.error);
-        };
-
-        recognition.start();
+        } else {
+            alert('Мозг не загружен');
+        }
 
     } catch (e) {
         console.error('Ошибка обработки аудио:', e);
