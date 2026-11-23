@@ -1,73 +1,90 @@
 import { db } from '../api/supabase.js';
-import { createCard } from '../ui/card.js';
+
+function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+}
 
 let isSelectionMode = false;
 let selectedIds = new Set();
-let currentObjects = [];
+let longPressTimer = null;
 
 export function renderObjects(objects) {
-    currentObjects = objects || [];
-    const container = document.getElementById('app-content');
-    if (!container) return;
+    let html = `<div class="object-list" style="padding-top: 10px; max-width: 600px; margin: 0 auto; padding-bottom: 150px;">`;
 
-    container.innerHTML = '';
+    if (!objects || objects.length === 0) {
+        html += `<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Объектов пока нет. Создайте первый!</div>`;
+    } else {
+        objects.forEach(obj => {
+            let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
+            let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
+            const isSelected = selectedIds.has(obj.id);
+            
+            html += `
+                <div class="object-card" data-id="${obj.id}" style="position: relative; background: var(--bg2); border: 1px solid ${isSelected ? 'var(--accent)' : 'var(--bg3)'}; border-radius: 12px; padding: 15px; margin-bottom: 10px; cursor: pointer; ${isSelectionMode ? 'padding-left: 40px;' : ''}">
+                    ${isSelectionMode ? `<div style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--accent); background: ${isSelected ? 'var(--accent)' : 'transparent'}; display: flex; align-items: center; justify-content: center;">
+                        ${isSelected ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                    </div>` : ''}
+                    <div style="font-size: 16px; font-weight: bold; color: var(--fg);">${escapeHtml(obj.name)}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <span style="background: ${statusColor}; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px;">${statusText}</span>
+                        <span style="color: var(--fg-dim); font-size: 13px;">${obj.budget || 0} ₽</span>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    html += `</div>`;
 
-    // Создаем контейнер для карточек
-    const list = document.createElement('div');
-    list.style.cssText = 'padding-top: 10px; max-width: 600px; margin: 0 auto; padding-bottom: 150px;';
-    container.appendChild(list);
-
-    if (!currentObjects || currentObjects.length === 0) {
-        list.innerHTML = '<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Объектов пока нет. Создайте первый!</div>';
-        return;
+    if (isSelectionMode) {
+        html += `
+            <div style="position: fixed; bottom: 100px; left: 0; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 16px; z-index: 10000; box-sizing: border-box;">
+                <button id="cancel-selection" style="flex: 1; max-width: 180px; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
+                <button id="delete-selected" style="flex: 1; max-width: 180px; padding: 14px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Удалить (${selectedIds.size})</button>
+            </div>
+        `;
     }
 
-    // Рисуем карточки через общий компонент
-    currentObjects.forEach(obj => {
-        const statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
-        const statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
-        
-        const card = createCard({
-            id: obj.id,
-            title: obj.name,
-            badge: statusText,
-            badgeColor: statusColor,
-            rightText: `${obj.budget || 0} ₽`,
-            isSelectionMode: isSelectionMode,
-            isSelected: selectedIds.has(obj.id),
-            onClick: (id) => {
-                if (isSelectionMode) {
-                    toggleSelection(id);
-                } else {
-                    if (window.openObject) window.openObject(id);
-                }
-            },
-            onLongPress: (id) => {
+    document.getElementById('app-content').innerHTML = html;
+
+    // Обработчики для карточек
+    document.querySelectorAll('.object-card').forEach(card => {
+        const id = parseInt(card.getAttribute('data-id'));
+
+        card.onclick = (e) => {
+            if (isSelectionMode) {
+                toggleSelection(id);
+            } else {
+                window.openObject(id);
+            }
+        };
+
+        card.addEventListener('touchstart', (e) => {
+            longPressTimer = setTimeout(() => {
                 if (!isSelectionMode) {
                     isSelectionMode = true;
                     selectedIds.clear();
                     selectedIds.add(id);
-                    renderObjects(currentObjects);
+                    renderObjects(objects);
                 }
-            }
+            }, 500);
         });
-        list.appendChild(card);
+
+        card.addEventListener('touchend', () => {
+            clearTimeout(longPressTimer);
+        });
+
+        card.addEventListener('touchmove', () => {
+            clearTimeout(longPressTimer);
+        });
     });
 
-    // Панель управления (если в режиме выделения)
     if (isSelectionMode) {
-        const panel = document.createElement('div');
-        panel.style.cssText = 'position: fixed; bottom: 100px; left: 0; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 16px; z-index: 10000; box-sizing: border-box;';
-        panel.innerHTML = `
-            <button id="cancel-selection" style="flex: 1; max-width: 180px; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
-            <button id="delete-selected" style="flex: 1; max-width: 180px; padding: 14px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Удалить (${selectedIds.size})</button>
-        `;
-        document.body.appendChild(panel);
-
         document.getElementById('cancel-selection').onclick = () => {
             isSelectionMode = false;
             selectedIds.clear();
-            renderObjects(currentObjects);
+            renderObjects(objects);
         };
 
         document.getElementById('delete-selected').onclick = async () => {
@@ -95,7 +112,5 @@ function toggleSelection(id) {
     } else {
         selectedIds.add(id);
     }
-    
-    // Перерисовываем
     renderObjects(currentObjects);
 }
