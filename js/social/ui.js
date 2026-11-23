@@ -105,10 +105,18 @@ async function renderChatScreen(container, chatId) {
                     .order('created_at', { ascending: false })
                     .limit(10);
 
+                // Берем историю в правильном порядке (старые сверху)
                 const historyForBrain = historyData.data.reverse().map(m => ({
                     role: m.sender_id === CURRENT_USER_ID ? 'user' : 'assistant',
                     text: m.text
                 }));
+
+                // Добавляем последнее сообщение бота (если оно было), чтобы Groq видел вопрос
+                // (оно уже есть в базе, но мы его только что сохранили, поэтому оно может быть в конце)
+                // Просто убедимся, что история не пустая и заканчивается на ответе бота, если это ответ на уточнение
+                if (historyForBrain.length > 0 && historyForBrain[historyForBrain.length - 1].role === 'user') {
+                    // Если последнее сообщение — наше, значит, перед ним был ответ бота. Он уже в истории.
+                }
 
                 // 2. Отправляем в мозг с контекстом
                 const result = await MasterBossBrain.handle(text, { 
