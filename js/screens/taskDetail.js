@@ -36,7 +36,7 @@ export async function openTaskDetail(id) {
 
         let html = `
             <!-- ФИКСИРОВАННАЯ ШАПКА -->
-            <div style="position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 10px 10px; display: flex; justify-content: space-between; align-items: center; margin: 0 -10px 15px -10px; border-bottom: 1px solid transparent;">
                 <button onclick="window.openTasks()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
