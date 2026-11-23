@@ -1,4 +1,5 @@
 import { fetchUserChats, fetchMessages, sendMessageToDB, BOT_ID, CURRENT_USER_ID } from './api.js';
+import { db } from '../api/supabase.js';
 import { MasterBossBrain } from '../brain/index.js';
 
 let currentChat = null;
@@ -97,7 +98,25 @@ async function renderChatScreen(container, chatId) {
 
             let botResponse = '';
             try {
-                const result = await MasterBossBrain.handle(text, { tenant_id: 1, object_id: 1, room_id: 5 });
+                // 1. Собираем историю сообщений для контекста (последние 10)
+                const historyData = await db.from('messages')
+                    .select('sender_id, text')
+                    .eq('chat_id', chatId)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                const historyForBrain = historyData.data.reverse().map(m => ({
+                    role: m.sender_id === CURRENT_USER_ID ? 'user' : 'assistant',
+                    text: m.text
+                }));
+
+                // 2. Отправляем в мозг с контекстом
+                const result = await MasterBossBrain.handle(text, { 
+                    tenant_id: 1, 
+                    object_id: 1, 
+                    room_id: 5,
+                    history: historyForBrain
+                });
                 document.getElementById('chat-loading')?.remove();
                 
                 if (result.status === 'error') {
