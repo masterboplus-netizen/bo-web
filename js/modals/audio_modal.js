@@ -73,14 +73,14 @@ function showDrawer() {
     if (drawer) return;
     drawer = document.createElement('div');
     drawer.id = 'audio-drawer';
-    drawer.style.cssText = 'position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: var(--bg2); border-top: 1px solid var(--bg3); padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; z-index: 100000; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 -4px 20px rgba(0,0,0,0.6); cursor: pointer;';
+    drawer.style.cssText = 'position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: var(--bg2); border-top: 1px solid var(--bg3); padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; z-index: 100000; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 -4px 20px rgba(0,0,0,0.6); cursor: pointer;';
     
     drawer.innerHTML = `
-        <div style="font-size: 28px; font-weight: bold; color: var(--fg); font-family: monospace; letter-spacing: 2px;" id="recording-time">00:00</div>
-        <div id="eq-bars" style="display: flex; gap: 6px; align-items: flex-end; height: 50px;">
-            ${Array(9).fill(0).map((_, i) => `<div class="eq-bar" style="width: 8px; background: var(--accent); border-radius: 4px; height: 10px; animation: eqAnim 0.4s infinite ease-in-out alternate; animation-delay: ${i * 0.1}s;"></div>`).join('')}
+        <div style="font-size: 18px; font-weight: bold; color: var(--fg); font-family: monospace; letter-spacing: 2px;" id="recording-time">00:00</div>
+        <div id="eq-bars" style="display: flex; gap: 3px; align-items: flex-end; height: 20px;">
+            ${Array(9).fill(0).map((_, i) => `<div class="eq-bar" style="width: 4px; background: var(--accent); border-radius: 4px; height: 10px; animation: eqAnim 0.4s infinite ease-in-out alternate; animation-delay: ${i * 0.1}s;"></div>`).join('')}
         </div>
-        <div style="color: var(--fg-dim); font-size: 13px;">Нажмите в любое место, чтобы остановить</div>
+        
     `;
 
     if (!document.getElementById('eq-style')) {
@@ -89,7 +89,7 @@ function showDrawer() {
         style.textContent = `
             @keyframes eqAnim {
                 0% { height: 5px; }
-                100% { height: 45px; }
+                100% { height: 18px; }
             }
         `;
         document.head.appendChild(style);
