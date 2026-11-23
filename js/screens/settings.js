@@ -83,7 +83,7 @@ export function openWidgetSettings() {
                 Назад в настройки меню
             </button>
             <h2 style="color: var(--fg); margin-bottom: 10px;">Настройка виджета</h2>
-            <p style="color: var(--fg-dim); font-size: 13px; margin-bottom: 20px;">Выберите до 6 кнопок (плюс кнопка «Меню» всегда первая).</p>
+            <p style="color: var(--fg-dim); font-size: 13px; margin-bottom: 20px;">Выберите до 5 кнопок (кнопки «Меню» и «Бо» всегда на месте).</p>
             <p style="color: var(--fg-dim); font-size: 13px; margin-bottom: 20px;">Для изменения порядка зажмите кнопку в самой капсуле на 1.5 секунды.</p>
 
             <div id="sortable-list">
@@ -100,8 +100,8 @@ export function openWidgetSettings() {
             const existing = cfg.find(c => c.id === id);
             const isCurrentlyActive = existing ? existing.enabled : false;
 
-            if (!isCurrentlyActive && activeCount >= 6) {
-                alert('Максимум 6 кнопок в настройках (плюс Меню = 7 в виджете).');
+            if (!isCurrentlyActive && activeCount >= 5) {
+                alert('Максимум 5 кнопок в настройках (плюс Меню и Бо).');
                 return;
             }
             if (isCurrentlyActive && activeCount <= 2) {
