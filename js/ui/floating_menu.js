@@ -28,8 +28,8 @@ export function renderCapsule() {
 
   let config = localStorage.getItem('widget_config');
   if (!config) {
+    // ДЕФОЛТНЫЙ КОНФИГ: без Личных, с Объектами
     config = [
-      { id: 'nav-personal', enabled: true },
       { id: 'nav-finance', enabled: true },
       { id: 'nav-diary', enabled: true },
       { id: 'nav-calendar', enabled: true },
@@ -39,6 +39,25 @@ export function renderCapsule() {
     localStorage.setItem('widget_config', JSON.stringify(config));
   } else {
     config = JSON.parse(config);
+    
+    // АВТО-ОБРЕЗКА: Если кнопок больше 5, выключаем Личные в первую очередь
+    let activeCount = 0;
+    config.sort((a, b) => {
+      if (a.id === 'nav-personal') return 1;
+      if (b.id === 'nav-personal') return -1;
+      return 0;
+    });
+    
+    config = config.map(cfg => {
+      if (cfg.enabled) {
+        activeCount++;
+        if (activeCount > 5) {
+          return { ...cfg, enabled: false };
+        }
+      }
+      return cfg;
+    });
+    localStorage.setItem('widget_config', JSON.stringify(config));
   }
 
   let html = '';
@@ -65,10 +84,8 @@ export function initFloatingMenu() {
 
   if (!wrapper || !capsule || !toggleBtn || !container) return;
 
-  // 1. Сначала рендерим кнопки
   renderCapsule();
 
-  // 2. Потом создаем Sortable (он уже видит все кнопки)
   if (typeof Sortable !== 'undefined') {
     new Sortable(container, {
       animation: 200,
@@ -78,10 +95,9 @@ export function initFloatingMenu() {
       dragClass: 'sortable-drag',
       
       onChoose: function(evt) {
-        document.body.style.overflow = 'hidden'; // Блокируем скролл страницы
+        document.body.style.overflow = 'hidden';
         capsule.classList.add('capsule-shaking');
         if (navigator.vibrate) navigator.vibrate(50);
-        
         evt.item.style.transform = 'scale(1.15)';
         evt.item.style.zIndex = '1000';
         evt.item.style.boxShadow = '0 8px 24px rgba(0,0,0,0.6)';
@@ -98,8 +114,6 @@ export function initFloatingMenu() {
       onEnd: function(evt) {
         document.body.style.overflow = '';
         capsule.classList.remove('capsule-shaking');
-        
-        // ТОТАЛЬНАЯ ОЧИСТКА КЛАССОВ И СТИЛЕЙ SORTABLE
         setTimeout(() => {
           container.querySelectorAll('.nav-item').forEach(el => {
             el.style.transform = '';
@@ -107,7 +121,7 @@ export function initFloatingMenu() {
             el.style.boxShadow = '';
             el.style.borderRadius = '';
             el.style.background = '';
-            el.style.opacity = ''; // Сбрасываем прозрачность
+            el.style.opacity = '';
             el.classList.remove('sortable-ghost', 'sortable-drag', 'sortable-chosen', 'sortable-fallback');
           });
         }, 50);
@@ -127,14 +141,12 @@ export function initFloatingMenu() {
     });
   }
 
-  // Выход по тапу на экран
   document.addEventListener('click', (e) => {
     if (capsule.classList.contains('capsule-shaking') && !e.target.closest('#floating-capsule')) {
       capsule.classList.remove('capsule-shaking');
     }
   });
 
-  // Перетаскивание самой капсулы
   let isDragging = false;
   let startY = 0;
   let currentTop = wrapper.getBoundingClientRect().top;
