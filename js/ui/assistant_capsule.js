@@ -1,8 +1,18 @@
-let capsuleEl = null;
+import { sendMessageToDB, fetchMessages, getOrCreateBotChat, BOT_ID, CURRENT_USER_ID } from '../social/api.js';
 
-export function initAssistantCapsule() {
+let capsuleEl = null;
+let botChatId = null;
+
+export async function initAssistantCapsule() {
     if (capsuleEl) return;
     
+    // Получаем или создаем чат с Бо
+    try {
+        botChatId = await getOrCreateBotChat();
+    } catch (e) {
+        console.error('Ошибка получения чата Бо:', e);
+    }
+
     capsuleEl = document.createElement('div');
     capsuleEl.id = 'assistant-capsule';
     capsuleEl.style.cssText = `
@@ -49,16 +59,16 @@ export function initAssistantCapsule() {
         const text = input.value.trim();
         if (!text) return;
         input.value = '';
-        addMessage('user', text);
-        await processBrain(text);
+        await sendMessage('user', text);
     };
     sendBtn.onclick = sendText;
     input.onkeydown = (e) => { if (e.key === 'Enter') sendText(); };
 }
 
-export function showAssistant() {
-    if (!capsuleEl) initAssistantCapsule();
+export async function showAssistant() {
+    if (!capsuleEl) await initAssistantCapsule();
     capsuleEl.style.transform = 'translateX(0)';
+    await loadHistory(); // Загружаем историю при открытии
 }
 
 export function hideAssistant() {
@@ -66,8 +76,9 @@ export function hideAssistant() {
     capsuleEl.style.transform = 'translateX(-100%)';
 }
 
+// Добавление сообщения в DOM (визуально)
 export function addMessage(role, text) {
-    if (!capsuleEl) initAssistantCapsule();
+    if (!capsuleEl) return;
     const container = document.getElementById('assistant-messages');
     if (!container) return;
     const msgDiv = document.createElement('div');
@@ -78,6 +89,23 @@ export function addMessage(role, text) {
     msgDiv.textContent = text;
     container.appendChild(msgDiv);
     container.scrollTop = container.scrollHeight;
+}
+
+// Отправка сообщения (сохраняет в БД и вызывает Мозг)
+async function sendMessage(role, text) {
+    // 1. Визуально добавляем
+    addMessage(role, text);
+
+    // 2. Сохраняем в БД
+    if (botChatId) {
+        const senderId = role === 'user' ? CURRENT_USER_ID : BOT_ID;
+        await sendMessageToDB(botChatId, senderId, text);
+    }
+
+    // 3. Если это сообщение от пользователя — вызываем Мозг
+    if (role === 'user') {
+        await processBrain(text);
+    }
 }
 
 async function processBrain(text) {
@@ -93,28 +121,55 @@ async function processBrain(text) {
         if (window.MasterBossBrain && window.MasterBossBrain.handle) {
             const result = await window.MasterBossBrain.handle(text, { tenant_id: 1 });
             document.getElementById('assistant-loading')?.remove();
+            
+            let botReply = '';
             if (result.status === 'error') {
-                addMessage('bot', '❌ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка'));
+                botReply = '❌ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка');
             } else if (result.results && result.results.length > 0) {
-                const msg = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('\n');
-                addMessage('bot', msg);
+                botReply = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('\n');
             } else {
-                addMessage('bot', '🤖 Мозг не вернул действий');
+                botReply = '🤖 Мозг не вернул действий';
             }
+
+            // Отправляем ответ Бо (он сохранится в БД)
+            await sendMessage('bot', botReply);
         } else {
             document.getElementById('assistant-loading')?.remove();
-            addMessage('bot', '❌ Мозг не загружен');
+            await sendMessage('bot', '❌ Мозг не загружен');
         }
     } catch (e) {
         document.getElementById('assistant-loading')?.remove();
-        addMessage('bot', '❌ Ошибка связи: ' + e.message);
+        await sendMessage('bot', '❌ Ошибка связи: ' + e.message);
+    }
+}
+
+// Загрузка истории из БД при открытии
+async function loadHistory() {
+    if (!botChatId) return;
+    try {
+        const messages = await fetchMessages(botChatId);
+        const container = document.getElementById('assistant-messages');
+        if (!container) return;
+        container.innerHTML = ''; // Очищаем перед загрузкой
+        
+        if (messages.length === 0) {
+            addMessage('bot', 'Привет! Я Бо. Чем могу помочь?');
+        } else {
+            messages.forEach(msg => {
+                const isUser = msg.sender_id === CURRENT_USER_ID;
+                addMessage(isUser ? 'user' : 'bot', msg.text);
+            });
+        }
+    } catch (e) {
+        console.error('Ошибка загрузки истории:', e);
     }
 }
 
 window.openAssistantWithText = async (text) => {
-    showAssistant();
-    addMessage('user', text);
-    await processBrain(text);
+    await showAssistant();
+    await sendMessage('user', text);
 };
 
-window.openAssistant = () => showAssistant();
+window.openAssistant = async () => {
+    await showAssistant();
+};
