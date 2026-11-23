@@ -157,6 +157,7 @@ function toggleSelection(id) {
 // === ИНФОРМАЦИОННАЯ КАРТОЧКА ЗАПИСИ ===
 window.openDiaryEntryDetail = async function(id) {
     const container = document.getElementById('app-content');
+    container.style.paddingTop = '0';
     container.innerHTML = '<div style="text-align: center; margin-top: 50px; color: var(--fg-dim);">Загрузка...</div>';
 
     try {
@@ -173,14 +174,14 @@ window.openDiaryEntryDetail = async function(id) {
 
         container.innerHTML = `
             <div style="max-width: 600px; margin: 0 auto; padding: 0 15px 80px 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <button onclick="window.openDiary()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
+                <div style="position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); margin-bottom: 15px;">
+                    <button onclick="window.openDiary()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 15px; display: flex; align-items: center;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
                         </svg>
                     </button>
-                    <button onclick="window.openDiaryActions(${log.id})" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 0; display: flex; align-items: center;">
+                    <button onclick="window.openDiaryActions(${log.id})" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 15px; display: flex; align-items: center;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="1"></circle>
                             <circle cx="12" cy="5" r="1"></circle>
