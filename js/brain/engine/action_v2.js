@@ -13,7 +13,10 @@ export async function executeActions(plan, context) {
       // Берем то, что пришло от мозга
       const tool = action.tool;
 
-      if (tool === 'chat') {
+      if (tool === 'clarify') {
+        results.push({ status: 'ok', message: action.payload.question || 'Уточните данные' });
+      }
+      else if (tool === 'chat') {
         results.push({ status: 'ok', message: action.payload.reply || 'Я вас слушаю!' });
       } 
       else if (tool === 'navigate') {

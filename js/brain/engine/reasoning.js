@@ -2,9 +2,7 @@ export function buildPlan(intents, context) {
   const actions = [];
   const errors = [];
 
-  // Проходимся по ВСЕМ интентам, которые вернул Groq
   for (const intent of intents) {
-    // Приводим к нижнему регистру на всякий случай
     const rawIntent = (intent.intent || '').toLowerCase().trim();
 
     if (rawIntent === 'unknown') {
@@ -12,13 +10,18 @@ export function buildPlan(intents, context) {
       continue;
     }
 
-    // Если это просто болтовня
+    // Обработка уточнений (если Groq просит данные)
+    if (rawIntent === 'clarify') {
+       actions.push({ tool: 'clarify', payload: intent.slots });
+       continue;
+    }
+
     if (rawIntent === 'chat') {
        actions.push({ tool: 'chat', payload: intent.slots });
        continue;
     }
 
-    // АЛИАСЫ (на случай, если Groq немного ошибся в названии)
+    // АЛИАСЫ
     let toolName = rawIntent;
     if (rawIntent === 'create_obj' || rawIntent === 'createobject' || rawIntent === 'add_object') {
       toolName = 'create_object';
