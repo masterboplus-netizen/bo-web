@@ -25,3 +25,5 @@ window.brainTest = async (text) => {
   console.log('[РЕЗУЛЬТАТ]', result);
   return result;
 };
+
+window.MasterBossBrain = MasterBossBrain;
