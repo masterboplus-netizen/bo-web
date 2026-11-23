@@ -2,11 +2,11 @@ import { sendMessageToDB, fetchMessages, getOrCreateBotChat, BOT_ID, CURRENT_USE
 
 let capsuleEl = null;
 let botChatId = null;
+let isExpanded = false;
 
 export async function initAssistantCapsule() {
     if (capsuleEl) return;
     
-    // Получаем или создаем чат с Бо
     try {
         botChatId = await getOrCreateBotChat();
     } catch (e) {
@@ -30,7 +30,7 @@ export async function initAssistantCapsule() {
         display: flex;
         flex-direction: column;
         transform: translateX(-100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s, height 0.3s, bottom 0.3s, border-radius 0.3s;
         overflow: hidden;
     `;
 
@@ -55,28 +55,63 @@ export async function initAssistantCapsule() {
     document.getElementById('close-assistant').onclick = () => hideAssistant();
     const input = document.getElementById('assistant-input');
     const sendBtn = document.getElementById('assistant-send');
+
+    // Разворачиваем при фокусе на поле ввода
+    input.onfocus = () => expandAssistant();
+    input.onblur = () => {
+        // Не сворачиваем сразу, чтобы можно было нажать кнопку отправки
+        setTimeout(() => {
+            if (document.activeElement !== input && document.activeElement !== sendBtn) {
+                collapseAssistant();
+            }
+        }, 100);
+    };
+
     const sendText = async () => {
         const text = input.value.trim();
         if (!text) return;
         input.value = '';
         await sendMessage('user', text);
+        // После отправки можно оставить развернутым или свернуть
+        // collapseAssistant(); 
     };
+
     sendBtn.onclick = sendText;
     input.onkeydown = (e) => { if (e.key === 'Enter') sendText(); };
+}
+
+function expandAssistant() {
+    if (!capsuleEl || isExpanded) return;
+    isExpanded = true;
+    capsuleEl.style.width = '100%';
+    capsuleEl.style.maxWidth = '100%';
+    capsuleEl.style.height = 'calc(100vh - 100px)'; // Учитываем нижнюю навигацию
+    capsuleEl.style.bottom = '80px';
+    capsuleEl.style.borderRadius = '0';
+}
+
+function collapseAssistant() {
+    if (!capsuleEl || !isExpanded) return;
+    isExpanded = false;
+    capsuleEl.style.width = 'calc(100% - 120px)';
+    capsuleEl.style.maxWidth = '400px';
+    capsuleEl.style.height = '60vh';
+    capsuleEl.style.bottom = '90px';
+    capsuleEl.style.borderRadius = '0 20px 20px 0';
 }
 
 export async function showAssistant() {
     if (!capsuleEl) await initAssistantCapsule();
     capsuleEl.style.transform = 'translateX(0)';
-    await loadHistory(); // Загружаем историю при открытии
+    await loadHistory();
 }
 
 export function hideAssistant() {
     if (!capsuleEl) return;
     capsuleEl.style.transform = 'translateX(-100%)';
+    collapseAssistant(); // При закрытии возвращаем в обычный вид
 }
 
-// Добавление сообщения в DOM (визуально)
 export function addMessage(role, text) {
     if (!capsuleEl) return;
     const container = document.getElementById('assistant-messages');
@@ -91,18 +126,12 @@ export function addMessage(role, text) {
     container.scrollTop = container.scrollHeight;
 }
 
-// Отправка сообщения (сохраняет в БД и вызывает Мозг)
 async function sendMessage(role, text) {
-    // 1. Визуально добавляем
     addMessage(role, text);
-
-    // 2. Сохраняем в БД
     if (botChatId) {
         const senderId = role === 'user' ? CURRENT_USER_ID : BOT_ID;
         await sendMessageToDB(botChatId, senderId, text);
     }
-
-    // 3. Если это сообщение от пользователя — вызываем Мозг
     if (role === 'user') {
         await processBrain(text);
     }
@@ -131,7 +160,6 @@ async function processBrain(text) {
                 botReply = '🤖 Мозг не вернул действий';
             }
 
-            // Отправляем ответ Бо (он сохранится в БД)
             await sendMessage('bot', botReply);
         } else {
             document.getElementById('assistant-loading')?.remove();
@@ -143,14 +171,13 @@ async function processBrain(text) {
     }
 }
 
-// Загрузка истории из БД при открытии
 async function loadHistory() {
     if (!botChatId) return;
     try {
         const messages = await fetchMessages(botChatId);
         const container = document.getElementById('assistant-messages');
         if (!container) return;
-        container.innerHTML = ''; // Очищаем перед загрузкой
+        container.innerHTML = '';
         
         if (messages.length === 0) {
             addMessage('bot', 'Привет! Я Бо. Чем могу помочь?');
