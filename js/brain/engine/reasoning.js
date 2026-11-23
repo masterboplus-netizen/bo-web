@@ -10,7 +10,7 @@ export function buildPlan(intents, context) {
       continue;
     }
 
-    // Обработка уточнений (если Groq просит данные)
+    // Обработка уточнений
     if (rawIntent === 'clarify') {
        actions.push({ tool: 'clarify', payload: intent.slots });
        continue;
@@ -21,7 +21,6 @@ export function buildPlan(intents, context) {
        continue;
     }
 
-    // АЛИАСЫ
     let toolName = rawIntent;
     if (rawIntent === 'create_obj' || rawIntent === 'createobject' || rawIntent === 'add_object') {
       toolName = 'create_object';

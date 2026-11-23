@@ -6,11 +6,7 @@ export async function executeActions(plan, context) {
 
   for (const action of plan.actions) {
     try {
-      let result;
-      
       if (!action || !action.payload) continue;
-      
-      // Берем то, что пришло от мозга
       const tool = action.tool;
 
       if (tool === 'clarify') {
@@ -35,14 +31,12 @@ export async function executeActions(plan, context) {
         await db.from('finance').insert([{ amount: action.payload.amount || 0, category: action.payload.category || 'Прочее', type: 'expense', date: new Date().toISOString(), tenant_id }]);
         results.push({ status: 'ok', message: `Расход добавлен: ${action.payload.amount}` });
       }
-      // САМОЕ ГЛАВНОЕ: Если пришло 'create_object', мы его ВЫПОЛНЯЕМ
       else if (tool === 'create_object') {
         const name = action.payload.name || 'Новый объект';
         await db.from('objects').insert([{ name: name, tenant_id }]);
         results.push({ status: 'ok', message: `Объект создан: ${name}` });
       }
       else {
-        // Если пришло что-то другое, мы все равно пишем, что это
         results.push({ status: 'error', message: `Инструмент ${tool} пока не подключен (проверьте название)` });
       }
     } catch (error) {

@@ -6,16 +6,17 @@ import { parseWithGroq as parseWithGroqEdge } from '../nlu/groq.js';
 export async function understand(text, context) {
   const cleanText = normalizeText(text);
   let intents = applyRules(cleanText);
+  const history = context?.history || [];
 
   if (intents.length === 1 && intents[0].intent === 'unknown') {
     try {
       // Сначала пробуем основную функцию (Edge Function)
-      let groqIntents = await parseWithGroqEdge(cleanText);
-      
+      let groqIntents = await parseWithGroqEdge(cleanText, history);
+
       // Если Edge Function не ответила, пробуем прямой вызов
       if (!groqIntents || groqIntents.length === 0) {
         console.warn('[Мозг] Edge Function не ответила, пробуем прямой Groq...');
-        groqIntents = await parseWithGroqDirect(cleanText);
+        groqIntents = await parseWithGroqDirect(cleanText, history);
       }
       if (groqIntents && groqIntents.length > 0) {
         intents = groqIntents;
