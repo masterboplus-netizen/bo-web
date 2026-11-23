@@ -73,7 +73,6 @@ function showDrawer() {
     if (drawer) return;
     drawer = document.createElement('div');
     drawer.id = 'audio-drawer';
-    // Шторка на весь низ, с z-index повыше
     drawer.style.cssText = 'position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: var(--bg2); border-top: 1px solid var(--bg3); padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; z-index: 100000; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 -4px 20px rgba(0,0,0,0.6); cursor: pointer;';
     
     drawer.innerHTML = `
@@ -98,10 +97,8 @@ function showDrawer() {
 
     document.body.appendChild(drawer);
     
-    // Анимация выезда
     setTimeout(() => drawer.style.transform = 'translateY(0)', 10);
 
-    // Тап по любому месту шторки = стоп
     drawer.onclick = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -120,32 +117,27 @@ async function processAudio(audioBlob) {
     try {
         console.log('Аудио записано, размер:', audioBlob.size);
         
-        // 1. Распознаем речь (встроенный Web Speech API)
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
             alert('Ваш браузер не поддерживает распознавание речи');
             return;
         }
-        
+
         const recognition = new SpeechRecognition();
         recognition.lang = 'ru-RU';
         recognition.interimResults = false;
-        
-        // Показываем, что слушаем (но запись уже остановлена)
-        // Вместо этого просто ждем результата
-        
+
         recognition.onresult = async (event) => {
             const text = event.results[0][0].transcript;
             console.log('Распознано:', text);
             
-            // 2. Отправляем в мозг
             if (window.MasterBossBrain && window.MasterBossBrain.handle) {
                 const result = await window.MasterBossBrain.handle(text, { tenant_id: 1 });
                 
                 if (result.status === 'error') {
                     alert('Ошибка мозга: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка'));
                 } else if (result.results && result.results.length > 0) {
-                    const msg = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('
-');
+                    const msg = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('\n');
                     alert(msg);
                 } else {
                     alert('Мозг не вернул действий');
@@ -154,41 +146,16 @@ async function processAudio(audioBlob) {
                 alert('Мозг не загружен');
             }
         };
-        
+
         recognition.onerror = (event) => {
             console.error('Ошибка распознавания:', event.error);
             alert('Ошибка распознавания: ' + event.error);
         };
-        
+
         recognition.start();
-        
+
     } catch (e) {
         console.error('Ошибка обработки аудио:', e);
         alert('Ошибка: ' + e.message);
     }
-}
-
-function showTaskConfirm(text) {
-    const confirm = document.createElement('div');
-    confirm.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px;';
-    confirm.innerHTML = `
-        <div style="background: var(--bg2); border-radius: 20px; padding: 24px; max-width: 400px; width: 100%; color: var(--fg);">
-            <h3 style="margin: 0 0 12px 0; font-size: 18px;">Создать задачу?</h3>
-            <div style="background: var(--bg3); border-radius: 12px; padding: 14px; margin-bottom: 20px; font-size: 15px; line-height: 1.4;">${text || '(пусто)'}</div>
-            <div style="display: flex; gap: 10px;">
-                <button id="task-confirm-no" style="flex: 1; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
-                <button id="task-confirm-yes" style="flex: 1; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Создать</button>
-            </div>
-        </div>`;
-    document.body.appendChild(confirm);
-    
-    document.getElementById('task-confirm-no').onclick = () => confirm.remove();
-    document.getElementById('task-confirm-yes').onclick = async () => {
-        confirm.remove();
-        if (window.openNewTask) {
-            window.openNewTask(text);
-        } else {
-            console.error('openNewTask не найден');
-        }
-    };
 }
