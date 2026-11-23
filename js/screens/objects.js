@@ -1,5 +1,5 @@
 import { db } from '../api/supabase.js';
-import { createCard } from '../ui/card.js'; // Импортируем единую карточку
+import { createCard } from '../ui/card.js';
 
 let currentObjects = [];
 let isSelectionMode = false;
@@ -10,14 +10,12 @@ export function renderObjects(objects) {
     currentObjects = objects;
     const container = document.getElementById('app-content');
     
-    // 1. Создаем контейнер списка
     container.innerHTML = `<div class="object-list" style="padding-top: 10px; max-width: 600px; margin: 0 auto; padding-bottom: 150px;"></div>`;
     const listEl = container.querySelector('.object-list');
 
     if (!objects || objects.length === 0) {
         listEl.innerHTML = `<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Объектов пока нет. Создайте первый!</div>`;
     } else {
-        // 2. Используем DocumentFragment для быстрой вставки
         const fragment = document.createDocumentFragment();
 
         objects.forEach(obj => {
@@ -25,11 +23,10 @@ export function renderObjects(objects) {
             let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
             const isSelected = selectedIds.has(obj.id);
 
-            // 3. Вызываем единую карточку
             const card = createCard({
                 id: obj.id,
                 title: obj.name,
-                subtitle: null, // Если нужно ID, можно передать `ID: ${obj.id}`
+                subtitle: null, 
                 badge: statusText,
                 badgeColor: statusColor,
                 rightText: `${obj.budget || 0} ₽`,
@@ -44,10 +41,7 @@ export function renderObjects(objects) {
                 },
                 onLongPress: (id) => {
                     if (!isSelectionMode) {
-                        isSelectionMode = true;
-                        selectedIds.clear();
-                        selectedIds.add(id);
-                        renderObjects(currentObjects);
+                        enterSelectionMode(id);
                     }
                 }
             });
@@ -58,7 +52,6 @@ export function renderObjects(objects) {
         listEl.appendChild(fragment);
     }
 
-    // 4. Панель кнопок (вставляем в конец body, как в твоем коде)
     const oldBar = document.getElementById('selection-bar');
     if (oldBar) oldBar.remove();
 
@@ -81,20 +74,27 @@ export function renderObjects(objects) {
         bar.querySelector('#delete-selected').onclick = async () => {
             if (selectedIds.size === 0) return;
             window.showConfirm(`Удалить ${selectedIds.size} объектов?`, async () => {
-
-            try {
-                const ids = Array.from(selectedIds);
-                const { error } = await db.from('objects').delete().in('id', ids);
-                if (error) throw error;
-                
-                isSelectionMode = false;
-                selectedIds.clear();
-                if (window.openObjects) window.openObjects();
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            }
+                try {
+                    const ids = Array.from(selectedIds);
+                    const { error } = await db.from('objects').delete().in('id', ids);
+                    if (error) throw error;
+                    
+                    isSelectionMode = false;
+                    selectedIds.clear();
+                    if (window.openObjects) window.openObjects();
+                } catch (e) {
+                    alert('Ошибка: ' + e.message);
+                }
+            });
         };
     }
+}
+
+function enterSelectionMode(initialId) {
+    isSelectionMode = true;
+    selectedIds.clear();
+    selectedIds.add(initialId);
+    renderObjects(currentObjects);
 }
 
 function toggleSelection(id) {
@@ -104,20 +104,9 @@ function toggleSelection(id) {
         selectedIds.add(id);
     }
     
-    // Если ничего не выбрано — выходим из режима
     if (selectedIds.size === 0) {
         isSelectionMode = false;
-        renderObjects(currentObjects);
-        return;
     }
-
-    // Обновляем только счетчик на панели (без перерисовки всего списка)
-    const deleteBtn = document.querySelector('#delete-selected');
-    if (deleteBtn) {
-        deleteBtn.textContent = `Удалить (${selectedIds.size})`;
-    }
-
-    // Перерисовываем список только для того, чтобы обновить галочки
-    // (в идеале нужно точечное обновление, но для теста сойдет)
+    
     renderObjects(currentObjects);
 }
