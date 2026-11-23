@@ -119,9 +119,52 @@ function hideDrawer() {
 async function processAudio(audioBlob) {
     try {
         console.log('Аудио записано, размер:', audioBlob.size);
-        showTaskConfirm('Голосовая задача (распознавание в разработке)');
+        
+        // 1. Распознаем речь (встроенный Web Speech API)
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            alert('Ваш браузер не поддерживает распознавание речи');
+            return;
+        }
+        
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'ru-RU';
+        recognition.interimResults = false;
+        
+        // Показываем, что слушаем (но запись уже остановлена)
+        // Вместо этого просто ждем результата
+        
+        recognition.onresult = async (event) => {
+            const text = event.results[0][0].transcript;
+            console.log('Распознано:', text);
+            
+            // 2. Отправляем в мозг
+            if (window.MasterBossBrain && window.MasterBossBrain.handle) {
+                const result = await window.MasterBossBrain.handle(text, { tenant_id: 1 });
+                
+                if (result.status === 'error') {
+                    alert('Ошибка мозга: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка'));
+                } else if (result.results && result.results.length > 0) {
+                    const msg = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('
+');
+                    alert(msg);
+                } else {
+                    alert('Мозг не вернул действий');
+                }
+            } else {
+                alert('Мозг не загружен');
+            }
+        };
+        
+        recognition.onerror = (event) => {
+            console.error('Ошибка распознавания:', event.error);
+            alert('Ошибка распознавания: ' + event.error);
+        };
+        
+        recognition.start();
+        
     } catch (e) {
         console.error('Ошибка обработки аудио:', e);
+        alert('Ошибка: ' + e.message);
     }
 }
 
