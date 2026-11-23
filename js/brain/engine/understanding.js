@@ -1,6 +1,6 @@
 import { normalizeText } from '../nlu/normalize.js';
 import { applyRules } from '../nlu/rules.js';
-import { parseWithGroq } from '../nlu/groq.js';
+import { parseWithGroq as parseWithGroqEdge } from '../nlu/groq.js';
 
 export async function understand(text, context) {
   const cleanText = normalizeText(text);
@@ -9,11 +9,14 @@ export async function understand(text, context) {
 
   if (intents.length === 1 && intents[0].intent === 'unknown') {
     try {
-      const groqIntents = await parseWithGroq(cleanText, history);
+      // Идем в Edge Function brain-parse (она обновлена и умеет историю)
+      const groqIntents = await parseWithGroqEdge(cleanText, history);
       if (groqIntents && groqIntents.length > 0) {
         intents = groqIntents;
       }
     } catch (e) {
+      console.warn('[Мозг] Edge Function не ответила:', e.message);
+      intents = [{ intent: 'error', confidence: 0, slots: { message: e.message } }];
     }
   }
   return intents;
