@@ -36,7 +36,7 @@ export async function initAssistantCapsule() {
 
     capsuleEl.innerHTML = `
         <div style="padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg2);">
-            <div style="font-weight: bold; font-size: 16px; color: var(--fg);">Бо (Ассистент)</div>
+            <div style="font-weight: bold; font-size: 16px; color: var(--fg);">Бо</div>
             <div id="close-assistant" style="cursor: pointer; padding: 5px; color: var(--fg-dim);">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </div>
