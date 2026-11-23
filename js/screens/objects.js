@@ -80,7 +80,7 @@ export function renderObjects(objects) {
 
         bar.querySelector('#delete-selected').onclick = async () => {
             if (selectedIds.size === 0) return;
-            if (!confirm(`Удалить ${selectedIds.size} объектов?`)) return;
+            window.showConfirm(`Удалить ${selectedIds.size} объектов?`, async () => {
 
             try {
                 const ids = Array.from(selectedIds);
