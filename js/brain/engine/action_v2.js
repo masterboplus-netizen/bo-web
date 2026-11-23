@@ -24,11 +24,49 @@ export async function executeActions(plan, context) {
       }
       else if (tool === 'add_task') {
         const title = action.payload.title || 'Без названия';
-        await db.from('tasks').insert([{ title: title, status: 'open', priority: 'medium', tenant_id }]);
-        results.push({ status: 'ok', message: `Задача создана: ${title}` });
+        let object_id = null;
+
+        if (action.payload.object_name) {
+          const { data: obj } = await db
+            .from('objects')
+            .select('id')
+            .eq('name', action.payload.object_name)
+            .eq('tenant_id', tenant_id)
+            .limit(1);
+          if (obj && obj.length > 0) object_id = obj[0].id;
+        }
+
+        await db.from('tasks').insert([{ 
+          title: title, 
+          status: 'open', 
+          priority: 'medium', 
+          tenant_id: tenant_id,
+          object_id: object_id
+        }]);
+        
+        results.push({ status: 'ok', message: `Задача создана: ${title}${object_id ? ' (объект: ' + action.payload.object_name + ')' : ''}` });
       } 
       else if (tool === 'add_expense') {
-        await db.from('finance').insert([{ amount: action.payload.amount || 0, category: action.payload.category || 'Прочее', type: 'expense', date: new Date().toISOString(), tenant_id }]);
+        let object_id = null;
+        if (action.payload.object_name) {
+          const { data: obj } = await db
+            .from('objects')
+            .select('id')
+            .eq('name', action.payload.object_name)
+            .eq('tenant_id', tenant_id)
+            .limit(1);
+          if (obj && obj.length > 0) object_id = obj[0].id;
+        }
+
+        await db.from('finance').insert([{ 
+          amount: action.payload.amount || 0, 
+          category: action.payload.category || 'Прочее', 
+          type: 'expense', 
+          date: new Date().toISOString(), 
+          tenant_id: tenant_id,
+          object_id: object_id
+        }]);
+        
         results.push({ status: 'ok', message: `Расход добавлен: ${action.payload.amount}` });
       }
       else if (tool === 'create_object') {
@@ -37,7 +75,7 @@ export async function executeActions(plan, context) {
         results.push({ status: 'ok', message: `Объект создан: ${name}` });
       }
       else {
-        results.push({ status: 'error', message: `Инструмент ${tool} пока не подключен (проверьте название)` });
+        results.push({ status: 'error', message: `Инструмент ${tool} пока не подключен` });
       }
     } catch (error) {
       results.push({ status: 'error', message: error.message });
