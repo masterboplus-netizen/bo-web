@@ -93,3 +93,15 @@ window.openObjectActions = function(id, name) {
     }, 10);
 };
 
+
+window.deleteObjectById = async function(id) {
+    if (!confirm('Удалить этот объект?')) return;
+    try {
+        const { error } = await db.from('objects').delete().eq('id', id);
+        if (error) throw error;
+        alert('Объект удален');
+        if (window.openObjects) window.openObjects();
+    } catch (e) {
+        alert('Ошибка удаления: ' + e.message);
+    }
+};
