@@ -93,3 +93,40 @@ window.openObjectActions = function(id, name) {
     }, 10);
 };
 
+
+window.deleteObjectById = async function(id) {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px;';
+    modal.innerHTML = `
+        <div style="background: var(--bg2); border-radius: 20px; padding: 24px; max-width: 400px; width: 100%; color: var(--fg); text-align: center;">
+            <div style="font-size: 18px; margin-bottom: 12px;">Удалить этот объект?</div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="modal-no" style="flex: 1; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
+                <button id="modal-yes" style="flex: 1; padding: 14px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Удалить</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+
+    document.getElementById('modal-no').onclick = () => modal.remove();
+    document.getElementById('modal-yes').onclick = async () => {
+        modal.remove();
+        try {
+            const { error } = await db.from('objects').delete().eq('id', id);
+            if (error) throw error;
+            
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 20px; font-size: 14px; z-index: 100000; transition: opacity 0.3s;';
+            toast.textContent = 'Объект удален';
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+
+            if (window.openObjects) window.openObjects();
+        } catch (e) {
+            alert('Ошибка: ' + e.message);
+        }
+    };
+};
