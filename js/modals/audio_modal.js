@@ -135,9 +135,7 @@ function showToast(message, duration = 3000) {
 
 async function processAudio(audioBlob) {
     try {
-        console.log('Аудио записано, размер:', audioBlob.size);
-        
-        // 1. Отправляем аудио в Groq (Whisper) для распознавания
+        // 1. Отправляем аудио в Groq (Whisper)
         const formData = new FormData();
         formData.append('file', audioBlob, 'audio.webm');
         formData.append('model', 'whisper-large-v3');
@@ -145,47 +143,26 @@ async function processAudio(audioBlob) {
 
         const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${window.GROQ_API_KEY}`
-            },
+            headers: { 'Authorization': `Bearer ${window.GROQ_API_KEY}` },
             body: formData
         });
 
-        if (!response.ok) {
-            const err = await response.text();
-            throw new Error(`Groq API error: ${response.status} ${err}`);
-        }
 
         const data = await response.json();
         const text = data.text;
-        console.log('Распознано Groq:', text);
 
-        if (!text || text.trim() === '') {
-            showToast('🤷‍♂️ Не удалось распознать речь.');
+            alert('Не удалось распознать речь.');
             return;
         }
 
-        // Показываем, что услышали
-        showToast(`🗣 Вы: "${text}"`, 2000);
-
-        // 2. Отдаем текст "Мозгу"
-        if (window.MasterBossBrain && window.MasterBossBrain.handle) {
-            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1 });
-            
-            if (result.status === 'error') {
-                showToast('❌ Ошибка мозга: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка'), 5000);
-            } else if (result.results && result.results.length > 0) {
-                const msg = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('\n');
-                showToast(`🤖 ${msg}`, 5000);
-            } else {
-                showToast('🤖 Мозг не вернул действий', 3000);
-            }
+        // 2. Отправляем текст в виджет Бо (вместо тостов)
+        if (window.openAssistantWithText) {
+            window.openAssistantWithText(text);
         } else {
-            showToast('❌ Мозг не загружен', 3000);
+            console.error('Ассистент не загружен');
         }
-
     } catch (e) {
         console.error('Ошибка обработки аудио:', e);
-        showToast('❌ Ошибка: ' + e.message, 5000);
+        alert('Ошибка: ' + e.message);
     }
 }
