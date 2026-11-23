@@ -3,6 +3,7 @@ import { db } from '../api/supabase.js';
 import { MasterBossBrain } from '../brain/index.js';
 
 let currentChat = null;
+let currentChannel = null; // Для Realtime
 
 export async function renderUI(container) {
     if (currentChat) {
@@ -45,6 +46,13 @@ async function renderChatList(container) {
 
 async function renderChatScreen(container, chatId) {
     container.innerHTML = '<div style="padding: 20px; color: var(--fg-dim); text-align: center;">Загрузка...</div>';
+    
+    // Отписываемся от старого канала, если он был
+    if (currentChannel) {
+        currentChannel.unsubscribe();
+        currentChannel = null;
+    }
+
     try {
         const messages = await fetchMessages(chatId);
         let html = `<div style="display: flex; flex-direction: column; height: 100%; background: var(--bg);">
@@ -73,10 +81,31 @@ async function renderChatScreen(container, chatId) {
             </div>
         </div>`;
         container.innerHTML = html;
+        
         const history = document.getElementById('social-chat-history');
         const input = document.getElementById('social-chat-input');
         const btn = document.getElementById('social-chat-send');
         history.scrollTop = history.scrollHeight;
+
+        // === REALTIME ПОДПИСКА ===
+        currentChannel = db.channel('realtime-messages')
+            .on('postgres_changes', { 
+                event: 'INSERT', 
+                schema: 'public', 
+                table: 'messages',
+                filter: `chat_id=eq.${chatId}` 
+            }, (payload) => {
+                const newMsg = payload.new;
+                // Если сообщение не от нас (чтобы не дублировать), добавляем в UI
+                if (newMsg.sender_id !== CURRENT_USER_ID) {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.style.cssText = 'align-self: flex-start; background: var(--bg3); color: var(--fg); padding: 10px 14px; border-radius: 16px 16px 16px 0; max-width: 80%; word-wrap: break-word;';
+                    msgDiv.textContent = newMsg.text;
+                    history.appendChild(msgDiv);
+                    history.scrollTop = history.scrollHeight;
+                }
+            })
+            .subscribe();
 
         btn.onclick = async () => {
             const text = input.value.trim();
@@ -89,65 +118,15 @@ async function renderChatScreen(container, chatId) {
             history.scrollTop = history.scrollHeight;
             await sendMessageToDB(chatId, CURRENT_USER_ID, text);
 
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'chat-loading';
-            loadingDiv.style.cssText = 'align-self: flex-start; color: var(--fg-dim); font-style: italic; padding: 10px;';
-            loadingDiv.textContent = 'Бо думает...';
-            history.appendChild(loadingDiv);
-            history.scrollTop = history.scrollHeight;
-
-            let botResponse = '';
-            try {
-                // 1. Собираем историю сообщений для контекста (последние 10)
-                const historyData = await db.from('messages')
-                    .select('sender_id, text')
-                    .eq('chat_id', chatId)
-                    .order('created_at', { ascending: false })
-                    .limit(10);
-
-                // Берем историю в правильном порядке (старые сверху)
-                const historyForBrain = historyData.data.reverse().map(m => ({
-                    role: m.sender_id === CURRENT_USER_ID ? 'user' : 'assistant',
-                    text: m.text
-                }));
-
-                // Добавляем последнее сообщение бота (если оно было), чтобы Groq видел вопрос
-                // (оно уже есть в базе, но мы его только что сохранили, поэтому оно может быть в конце)
-                // Просто убедимся, что история не пустая и заканчивается на ответе бота, если это ответ на уточнение
-                if (historyForBrain.length > 0 && historyForBrain[historyForBrain.length - 1].role === 'user') {
-                    // Если последнее сообщение — наше, значит, перед ним был ответ бота. Он уже в истории.
-                }
-
-                // 2. Отправляем в мозг с контекстом
-                const result = await MasterBossBrain.handle(text, { 
-                    tenant_id: 1, 
-                    object_id: 1, 
-                    room_id: 5,
-                    history: historyForBrain
-                });
-                document.getElementById('chat-loading')?.remove();
-                
-                if (result.status === 'error') {
-                    botResponse = '⚠️ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка');
-                } else if (result.results && result.results.length > 0) {
-                    botResponse = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('<br>');
-                } else {
-                    botResponse = '🤔 Мозг не вернул действий.';
-                }
-            } catch (e) {
-                document.getElementById('chat-loading')?.remove();
-                botResponse = '❌ Ошибка связи с мозгом: ' + e.message;
-            }
-
-            const botDiv = document.createElement('div');
-            botDiv.style.cssText = 'align-self: flex-start; background: var(--bg3); color: var(--fg); padding: 10px 14px; border-radius: 16px 16px 16px 0; max-width: 80%; word-wrap: break-word;';
-            botDiv.innerHTML = botResponse;
-            history.appendChild(botDiv);
-            history.scrollTop = history.scrollHeight;
-            await sendMessageToDB(chatId, BOT_ID, botResponse);
+            // (Здесь можно оставить вызов Мозга для ответа в мессенджере, если нужно)
         };
 
-        window.closeChat = () => { currentChat = null; renderUI(container); };
+        window.closeChat = () => { 
+            if (currentChannel) currentChannel.unsubscribe();
+            currentChannel = null;
+            currentChat = null; 
+            renderUI(container); 
+        };
     } catch (e) {
         container.innerHTML = `<div style="color: red; padding: 20px;">Ошибка загрузки: ${e.message}</div>`;
     }
