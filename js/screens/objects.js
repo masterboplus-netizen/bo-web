@@ -23,7 +23,9 @@ export function renderObjects(objects) {
             
             html += `
                 <div class="object-card" data-id="${obj.id}" style="position: relative; ${isSelectionMode ? 'padding-left: 40px;' : ''} ${isSelected ? 'border: 2px solid var(--accent);' : ''}">
-                    ${isSelectionMode ? `<div style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--accent); background: ${isSelected ? 'var(--accent)' : 'transparent'};"></div>` : ''}
+                    ${isSelectionMode ? `<div style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--accent); background: ${isSelected ? 'var(--accent)' : 'transparent'}; display: flex; align-items: center; justify-content: center;">
+        ${isSelected ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+    </div>` : ''}
                     <div class="obj-title">${escapeHtml(obj.name)}</div>
                     <div class="obj-details">
                         <span class="badge" style="background: ${statusColor}">${statusText}</span>
@@ -37,9 +39,9 @@ export function renderObjects(objects) {
 
     if (isSelectionMode) {
         html += `
-            <div style="position: fixed; bottom: 100px; left: 0; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 20px; z-index: 10000;">
-                <button id="cancel-selection" style="flex: 1; max-width: 200px; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
-                <button id="delete-selected" style="flex: 1; max-width: 200px; padding: 14px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Удалить (${selectedIds.size})</button>
+            <div style="position: fixed; bottom: 100px; left: 0; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 16px; z-index: 10000; box-sizing: border-box;">
+                <button id="cancel-selection" style="flex: 1; max-width: 180px; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
+                <button id="delete-selected" style="flex: 1; max-width: 180px; padding: 14px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Удалить (${selectedIds.size})</button>
             </div>
         `;
     }
