@@ -1,4 +1,10 @@
 import { db } from '../api/supabase.js';
+import { createCard } from '../ui/card.js';
+
+let currentLogs = [];
+let isSelectionMode = false;
+let selectedIds = new Set();
+let longPressTimer = null;
 
 function escapeHtml(text) {
     return String(text).replace(/[&<>"']/g, function(m) {
@@ -16,40 +22,136 @@ export async function renderDiary() {
         const { data: logs, error } = await db.from('task_progress').select('*').order('created_at', { ascending: false });
         if (error) throw error;
 
-        let html = `<div style="max-width: 600px; margin: 0 auto; padding: 0 15px 80px 15px;">`;
-
-        if (!logs || logs.length === 0) {
-            html += `<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Записей пока нет. Нажмите «+», чтобы создать первую.</div>`;
-        } else {
-            logs.forEach(log => {
-                const date = new Date(log.created_at).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
-                let details = [];
-                if (log.hours) details.push(`${log.hours} ч.`);
-                if (log.qty) details.push(`${log.qty} ${log.unit || ''}`);
-
-                html += `
-                    <div onclick="window.openDiaryEntryDetail(${log.id})" style="background: var(--bg2); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--bg3); cursor: pointer;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="font-size: 12px; color: var(--fg-dim);">${date}</span>
-                            ${details.length > 0 ? `<span style="font-size: 12px; color: var(--accent); font-weight: bold;">${details.join(' • ')}</span>` : ''}
-                        </div>
-                        <div style="color: var(--fg); font-size: 15px; margin-bottom: 8px;">${escapeHtml(log.description || 'Без описания')}</div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 12px; color: var(--fg-dim);">Задача ID: ${log.task_id}</span>
-                            <button onclick="event.stopPropagation(); window.openTaskDetail(${log.task_id})" style="background: var(--bg3); border: none; color: var(--accent); font-size: 12px; padding: 4px 8px; border-radius: 6px; cursor: pointer;">К задаче →</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        html += `</div>`;
-        container.innerHTML = html;
+        currentLogs = logs || [];
+        drawDiaryList();
 
     } catch (err) {
         console.error(err);
-        container.innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка загрузки: ${err.message}</div>`;
+        document.getElementById('app-content').innerHTML = `<div style="color: red; text-align: center; margin-top: 50px;">Ошибка загрузки: ${err.message}</div>`;
     }
+}
+
+function drawDiaryList() {
+    const container = document.getElementById('app-content');
+    
+    container.innerHTML = `<div class="diary-list" style="max-width: 600px; margin: 0 auto; padding: 0 15px 150px 15px;"></div>`;
+    const listEl = container.querySelector('.diary-list');
+
+    if (!currentLogs || currentLogs.length === 0) {
+        listEl.innerHTML = `<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Записей пока нет. Нажмите «+», чтобы создать первую.</div>`;
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    currentLogs.forEach(log => {
+        const date = new Date(log.created_at).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+        
+        let details = [];
+        if (log.hours) details.push(`${log.hours} ч.`);
+        if (log.qty) details.push(`${log.qty} ${log.unit || ''}`);
+        const badgeText = details.length > 0 ? details.join(' • ') : null;
+
+        const card = createCard({
+            id: log.id,
+            title: date, // Дата как заголовок
+            subtitle: log.description || 'Без описания',
+            badge: badgeText,
+            badgeColor: 'var(--accent)',
+            rightText: `Задача ID: ${log.task_id}`, // ID задачи справа
+            isSelectionMode: isSelectionMode,
+            isSelected: selectedIds.has(log.id),
+            onClick: (id) => {
+                if (isSelectionMode) {
+                    toggleSelection(id);
+                } else {
+                    window.openDiaryEntryDetail(id);
+                }
+            },
+            onLongPress: (id) => {
+                if (!isSelectionMode) {
+                    enterSelectionMode(id);
+                }
+            }
+        });
+
+        // Добавляем кнопку "К задаче" прямо в карточку (после её создания)
+        // Мы находим футер карточки и добавляем туда кнопку
+        const footer = card.querySelector('div:last-child'); 
+        if (footer && !isSelectionMode) {
+            const btn = document.createElement('button');
+            btn.style.cssText = 'background: var(--bg3); border: none; color: var(--accent); font-size: 12px; padding: 4px 8px; border-radius: 6px; cursor: pointer; margin-left: 10px;';
+            btn.textContent = 'К задаче →';
+            btn.onclick = (e) => {
+                e.stopPropagation(); // Чтобы не открывалась запись дневника
+                window.openTaskDetail(log.task_id);
+            };
+            footer.appendChild(btn);
+        }
+
+        fragment.appendChild(card);
+    });
+
+    listEl.appendChild(fragment);
+
+    // Панель кнопок
+    const oldBar = document.getElementById('selection-bar');
+    if (oldBar) oldBar.remove();
+
+    if (isSelectionMode) {
+        const bar = document.createElement('div');
+        bar.id = 'selection-bar';
+        bar.style.cssText = `position: fixed; bottom: 100px; left: 0; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 16px; z-index: 9999; box-sizing: border-box;`;
+        bar.innerHTML = `
+            <button id="cancel-selection" style="flex: 1; max-width: 180px; padding: 14px; background: var(--bg3); color: var(--fg); border: none; border-radius: 12px; font-size: 15px; cursor: pointer;">Отмена</button>
+            <button id="delete-selected" style="flex: 1; max-width: 180px; padding: 14px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer;">Удалить (${selectedIds.size})</button>
+        `;
+        document.body.appendChild(bar);
+
+        bar.querySelector('#cancel-selection').onclick = () => {
+            isSelectionMode = false;
+            selectedIds.clear();
+            drawDiaryList();
+        };
+
+        bar.querySelector('#delete-selected').onclick = async () => {
+            if (selectedIds.size === 0) return;
+            window.showConfirm(`Удалить ${selectedIds.size} записей?`, async () => {
+                try {
+                    const ids = Array.from(selectedIds);
+                    const { error } = await db.from('task_progress').delete().in('id', ids);
+                    if (error) throw error;
+                    
+                    isSelectionMode = false;
+                    selectedIds.clear();
+                    renderDiary(); // Перезагружаем список
+                } catch (e) {
+                    alert('Ошибка: ' + e.message);
+                }
+            });
+        };
+    }
+}
+
+function enterSelectionMode(initialId) {
+    isSelectionMode = true;
+    selectedIds.clear();
+    selectedIds.add(initialId);
+    drawDiaryList();
+}
+
+function toggleSelection(id) {
+    if (selectedIds.has(id)) {
+        selectedIds.delete(id);
+    } else {
+        selectedIds.add(id);
+    }
+    
+    if (selectedIds.size === 0) {
+        isSelectionMode = false;
+    }
+    
+    drawDiaryList();
 }
 
 // === ИНФОРМАЦИОННАЯ КАРТОЧКА ЗАПИСИ ===
@@ -61,7 +163,6 @@ window.openDiaryEntryDetail = async function(id) {
         const { data: log, error } = await db.from('task_progress').select('*').eq('id', id).single();
         if (error) throw error;
 
-        // Получаем название задачи для отображения
         let taskTitle = 'Задача ID: ' + log.task_id;
         try {
             const { data: task } = await db.from('tasks').select('title').eq('id', log.task_id).single();
@@ -89,7 +190,7 @@ window.openDiaryEntryDetail = async function(id) {
                 </div>
 
                 <h2 style="color: var(--fg); margin: 0 0 10px 0; font-size: 22px;">${date}</h2>
-                
+
                 <div style="background: var(--bg2); border-radius: 12px; padding: 15px; border: 1px solid var(--bg3); margin-bottom: 15px;">
                     <div style="color: var(--fg-dim); font-size: 12px; margin-bottom: 5px;">Что сделано</div>
                     <div style="color: var(--fg); font-size: 15px; line-height: 1.4; white-space: pre-wrap;">${escapeHtml(log.description || 'Без описания')}</div>
@@ -114,4 +215,3 @@ window.openDiaryEntryDetail = async function(id) {
         window.openDiary();
     }
 };
-
