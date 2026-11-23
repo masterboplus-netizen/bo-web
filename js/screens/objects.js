@@ -126,6 +126,7 @@ function toggleSelection(id) {
         const checkmark = card.querySelector('div[style*="border-radius: 50%"]');
         if (checkmark) {
             checkmark.style.background = isSelected ? 'var(--accent)' : 'transparent';
+            checkmark.innerHTML = isSelected ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' : '';
         }
     });
     // Обновляем текст кнопки удаления
