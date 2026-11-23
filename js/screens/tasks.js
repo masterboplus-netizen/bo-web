@@ -6,12 +6,6 @@ let isSelectionMode = false;
 let selectedIds = new Set();
 let longPressTimer = null;
 
-function escapeHtml(text) {
-    return String(text).replace(/[&<>"']/g, function(m) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
-    });
-}
-
 export async function renderTasks() {
     if (window.setNavActive) window.setNavActive('tasks');
     const container = document.getElementById('app-content');
@@ -143,53 +137,3 @@ function toggleSelection(id) {
     
     drawTasksList();
 }
-
-// === МЕНЮ ДЕЙСТВИЙ (ТРИ ТОЧКИ) ===
-
-window.setQuickDate = function(type) {
-    const today = new Date();
-    let targetDate = new Date(today);
-
-    if (type === 'tomorrow') targetDate.setDate(today.getDate() + 1);
-    else if (type === 'plus3') targetDate.setDate(today.getDate() + 3);
-    else if (type === 'plus7') targetDate.setDate(today.getDate() + 7);
-
-    const dateStr = targetDate.toISOString().split('T')[0];
-
-    const singleInput = document.getElementById('edit-task-deadline-start');
-    const rangeStart = document.getElementById('edit-task-deadline-start-range');
-    const rangeEnd = document.getElementById('edit-task-deadline-end');
-
-    const btn = document.querySelector(`button[onclick="window.setQuickDate('${type}')"]`);
-    if (btn) {
-        const originalBg = btn.style.background;
-        const originalColor = btn.style.color;
-        btn.style.background = 'var(--accent)';
-        btn.style.color = 'white';
-        setTimeout(() => {
-            btn.style.background = originalBg;
-            btn.style.color = originalColor;
-        }, 300);
-    }
-
-    if (singleInput && singleInput.offsetParent !== null) {
-        singleInput.value = dateStr;
-    } else if (rangeStart && rangeEnd) {
-        if (!rangeStart.value) {
-            rangeStart.value = dateStr;
-        } else {
-            rangeEnd.value = dateStr;
-        }
-    }
-};
-
-window.toggleTaskStatus = async function(id, currentStatus) {
-    const newStatus = currentStatus === 'done' ? 'active' : 'done';
-    try {
-        const { error } = await db.from('tasks').update({ status: newStatus }).eq('id', id);
-        if (error) throw error;
-        window.openTaskDetail(id);
-    } catch (err) {
-        alert('Ошибка обновления статуса: ' + err.message);
-    }
-};
