@@ -3,6 +3,7 @@ import { sendMessageToDB, fetchMessages, getOrCreateBotChat, BOT_ID, CURRENT_USE
 let capsuleEl = null;
 let botChatId = null;
 let isExpanded = false;
+let isOpen = false;
 
 export async function initAssistantCapsule() {
     if (capsuleEl) return;
@@ -119,12 +120,14 @@ function collapseAssistant() {
 
 export async function showAssistant() {
     if (!capsuleEl) await initAssistantCapsule();
+    isOpen = true;
     capsuleEl.style.transform = 'translateX(0)';
     await loadHistory();
 }
 
 export function hideAssistant() {
     if (!capsuleEl) return;
+    isOpen = false;
     capsuleEl.style.transform = 'translateX(-100%)';
     collapseAssistant(); // При закрытии возвращаем в обычный вид
 }
@@ -227,5 +230,9 @@ window.openAssistantWithText = async (text) => {
 };
 
 window.openAssistant = async () => {
-    await showAssistant();
+    if (isOpen) {
+        hideAssistant();
+    } else {
+        await showAssistant();
+    }
 };
