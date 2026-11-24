@@ -35,7 +35,6 @@ export function openCameraModal() {
   let photoData = null;
   let currentTaskId = null;
 
-  // Получаем текущую задачу из localStorage (если мы в карточке задачи)
   const savedTask = localStorage.getItem('currentTaskId');
   if (savedTask) currentTaskId = parseInt(savedTask);
 
@@ -58,7 +57,6 @@ export function openCameraModal() {
     modal.remove();
     const wrapper = document.getElementById('floating-capsule-wrapper');
     if (wrapper) wrapper.style.right = '8px';
-    // Очищаем currentTaskId, чтобы следующее фото не прицепилось к старой задаче
     localStorage.removeItem('currentTaskId');
   }
 
@@ -91,19 +89,26 @@ export function openCameraModal() {
 
       const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
       
-      // Если мы в карточке задачи — сохраняем фото в task_photos
-      if (currentTaskId) {
-        await db.from('task_photos').insert([{
-          task_id: currentTaskId,
-          photo_url: urlData.publicUrl,
-          title: 'Фото от ' + new Date().toLocaleDateString('ru-RU')
+      // 1. Всегда создаем фото в базе
+      const { data: newPhoto, error: photoErr } = await db.from('task_photos').insert([{
+        photo_url: urlData.publicUrl,
+        title: 'Фото от ' + new Date().toLocaleDateString('ru-RU'),
+        category: 'none'
+      }]).select().single();
+
+      if (photoErr) throw photoErr;
+
+      // 2. Если мы в задаче — привязываем к ней
+      if (currentTaskId && newPhoto) {
+        await db.from('photo_links').insert([{
+            photo_id: newPhoto.id,
+            link_type: 'task',
+            link_id: currentTaskId
         }]);
         
         alert('Фото сохранено в задачу!');
         closeModal();
-        // Перезагружаем карточку задачи
         window.openTaskDetail(currentTaskId);
-        localStorage.removeItem('currentTaskId');
       } else {
         alert('Фото успешно загружено в облако!');
         closeModal();

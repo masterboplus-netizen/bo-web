@@ -37,7 +37,6 @@ window.uploadFromMenu = function() {
                 if (uploadError) throw uploadError;
                 const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
                 const { error: dbError } = await db.from('task_photos').insert([{
-                    task_id: null,
                     photo_url: urlData.publicUrl,
                     title: null,
                     category: 'none'
