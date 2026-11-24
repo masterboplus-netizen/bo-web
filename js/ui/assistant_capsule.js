@@ -1,5 +1,9 @@
 import { sendMessageToDB, fetchMessages, getOrCreateBotChat, BOT_ID, CURRENT_USER_ID } from '../social/api.js';
 
+const MAX_HISTORY_MSGS = 5;
+const MAX_HISTORY_CHARS = 3000;
+const CONTEXT_TIMEOUT_MIN = 15;
+
 let capsuleEl = null;
 let botChatId = null;
 let isExpanded = false;
@@ -180,7 +184,8 @@ async function processBrain(text) {
 
     try {
         if (window.MasterBossBrain && window.MasterBossBrain.handle) {
-            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1 });
+            const context = await getSmartContext();
+            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: context });
             document.getElementById('assistant-loading')?.remove();
             
             let botReply = '';

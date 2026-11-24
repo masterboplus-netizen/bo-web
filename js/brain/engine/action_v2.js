@@ -20,7 +20,21 @@ export async function executeActions(plan, context) {
         if (screen === 'tasks' && window.openTasks) { window.openTasks(); results.push({ status: 'ok', message: 'Открываю задачи' }); }
         else if (screen === 'objects' && window.openObjects) { window.openObjects(); results.push({ status: 'ok', message: 'Открываю объекты' }); }
         else if (screen === 'finance' && window.openFinance) { window.openFinance(); results.push({ status: 'ok', message: 'Открываю финансы' }); }
+        else if (screen === 'diary' && window.openDiary) { window.openDiary(); results.push({ status: 'ok', message: 'Открываю дневник' }); }
+        else if (screen === 'calendar' && window.openCalendar) { window.openCalendar(); results.push({ status: 'ok', message: 'Открываю календарь' }); }
+        else if (screen === 'photos' && window.openPhotos) { window.openPhotos(); results.push({ status: 'ok', message: 'Открываю галерею' }); }
+        else if (screen === 'menu' && window.openMenu) { window.openMenu(); results.push({ status: 'ok', message: 'Открываю меню' }); }
         else { results.push({ status: 'ok', message: 'Пока не умею открывать этот экран' }); }
+      }
+      else if (tool === 'list_objects') {
+        const { data: objects, error } = await db.from('objects').select('name').eq('tenant_id', tenant_id).limit(10);
+        if (error) throw error;
+        if (!objects || objects.length === 0) {
+          results.push({ status: 'ok', message: 'У вас пока нет объектов.' });
+        } else {
+          const names = objects.map(o => o.name).join(', ');
+          results.push({ status: 'ok', message: `Ваши объекты: ${names}` });
+        }
       }
       else if (tool === 'add_task') {
         const title = action.payload.title || 'Без названия';
