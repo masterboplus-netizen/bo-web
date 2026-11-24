@@ -55,7 +55,14 @@ async function renderChatScreen(container, chatId) {
 
     try {
         const messages = await fetchMessages(chatId);
-        let html = `<div style="display: flex; flex-direction: column; height: 100%; background: var(--bg); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10000;">
+        // Скрываем скролл у родительского контейнера, чтобы чат занял всё место
+        const appContent = document.getElementById('app-content');
+        if (appContent) {
+            appContent.style.padding = '0';
+            appContent.style.overflow = 'hidden';
+        }
+        
+        let html = `<div style="display: flex; flex-direction: column; height: calc(100vh - 80px); background: var(--bg); position: fixed; top: 80px; left: 0; right: 0; bottom: 0; z-index: 10000;">
             <div style="padding: 15px; border-bottom: 1px solid var(--border); background: var(--bg2); display: flex; align-items: center; gap: 10px; padding-top: 25px;">
                 <div onclick="window.closeChat()" style="cursor: pointer; padding: 5px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--fg)" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
                 <div style="flex: 1;"><div style="font-weight: bold; font-size: 16px;">Чат</div></div>
@@ -73,7 +80,7 @@ async function renderChatScreen(container, chatId) {
             });
         }
         html += `</div>
-            <div style="padding: 10px 15px 80px 15px; border-top: 1px solid var(--border); background: var(--bg2); display: flex; gap: 10px; align-items: center;">
+            <div style="padding: 10px 15px; border-top: 1px solid var(--border); background: var(--bg2); display: flex; gap: 10px; align-items: center;">
                 <input type="text" id="social-chat-input" placeholder="Написать..." style="flex: 1; padding: 12px 16px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg3); color: var(--fg); font-size: 15px; outline: none;">
                 <button id="social-chat-send" style="background: var(--accent); color: white; border: none; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
@@ -126,6 +133,12 @@ async function renderChatScreen(container, chatId) {
             if (currentChannel) currentChannel.unsubscribe();
             currentChannel = null;
             currentChat = null; 
+            // Восстанавливаем стили app-content
+            const appContent = document.getElementById('app-content');
+            if (appContent) {
+                appContent.style.padding = '10px 20px 20px 20px';
+                appContent.style.overflow = 'auto';
+            }
             renderUI(container); 
         };
     } catch (e) {
