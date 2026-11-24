@@ -26,7 +26,7 @@ export async function initAssistantCapsule() {
         border: 1px solid var(--border);
         border-radius: 0 20px 20px 0;
         box-shadow: 4px 0 24px rgba(0,0,0,0.6);
-        z-index: 10000;
+        z-index: 100000; /* Поднимаем выше навигации */
         display: flex;
         flex-direction: column;
         transform: translateX(-100%);
@@ -72,8 +72,6 @@ export async function initAssistantCapsule() {
         if (!text) return;
         input.value = '';
         await sendMessage('user', text);
-        // После отправки можно оставить развернутым или свернуть
-        // collapseAssistant(); 
     };
 
     sendBtn.onclick = sendText;
@@ -85,9 +83,20 @@ function expandAssistant() {
     isExpanded = true;
     capsuleEl.style.width = '100%';
     capsuleEl.style.maxWidth = '100%';
-    capsuleEl.style.height = 'calc(100vh - 100px)'; // Учитываем нижнюю навигацию
+    capsuleEl.style.height = 'calc(100vh - 80px)'; // Учитываем нижнюю навигацию
     capsuleEl.style.bottom = '80px';
     capsuleEl.style.borderRadius = '0';
+    
+    // Скрываем нижнюю навигацию и правую капсулу
+    const nav = document.querySelector('nav');
+    if (nav) nav.style.display = 'none';
+    const capsuleWrapper = document.getElementById('floating-capsule-wrapper');
+    if (capsuleWrapper) capsuleWrapper.style.display = 'none';
+    const fab = document.querySelector('.nav-add-btn');
+    if (fab) fab.style.display = 'none';
+
+    // Добавляем в историю состояние, чтобы перехватить кнопку "Назад"
+    history.pushState({ assistantOpen: true }, '');
 }
 
 function collapseAssistant() {
@@ -98,6 +107,14 @@ function collapseAssistant() {
     capsuleEl.style.height = '60vh';
     capsuleEl.style.bottom = '90px';
     capsuleEl.style.borderRadius = '0 20px 20px 0';
+
+    // Возвращаем нижнюю навигацию и правую капсулу
+    const nav = document.querySelector('nav');
+    if (nav) nav.style.display = 'flex';
+    const capsuleWrapper = document.getElementById('floating-capsule-wrapper');
+    if (capsuleWrapper) capsuleWrapper.style.display = 'flex';
+    const fab = document.querySelector('.nav-add-btn');
+    if (fab) fab.style.display = 'flex';
 }
 
 export async function showAssistant() {
@@ -111,6 +128,14 @@ export function hideAssistant() {
     capsuleEl.style.transform = 'translateX(-100%)';
     collapseAssistant(); // При закрытии возвращаем в обычный вид
 }
+
+// Слушатель для кнопки "Назад" (мобильный свайп)
+window.addEventListener('popstate', (e) => {
+    if (capsuleEl && isExpanded) {
+        collapseAssistant();
+        // Если пользователь нажал "Назад" на клавиатуре (не закрывая виджет), просто сворачиваем
+    }
+});
 
 export function addMessage(role, text) {
     if (!capsuleEl) return;
