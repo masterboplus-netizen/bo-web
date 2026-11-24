@@ -1,4 +1,5 @@
 import { db } from '../api/supabase.js';
+import { createPhoto, linkPhoto, unlinkPhoto } from '../api/photos.js';
 
 export function openCategoryPicker(callback) {
     const overlay = document.createElement('div');
@@ -63,7 +64,6 @@ export async function uploadTaskPhoto(taskId, input) {
     const files = Array.from(input.files);
     
     window.openSmartCategoryPicker(files, taskId);
-    // Сбрасываем input, чтобы можно было выбрать те же файлы снова
     input.value = '';
 }
 
@@ -74,11 +74,11 @@ export async function deleteTaskPhoto(photoId, taskId) {
     }
     window.showConfirm('Удалить это фото?', async () => {
         try {
-            const { error } = await db.from('task_photos').delete().eq('id', photoId);
-            if (error) throw error;
+            // В новой логике мы отвязываем от задачи, а не удаляем фото полностью
+            await unlinkPhoto(photoId, 'task', taskId);
             if (window.openTaskDetail && taskId) window.openTaskDetail(taskId);
         } catch (err) {
-            alert('Ошибка удаления: ' + err.message);
+            alert('Ошибка отвязки: ' + err.message);
         }
     });
 }
@@ -93,7 +93,7 @@ window.openSmartCategoryPicker = function(files, taskId) {
         { id: 'none', label: 'Без категории' }
     ];
 
-    let currentFiles = [...files]; // Копируем массив, чтобы можно было удалять
+    let currentFiles = [...files];
 
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box;';
@@ -134,7 +134,6 @@ window.openSmartCategoryPicker = function(files, taskId) {
                 </button>
             `;
             
-            // Обработчик удаления (перерисовываем список)
             row.querySelector('[data-delete]').onclick = () => {
                 currentFiles.splice(index, 1);
                 if (currentFiles.length === 0) {
@@ -154,9 +153,8 @@ window.openSmartCategoryPicker = function(files, taskId) {
     
     modal.querySelector('#smart-picker-save').onclick = async () => {
         overlay.remove();
-        // Собираем выбранные категории
         const selects = listContainer.querySelectorAll('select');
-        // Начинаем загрузку
+        
         for (let i = 0; i < currentFiles.length; i++) {
             const file = currentFiles[i];
             const category = selects[i] ? selects[i].value : 'none';
@@ -168,20 +166,17 @@ window.openSmartCategoryPicker = function(files, taskId) {
 
                 const { data: urlData } = db.storage.from('photos').getPublicUrl(fileName);
 
-                const { error: dbError } = await db.from('task_photos').insert([{
-                    task_id: taskId,
-                    photo_url: urlData.publicUrl,
-                    title: null,
-                    category: category
-                }]);
-                if (dbError) throw dbError;
+                // 1. Создаем фото в общей базе (без task_id)
+                const newPhoto = await createPhoto(urlData.publicUrl, null, category);
+
+                // 2. Привязываем к задаче через photo_links
+                await linkPhoto(newPhoto.id, 'task', taskId);
+
             } catch (err) {
                 console.error('Ошибка при загрузке файла ' + file.name + ': ', err.message);
-                // Продолжаем загрузку остальных
             }
         }
         
-        // Перерисовываем детали задачи
         if (window.openTaskDetail) window.openTaskDetail(taskId);
     };
 };
