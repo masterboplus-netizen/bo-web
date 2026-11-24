@@ -23,6 +23,15 @@ export async function openObject(objectId) {
         }
         let yandexLink = 'https://yandex.ru/maps/?text=' + encodeURIComponent(address);
         let gisLink = 'https://2gis.ru/search/' + encodeURIComponent(address);
+        
+        // Проверяем, есть ли в адресе сохраненная ссылка на Яндекс
+        if (address.includes('http')) {
+            const parts = address.split('|');
+            const possibleLink = parts.find(p => p.trim().startsWith('http'));
+            if (possibleLink) {
+                yandexLink = possibleLink.trim();
+            }
+        }
 
         const container = document.getElementById('app-content');
         container.style.paddingTop = '0'; // Убираем отступ для прилипания

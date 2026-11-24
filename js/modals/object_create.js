@@ -19,14 +19,21 @@ export function openNewObject() {
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <label style="display: block; color: var(--fg-dim);">Адрес</label>
-                    <input type="text" id="new-addr-city" placeholder="Город" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <input type="text" id="new-addr-street" placeholder="Улица" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <input type="text" id="new-addr-house" placeholder="Дом" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <input type="text" id="new-addr-block" placeholder="Корпус" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <input type="text" id="new-addr-entrance" placeholder="Подъезд" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <input type="text" id="new-addr-floor" placeholder="Этаж" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
-                    <input type="text" id="new-addr-flat" placeholder="Кв" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    <label style="display: block; color: var(--fg-dim);">Ссылка на Яндекс.Карты (необязательно)</label>
+                    <input type="text" id="new-addr-link" placeholder="https://yandex.ru/maps/-/..." style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                    
+                    <label style="display: block; color: var(--fg-dim); margin-top: 5px;">Или введите адрес вручную</label>
+                    <input type="text" id="new-addr-full" placeholder="Москва, ул. Ленина, д. 5" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; margin-bottom: 5px;">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <input type="text" id="new-addr-city" placeholder="Город" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="new-addr-street" placeholder="Улица" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="new-addr-house" placeholder="Дом" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="new-addr-block" placeholder="Корпус" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="new-addr-entrance" placeholder="Подъезд" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="new-addr-floor" placeholder="Этаж" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box;">
+                        <input type="text" id="new-addr-flat" placeholder="Кв" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; grid-column: span 2;">
+                    </div>
                 </div>
 
                 <div>
@@ -49,6 +56,7 @@ export async function saveNewObject() {
 
     const name = document.getElementById('new-obj-name').value.trim();
     const budget = document.getElementById('new-obj-budget').value;
+    const link = document.getElementById('new-addr-link').value.trim();
     
     const city = document.getElementById('new-addr-city').value.trim();
     const street = document.getElementById('new-addr-street').value.trim();
@@ -66,7 +74,13 @@ export async function saveNewObject() {
     if (entrance) parts.push('подъезд ' + entrance);
     if (floor) parts.push('этаж ' + floor);
     if (flat) parts.push('кв. ' + flat);
-    const address = parts.join(', ');
+    
+    // Если ввели ссылку, сохраняем её как адрес (или отдельным полем, если база поддерживает)
+    let address = parts.join(', ');
+    if (link) {
+        // В будущем здесь можно сохранять link в отдельное поле, но пока пихаем в конец адреса
+        address = address ? address + ' | ' + link : link;
+    }
 
     if (!name) {
         alert('Введите название объекта!');
