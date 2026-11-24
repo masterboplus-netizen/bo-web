@@ -9,7 +9,7 @@ export async function parseWithGroq(text, history = []) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${SUPABASE_KEY}`
       },
-      body: JSON.stringify({ text, history })
+      body: JSON.stringify({ text, context: { history } })
     });
     if (!response.ok) throw new Error('Ошибка Edge Function');
     const data = await response.json();
