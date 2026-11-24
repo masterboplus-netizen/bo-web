@@ -228,10 +228,10 @@ window.gallerySwitchCategory = async function(catId) {
 window.galleryDeletePhoto = function(photoId) {
     const safeId = window.safePhotoId(photoId, 'galleryDeletePhoto');
     if (!safeId) return;
-    window.showConfirm('Удалить это фото?', async () => {
+    window.showConfirm('Удалить это фото навсегда? Оно исчезнет из всех задач и альбомов.', async () => {
         try {
-            const { error } = await db.from('task_photos').delete().eq('id', safeId);
-            if (error) throw error;
+            const { deletePhotoPermanently } = await import('../api/photos.js');
+            await deletePhotoPermanently(safeId);
             window._galleryIndex = 0;
             await renderPhotos();
         } catch (err) {
