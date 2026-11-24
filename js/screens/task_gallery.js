@@ -20,18 +20,28 @@ let galleryState = {
 export async function openPhotoGallery(taskId, category, photoId) {
     try {
         const allTaskPhotos = await fetchPhotosByLink('task', taskId);
-        const catPhotos = (allTaskPhotos || []).filter(p => (p.category || 'none') === category);
         
-        if (catPhotos.length === 0) {
-            alert('В этой категории нет фото');
+        if (!allTaskPhotos || allTaskPhotos.length === 0) {
+            alert('В этой задаче пока нет фотографий');
             return;
+        }
+
+        // Ищем, есть ли фото в запрошенной категории
+        let catPhotos = allTaskPhotos.filter(p => (p.category || 'none') === category);
+        let activeCategory = category;
+
+        // Если в запрошенной категории пусто, ищем первую доступную
+        if (catPhotos.length === 0) {
+            const availableCat = allTaskPhotos[0].category || 'none';
+            catPhotos = allTaskPhotos.filter(p => (p.category || 'none') === availableCat);
+            activeCategory = availableCat;
         }
 
         galleryState = {
             taskId: taskId,
-            category: category,
+            category: activeCategory,
             photos: catPhotos,
-            allPhotos: allTaskPhotos || [],
+            allPhotos: allTaskPhotos,
             currentIndex: 0
         };
 
@@ -67,8 +77,6 @@ function renderOverlay() {
     const availableCats = categories.filter(c => 
         galleryState.allPhotos.some(p => (p.category || 'none') === c.id)
     );
-
-    const currentCat = categories.find(c => c.id === galleryState.category) || { id: 'none', label: 'Без категории' };
 
     let capsuleHtml = '<div style="display: flex; align-items: stretch; background: rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; height: 50px;">';
     availableCats.forEach(cat => {
