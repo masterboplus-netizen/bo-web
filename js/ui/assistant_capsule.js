@@ -173,6 +173,13 @@ async function sendMessage(role, text) {
     }
 }
 
+async function getSmartContext() {
+    return {
+        tenant_id: 1,
+        screen: localStorage.getItem("currentScreen") || "main"
+    };
+}
+
 async function processBrain(text) {
     const container = document.getElementById('assistant-messages');
     const loadingDiv = document.createElement('div');
