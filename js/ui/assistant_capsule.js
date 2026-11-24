@@ -191,7 +191,7 @@ async function processBrain(text) {
 
     try {
         if (window.MasterBossBrain && window.MasterBossBrain.handle) {
-            const context = await getSmartContext();
+            const context = { tenant_id: 1, object_id: 1, room_id: 5 };
             const shortHistory = context.history ? context.history.slice(-4) : [];
             const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: shortHistory });
             document.getElementById('assistant-loading')?.remove();

@@ -77,7 +77,7 @@ function startApp() {
     window.renderMainMenu();
     initAudioButton();
     setTimeout(() => initFloatingMenu(), 100);
-    // initAssistantCapsule();
+    initAssistantCapsule();
 }
 
 if (document.readyState === 'loading') {
