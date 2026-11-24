@@ -13,7 +13,7 @@ import { renderCalendar } from './screens/calendar.js';
 import { renderPhotos } from './screens/photos.js';
 import { renderObjects } from './screens/objects.js';
 import { initFloatingMenu, renderCapsule, CAPSULE_ITEMS } from './ui/floating_menu.js';
-import { initAssistantCapsule } from './ui/assistant_capsule.js';
+// import { initAssistantCapsule } from './ui/assistant_capsule.js';
 import { fetchObjects } from './api/objects.js';
 import { openAddMenu } from './modals/add_menu.js';
 import { initAudioButton } from './modals/audio_modal.js';
@@ -77,7 +77,7 @@ function startApp() {
     window.renderMainMenu();
     initAudioButton();
     setTimeout(() => initFloatingMenu(), 100);
-    initAssistantCapsule();
+    // initAssistantCapsule();
 }
 
 if (document.readyState === 'loading') {
