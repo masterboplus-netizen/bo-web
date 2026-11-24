@@ -132,6 +132,10 @@ export function hideAssistant() {
 // Слушатель для кнопки "Назад" (мобильный свайп)
 window.addEventListener('popstate', (e) => {
     if (capsuleEl && isExpanded) {
+        // Принудительно убираем фокус, чтобы клавиатура закрылась
+        if (document.activeElement && document.activeElement.blur) {
+            document.activeElement.blur();
+        }
         collapseAssistant();
         // Если пользователь нажал "Назад" на клавиатуре (не закрывая виджет), просто сворачиваем
     }
