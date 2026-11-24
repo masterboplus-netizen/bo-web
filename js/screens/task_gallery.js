@@ -9,36 +9,35 @@ window.safePhotoId = function(id, source) {
     return Number(id);
 };
 
-function escapeHtml(text) {
-    return String(text).replace(/[&<>"']/g, function(m) {
-        return {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
-        }[m];
-    });
-}
-
 window._galleryState = {
     taskId: null,
     category: null,
-    photos: [],
+    photos: [],       // Фото только текущей категории
+    allPhotos: [],    // Все фото задачи (для переключения категорий)
     currentIndex: 0
 };
 
 export async function openPhotoGallery(taskId, category, photoId) {
     try {
-        const allPhotos = await fetchPhotosByLink('task', taskId);
-        const catPhotos = (allPhotos || []).filter(p => (p.category || 'none') === category);
+        // Загружаем ВСЕ фото задачи
+        const allTaskPhotos = await fetchPhotosByLink('task', taskId);
+        
+        // Фильтруем по категории для отображения
+        const catPhotos = (allTaskPhotos || []).filter(p => (p.category || 'none') === category);
+        
         if (catPhotos.length === 0) {
             alert('В этой категории нет фото');
             return;
         }
-        window._galleryState = { taskId, category, photos: catPhotos, currentIndex: 0 };
-        const container = document.getElementById('app-content');
-        if (container) container.scrollTop = 0;
+
+        window._galleryState = {
+            taskId: taskId,
+            category: category,
+            photos: catPhotos,
+            allPhotos: allTaskPhotos || [],
+            currentIndex: 0
+        };
+
         renderGallery();
     } catch (err) {
         alert('Ошибка загрузки галереи: ' + err.message);
@@ -48,11 +47,18 @@ export async function openPhotoGallery(taskId, category, photoId) {
 export function renderGallery() {
     const state = window._galleryState;
     const container = document.getElementById('app-content');
+    
+    if (!state || !state.photos || state.photos.length === 0) {
+        if (window.openTaskDetail && state.taskId) window.openTaskDetail(state.taskId);
+        return;
+    }
+
     const currentPhoto = state.photos[state.currentIndex];
 
+    // Если индекс вышел за пределы (например, удалили фото), сбрасываем
     if (!currentPhoto) {
-        container.innerHTML = `<div style="text-align: center; color: var(--fg-dim); margin-top: 50px;">Нет фото</div>`;
-        return;
+        state.currentIndex = 0;
+        return renderGallery();
     }
 
     const categories = [
@@ -82,13 +88,11 @@ export function renderGallery() {
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                 </button>
             </div>
-            <div onclick="window.openEditPhotoTitle(${currentPhoto.id}, '${escapeHtml(currentPhoto.title || '')}')" style="background: var(--bg2); border: 1px solid var(--bg3); border-radius: 12px; padding: 12px 15px; margin-bottom: 15px; cursor: pointer;">
-                <div style="color: var(--fg-dim); font-size: 11px; margin-bottom: 3px;">Название</div>
-                <div style="color: var(--fg); font-size: 15px; font-weight: 500;">${escapeHtml(currentPhoto.title || 'Без названия')}</div>
-            </div>
+            
             <div style="position: relative; width: 100%; height: 60vh; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
                 <img src="${currentPhoto.photo_url}" style="width: 100%; height: 100%; object-fit: contain; display: block;">
             </div>
+            
             <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none;">
                 ${state.photos.map((p, idx) => `
                     <div onclick="window.galleryJumpTo(${idx})" style="flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid ${idx === state.currentIndex ? 'var(--accent)' : 'transparent'}; opacity: ${idx === state.currentIndex ? '1' : '0.6'}; transition: all 0.2s;">
@@ -96,6 +100,7 @@ export function renderGallery() {
                     </div>
                 `).join('')}
             </div>
+            
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <button onclick="window.galleryPrev()" style="flex: 1; margin-right: 10px; padding: 14px; background: var(--bg2); color: var(--fg); border: 1px solid var(--bg3); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -105,6 +110,7 @@ export function renderGallery() {
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </button>
             </div>
+
             <div style="display: flex; align-items: stretch; background: var(--bg2); border-radius: 20px; border: 1px solid var(--bg3); overflow: hidden; margin-bottom: 15px; height: 50px;">
                 <div onclick="window.gallerySwitchCategory('${prevCat.id}')" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 8px; text-align: center; color: var(--fg-dim); font-size: 12px; cursor: pointer; line-height: 1.2; overflow: hidden;">${prevCat.label}</div>
                 <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 8px; text-align: center; color: white; background: var(--accent); font-size: 12px; font-weight: bold; line-height: 1.2; overflow: hidden;">${currentCat.label}</div>
@@ -136,14 +142,22 @@ window.galleryJumpTo = function(index) {
 
 window.gallerySwitchCategory = async function(catId) {
     const state = window._galleryState;
-    try {
-        const allPhotos = await fetchPhotosByLink('task', state.taskId);
-        const catPhotos = (allPhotos || []).filter(p => (p.category || 'none') === catId);
-        window._galleryState = { taskId: state.taskId, category: catId, photos: catPhotos, currentIndex: 0 };
-        renderGallery();
-    } catch (err) {
-        alert('Ошибка: ' + err.message);
+    // Фильтруем уже загруженные фото задачи по новой категории
+    const catPhotos = (state.allPhotos || []).filter(p => (p.category || 'none') === catId);
+    
+    if (catPhotos.length === 0) {
+        alert('В этой категории нет фото');
+        return; // Остаемся на текущем экране
     }
+    
+    window._galleryState = {
+        taskId: state.taskId,
+        category: catId,
+        photos: catPhotos,
+        allPhotos: state.allPhotos,
+        currentIndex: 0
+    };
+    renderGallery();
 };
 
 window.galleryPhotoActions = function(photoId) {
@@ -169,13 +183,24 @@ window.taskGalleryUnlinkPhoto = async function(photoId) {
     const state = window._galleryState;
     if (!state || !state.taskId) { window.openPhotos(); return; }
     if (!safeId) return;
+    
     window.showConfirm('Отвязать это фото от задачи? (Оно останется в общей галерее)', async () => {
         try {
             await unlinkPhoto(safeId, 'task', state.taskId);
-            const { data: allPhotos } = await db.from('photo_links').select('photo_id, task_photos(*)').eq('link_type', 'task').eq('link_id', state.taskId);
-            const catPhotos = (allPhotos || []).map(l => l.task_photos).filter(p => p && (p.category || 'none') === state.category);
+            
+            const allTaskPhotos = await fetchPhotosByLink('task', state.taskId);
+            const catPhotos = (allTaskPhotos || []).filter(p => (p.category || 'none') === state.category);
+            
             if (catPhotos.length === 0) {
-                window.openTaskDetail(state.taskId);
+                // Если в категории не осталось фото, переключаем на первую доступную
+                if (allTaskPhotos && allTaskPhotos.length > 0) {
+                    const firstPhotoCat = allTaskPhotos[0].category || 'none';
+                    const newCatPhotos = allTaskPhotos.filter(p => (p.category || 'none') === firstPhotoCat);
+                    window._galleryState = { taskId: state.taskId, category: firstPhotoCat, photos: newCatPhotos, allPhotos: allTaskPhotos, currentIndex: 0 };
+                    renderGallery();
+                } else {
+                    window.openTaskDetail(state.taskId);
+                }
             } else {
                 window._galleryState.photos = catPhotos;
                 window._galleryState.currentIndex = Math.min(state.currentIndex, catPhotos.length - 1);
