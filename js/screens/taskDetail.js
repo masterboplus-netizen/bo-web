@@ -18,7 +18,7 @@ export async function openTaskDetail(id) {
         const { data: task, error } = await db.from('tasks').select('*').eq('id', id).single();
         if (error) throw error;
 
-        const { data: photos, error: photosError } = await db.from('task_photos').select('*').eq('task_id', id).order('created_at', { ascending: false });
+        const { data: photos, error: photosError } = await db.from('photo_links').select('photo_id, task_photos(*)').eq('link_type', 'task').eq('link_id', id).order('created_at', { ascending: false });
         if (photosError) throw photosError;
 
         const { data: logs, error: logsError } = await db.from('task_progress').select('*').eq('task_id', id).order('created_at', { ascending: false });

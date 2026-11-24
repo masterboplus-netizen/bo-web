@@ -53,7 +53,6 @@ export function openNewTask() {
                         <div id="new-task-deadline-start-range" onclick="window.openCustomCalendar('new-task-range')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">Начало</div>
                         <div id="new-task-deadline-end" onclick="window.openCustomCalendar('new-task-end')" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--fg); box-sizing: border-box; cursor: pointer; min-height: 42px; display: flex; align-items: center;">Конец</div>
                     </div>
-
                 </div>
             </div>
 
@@ -115,6 +114,7 @@ export async function saveNewTask() {
     const isSingle = single ? single.style.display !== 'none' : true;
     let dateStart = null;
     let dateEnd = null;
+    
     if (isSingle) {
         const el = document.getElementById('new-task-deadline-start');
         if (el && el.textContent !== 'Выберите дату') {
@@ -137,6 +137,7 @@ export async function saveNewTask() {
     let photoUrl = null;
     const photoInput = document.getElementById('new-task-photo');
 
+    // 1. Загружаем фото (если есть)
     if (photoInput && photoInput.files && photoInput.files[0]) {
         const file = photoInput.files[0];
         const fileName = `task_${Date.now()}_${file.name.replace(/\s/g, '_')}`;
@@ -153,17 +154,35 @@ export async function saveNewTask() {
     }
 
     try {
-        const { error } = await db.from('tasks').insert([{
+        // 2. Создаем задачу
+        const { data: newTask, error: taskError } = await db.from('tasks').insert([{
             title: title,
             description: desc || null,
             priority: priority,
             deadline_start: dateStart || null,
             deadline_end: dateEnd || null,
             status: 'active',
-            photo_url: photoUrl
-        }]);
+            photo_url: photoUrl // Оставляем для совместимости
+        }]).select().single();
 
-        if (error) throw error;
+        if (taskError) throw taskError;
+
+        // 3. Если фото было, создаем его в базе и привязываем к задаче
+        if (photoUrl && newTask) {
+            const { data: photoData, error: photoErr } = await db.from('task_photos').insert([{
+                photo_url: photoUrl,
+                category: 'none'
+            }]).select().single();
+
+            if (!photoErr && photoData) {
+                await db.from('photo_links').insert([{
+                    photo_id: photoData.id,
+                    link_type: 'task',
+                    link_id: newTask.id
+                }]);
+            }
+        }
+
         window.openTasks();
     } catch (err) {
         alert('Ошибка сохранения: ' + err.message);
