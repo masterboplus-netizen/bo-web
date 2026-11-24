@@ -11,7 +11,13 @@ window.safePhotoId = function(id, source) {
 
 function escapeHtml(text) {
     return String(text).replace(/[&<>"']/g, function(m) {
-        return { '&': '&', '<': '<', '>': '>', '"': '"', "'": ''' }[m];
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[m];
     });
 }
 
