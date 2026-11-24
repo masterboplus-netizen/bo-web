@@ -17,6 +17,11 @@ export function applyRules(text) {
   const t = text.toLowerCase().trim();
   const intents = [];
 
+  // 0. СПИСОК ОБЪЕКТОВ (вывод текстом)
+  if (t.includes("список объектов") || t.includes("покажи объекты") || t.includes("мои объекты")) {
+    return [{ intent: "list_objects", confidence: 0.9, slots: {} }];
+  }
+
   // 1. НАВИГАЦИЯ (открытие экранов)
   const navMatch = t.match(/(?:открой|покажи|перейди|зайди|открыть|показать)\s*(?:в\s*)?(объекты|задачи|финансы|дневник|календарь|галерею|меню)/i);
   if (navMatch) {
