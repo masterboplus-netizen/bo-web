@@ -52,7 +52,9 @@ export function renderChat(container) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
     try {
-      const result = await MasterBossBrain.handle(text, { tenant_id: 1, history: chatHistory });
+      // Ограничиваем историю до 4 последних сообщений (2 пары), чтобы не жечь токены
+      const shortHistory = chatHistory.slice(-4);
+      const result = await MasterBossBrain.handle(text, { tenant_id: 1, history: shortHistory });
       document.getElementById('chat-loading')?.remove();
 
       if (result.status === 'error') {
