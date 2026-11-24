@@ -59,6 +59,7 @@ export function renderChat(container) {
 
       if (result.status === 'error') {
         addMessage('⚠️ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка'), false);
+        console.log('[DEBUG] Результат от мозга:', result); // ВЫВОДИМ ОТЛАДКУ В КОНСОЛЬ
         return;
       }
 
