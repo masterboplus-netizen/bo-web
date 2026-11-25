@@ -170,15 +170,17 @@ async function renderChatScreen(container, chatId) {
             botDiv.innerHTML = botResponse;
             history.appendChild(botDiv);
             history.scrollTop = history.scrollHeight;
-            await sendMessageToDB(chatId, BOT_ID, botResponse);
-
-            // Если это навигация, закрываем чат
-            if (result.results && result.results.some(r => r.message && r.message.includes('Открываю'))) {
+            
+            // Если пользователь просит открыть вкладку - закрываем чат
+            if (text.toLowerCase().includes('открой') || text.toLowerCase().includes('покажи')) {
                 setTimeout(() => {
                     if (window.closeChat) window.closeChat();
-                }, 500);
+                }, 1000);
             }
 
+            await sendMessageToDB(chatId, BOT_ID, botResponse);
+
+            
         };
 
         window.closeChat = () => { 
