@@ -171,6 +171,14 @@ async function renderChatScreen(container, chatId) {
             history.appendChild(botDiv);
             history.scrollTop = history.scrollHeight;
             await sendMessageToDB(chatId, BOT_ID, botResponse);
+
+            // Если это навигация, закрываем чат
+            if (result.results && result.results.some(r => r.message && r.message.includes('Открываю'))) {
+                setTimeout(() => {
+                    if (window.closeChat) window.closeChat();
+                }, 500);
+            }
+
         };
 
         window.closeChat = () => { 
