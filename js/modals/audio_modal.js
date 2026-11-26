@@ -117,19 +117,24 @@ function hideDrawer() {
 
 async function processAudio(audioBlob) {
     try {
-        // 1. Отправляем аудио в Groq (Whisper)
         const formData = new FormData();
         formData.append('file', audioBlob, 'audio.webm');
-        formData.append('model', 'whisper-large-v3');
-        formData.append('language', 'ru');
 
-        const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+        const SUPABASE_URL = "https://ruomhtlvyqmaqhqqsfqn.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1b21odGx2eXFtYXFocXFzZnFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzOTQwMjUsImV4cCI6MjEwODk3MDAyNX0.7FWm5KVmMqyVxNjXMhcGhgzb6nD8aLfie7cxBlohIO4";
+
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/voice-task`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${window.GROQ_API_KEY}` },
+            headers: { 
+                'Authorization': `Bearer ${SUPABASE_KEY}`
+            },
             body: formData
         });
 
-        if (!response.ok) throw new Error('Groq API error: ' + response.status);
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error('Voice Task error: ' + errText);
+        }
 
         const data = await response.json();
         const text = data.text;
@@ -139,11 +144,15 @@ async function processAudio(audioBlob) {
             return;
         }
 
-        // 2. Отправляем текст в виджет Бо
         if (window.openAssistantWithText) {
             window.openAssistantWithText(text);
+        } else if (window.MasterBossBrain && window.MasterBossBrain.handle) {
+            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1 });
+            if (result.results && result.results.length > 0) {
+                alert(result.results.map(r => r.message).join('\n'));
+            }
         } else {
-            console.error('Ошибка: window.openAssistantWithText не найден');
+            console.error('Ошибка: ни openAssistantWithText, ни MasterBossBrain не найдены');
         }
     } catch (e) {
         console.error('Ошибка обработки аудио:', e);
