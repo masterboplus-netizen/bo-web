@@ -11,7 +11,7 @@ let isOpen = false;
 
 export async function initAssistantCapsule() {
     if (capsuleEl) return;
-    
+
     try {
         botChatId = await getOrCreateBotChat();
     } catch (e) {
@@ -31,7 +31,7 @@ export async function initAssistantCapsule() {
         border: 1px solid var(--border);
         border-radius: 0 20px 20px 0;
         box-shadow: 4px 0 24px rgba(0,0,0,0.6);
-        z-index: 100000; /* Поднимаем выше навигации */
+        z-index: 100000;
         display: flex;
         flex-direction: column;
         transform: translateX(-100%);
@@ -61,10 +61,8 @@ export async function initAssistantCapsule() {
     const input = document.getElementById('assistant-input');
     const sendBtn = document.getElementById('assistant-send');
 
-    // Разворачиваем при фокусе на поле ввода
     input.onfocus = () => expandAssistant();
     input.onblur = () => {
-        // Не сворачиваем сразу, чтобы можно было нажать кнопку отправки
         setTimeout(() => {
             if (document.activeElement !== input && document.activeElement !== sendBtn) {
                 collapseAssistant();
@@ -88,11 +86,10 @@ function expandAssistant() {
     isExpanded = true;
     capsuleEl.style.width = '100%';
     capsuleEl.style.maxWidth = '100%';
-    capsuleEl.style.height = 'calc(100vh - 80px)'; // Учитываем нижнюю навигацию
+    capsuleEl.style.height = 'calc(100vh - 80px)';
     capsuleEl.style.bottom = '80px';
     capsuleEl.style.borderRadius = '0';
-    
-    // Скрываем нижнюю навигацию и правую капсулу
+
     const nav = document.querySelector('nav');
     if (nav) nav.style.display = 'none';
     const capsuleWrapper = document.getElementById('floating-capsule-wrapper');
@@ -100,7 +97,6 @@ function expandAssistant() {
     const fab = document.querySelector('.nav-add-btn');
     if (fab) fab.style.display = 'none';
 
-    // Добавляем в историю состояние, чтобы перехватить кнопку "Назад"
     history.pushState({ assistantOpen: true }, '');
 }
 
@@ -113,7 +109,6 @@ function collapseAssistant() {
     capsuleEl.style.bottom = '90px';
     capsuleEl.style.borderRadius = '0 20px 20px 0';
 
-    // Возвращаем нижнюю навигацию и правую капсулу
     const nav = document.querySelector('nav');
     if (nav) nav.style.display = 'flex';
     const capsuleWrapper = document.getElementById('floating-capsule-wrapper');
@@ -126,26 +121,25 @@ export async function showAssistant() {
     if (!capsuleEl) await initAssistantCapsule();
     isOpen = true;
     capsuleEl.style.transform = 'translateX(0)';
+    if (!botChatId) {
+        try { botChatId = await getOrCreateBotChat(); } catch (e) { console.error('Ошибка получения чата:', e); }
+    }
     await loadHistory();
 }
 
 export function hideAssistant() {
     if (!capsuleEl) return;
-    if (!capsuleEl) return;
     isOpen = false;
     capsuleEl.style.transform = 'translateX(-100%)';
-    collapseAssistant(); // При закрытии возвращаем в обычный вид
+    collapseAssistant();
 }
 
-// Слушатель для кнопки "Назад" (мобильный свайп)
 window.addEventListener('popstate', (e) => {
     if (capsuleEl && isExpanded) {
-        // Принудительно убираем фокус, чтобы клавиатура закрылась
         if (document.activeElement && document.activeElement.blur) {
             document.activeElement.blur();
         }
         collapseAssistant();
-        // Если пользователь нажал "Назад" на клавиатуре (не закрывая виджет), просто сворачиваем
     }
 });
 
@@ -196,7 +190,7 @@ async function processBrain(text) {
             const shortHistory = context.history ? context.history.slice(-4) : [];
             const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: shortHistory });
             document.getElementById('assistant-loading')?.remove();
-            
+
             let botReply = '';
             if (result.status === 'error') {
                 botReply = '❌ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка');
@@ -224,7 +218,7 @@ async function loadHistory() {
         const container = document.getElementById('assistant-messages');
         if (!container) return;
         container.innerHTML = '';
-        
+
         if (!messages || messages.length === 0) {
             addMessage('bot', 'Привет! Я Бо. Чем могу помочь?');
         } else {
