@@ -1,3 +1,4 @@
+import { db } from '../api/supabase.js';
 import { sendMessageToDB, fetchMessages, getOrCreateBotChat, BOT_ID, CURRENT_USER_ID } from '../social/api.js';
 
 const MAX_HISTORY_MSGS = 5;
@@ -8,6 +9,7 @@ let capsuleEl = null;
 let botChatId = null;
 let isExpanded = false;
 let isOpen = false;
+let pendingAction = null; // Для подтверждения удаления
 
 export async function initAssistantCapsule() {
     if (capsuleEl) return;
@@ -184,14 +186,60 @@ async function processBrain(text) {
     container.appendChild(loadingDiv);
     container.scrollTop = container.scrollHeight;
 
+    // --- ОБРАБОТКА ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ ---
+    if (pendingAction && pendingAction.type === 'delete_object') {
+        const lower = text.toLowerCase().trim();
+        if (lower === 'да' || lower === 'удали' || lower === 'подтверждаю' || lower === 'yes') {
+            document.getElementById('assistant-loading')?.remove();
+            try {
+                const result = await window.MasterBossBrain.execute(
+                    { status: 'ok', actions: [{ tool: 'delete_object', payload: { name: pendingAction.name } }] },
+                    { tenant_id: 1 }
+                );
+                const msg = result.results?.[0]?.message || 'Готово';
+                await sendMessage('bot', msg);
+            } catch (e) {
+                await sendMessage('bot', '❌ Ошибка удаления: ' + e.message);
+            }
+            pendingAction = null;
+            return;
+        } else if (lower === 'нет' || lower === 'отмена' || lower === 'no') {
+            document.getElementById('assistant-loading')?.remove();
+            await sendMessage('bot', 'Удаление отменено.');
+            pendingAction = null;
+            return;
+        }
+    }
+    // -----------------------------------------
+
     try {
         if (window.MasterBossBrain && window.MasterBossBrain.handle) {
-            const context = { tenant_id: 1, object_id: 1, room_id: 5 };
-            const shortHistory = context.history ? context.history.slice(-4) : [];
-            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: shortHistory });
+            // Берем последние 10 сообщений прямо из БД
+            let historyData = [];
+            if (botChatId) {
+                const { data } = await db.from('messages').select('sender_id, text').eq('chat_id', botChatId).order('created_at', { ascending: false }).limit(10);
+                if (data) historyData = data.reverse().map(m => ({ role: m.sender_id === CURRENT_USER_ID ? 'user' : 'assistant', text: m.text }));
+            }
+            
+            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: historyData });
             document.getElementById('assistant-loading')?.remove();
 
             let botReply = '';
+            
+            // Если это запрос на удаление — сохраняем в pendingAction и спрашиваем подтверждение
+            if (result.status === 'ok' && result.actions) {
+                const delAction = result.actions.find(a => a.tool === 'delete_object');
+                if (delAction && delAction.payload) {
+                    const name = delAction.payload.name || delAction.payload.object_name;
+                    if (name) {
+                        pendingAction = { type: 'delete_object', name: name };
+                        document.getElementById('assistant-loading')?.remove();
+                        await sendMessage('bot', `Вы уверены, что хотите удалить объект "${name}"? Напишите "Да" для подтверждения или "Нет" для отмены.`);
+                        return;
+                    }
+                }
+            }
+
             if (result.status === 'error') {
                 botReply = '❌ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка');
             } else if (result.results && result.results.length > 0) {

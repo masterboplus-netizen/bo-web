@@ -88,6 +88,30 @@ export async function executeActions(plan, context) {
         
         results.push({ status: 'ok', message: `Расход добавлен: ${action.payload.amount}` });
       }
+      else if (tool === 'delete_object') {
+        const name = (action.payload.name || action.payload.object_name || '').trim();
+        if (!name) {
+          results.push({ status: 'error', message: 'Не указано название объекта для удаления' });
+        } else {
+          const { data: existing, error: checkErr } = await db
+            .from('objects')
+            .select('id, name')
+            .eq('tenant_id', tenant_id)
+            .ilike('name', name)
+            .limit(1);
+
+          if (checkErr) throw checkErr;
+
+          if (existing && existing.length > 0) {
+            const obj = existing[0];
+            const { error: delErr } = await db.from('objects').delete().eq('id', obj.id);
+            if (delErr) throw delErr;
+            results.push({ status: 'ok', message: `Объект "${obj.name}" удален.` });
+          } else {
+            results.push({ status: 'error', message: `Объект "${name}" не найден.` });
+          }
+        }
+      }
       else if (tool === 'create_object') {
         const name = (action.payload.name || 'Новый объект').trim();
 
