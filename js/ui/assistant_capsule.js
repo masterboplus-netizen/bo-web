@@ -214,10 +214,10 @@ async function processBrain(text) {
 async function loadHistory() {
     if (!botChatId) return;
     try {
-        const messages = await fetchMessages(botChatId);
+        const messages = await fetchMessages(botChatId); console.log("[DIAG-2] chatId =", botChatId); console.log("[DIAG-2] count =", messages ? messages.length : null); console.table((messages || []).slice(0, 5)); console.log("[DIAG-2] chatId =", botChatId); console.log("[DIAG-2] count =", messages?messages.length:null); console.table((messages||[]).slice(0,5));
         const container = document.getElementById('assistant-messages');
         if (!container) return;
-        container.innerHTML = '';
+        console.log('[DIAG-4] container found =', !!document.getElementById('assistant-messages')); container.innerHTML = '';
 
         if (!messages || messages.length === 0) {
             addMessage('bot', 'Привет! Я Бо. Чем могу помочь?');
