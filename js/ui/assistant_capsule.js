@@ -12,21 +12,8 @@ let isOpen = false;
 export async function initAssistantCapsule() {
     if (capsuleEl) return;
 
-    // Перехват логов для вывода на экран
-    const origLog = console.log;
-    console.log = function(...args) {
-        origLog.apply(console, args);
-        if (args[0] && typeof args[0] === 'string' && args[0].includes('[DIAG-')) {
-            const d = document.createElement('div');
-            d.style.cssText = 'position:fixed; top:50px; left:10px; right:10px; z-index:999999; background:#f00; color:#fff; font-size:12px; padding:10px; word-wrap:break-word;';
-            d.textContent = args.join(' ');
-            document.body.appendChild(d);
-            setTimeout(() => d.remove(), 10000);
-        }
-    };
-
     try {
-        botChatId = await getOrCreateBotChat(); console.log('[DIAG-1] botChatId =', botChatId);
+        botChatId = await getOrCreateBotChat();
     } catch (e) {
         console.error('Ошибка получения чата Бо:', e);
     }
@@ -135,7 +122,7 @@ export async function showAssistant() {
     isOpen = true;
     capsuleEl.style.transform = 'translateX(0)';
     if (!botChatId) {
-        try { botChatId = await getOrCreateBotChat(); console.log('[DIAG-1] botChatId =', botChatId); } catch (e) { console.error('Ошибка получения чата:', e); }
+        try { botChatId = await getOrCreateBotChat(); } catch (e) { console.error('Ошибка получения чата:', e); }
     }
     await loadHistory();
 }
@@ -227,10 +214,10 @@ async function processBrain(text) {
 async function loadHistory() {
     if (!botChatId) return;
     try {
-        const messages = await fetchMessages(botChatId); console.log("[DIAG-2] chatId =", botChatId); console.log("[DIAG-2] count =", messages ? messages.length : null); console.table((messages || []).slice(0, 5)); console.log("[DIAG-2] chatId =", botChatId); console.log("[DIAG-2] count =", messages?messages.length:null); console.table((messages||[]).slice(0,5));
+        const messages = await fetchMessages(botChatId);
         const container = document.getElementById('assistant-messages');
         if (!container) return;
-        console.log('[DIAG-4] container found =', !!document.getElementById('assistant-messages')); container.innerHTML = '';
+        container.innerHTML = '';
 
         if (!messages || messages.length === 0) {
             addMessage('bot', 'Привет! Я Бо. Чем могу помочь?');
@@ -241,8 +228,7 @@ async function loadHistory() {
             });
         }
     } catch (e) {
-        console.error('[DIAG-5] Ошибка загрузки истории:', e);
-        addMessage('bot', 'ОШИБКА ИСТОРИИ: ' + e.message);
+        console.error('Ошибка загрузки истории:', e);
     }
 }
 

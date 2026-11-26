@@ -53,7 +53,7 @@ async function renderChatScreen(container, chatId) {
     }
 
     try {
-        console.log('[DIAG-3] social chatId =', chatId); const messages = await fetchMessages(chatId);
+        const messages = await fetchMessages(chatId);
         const appContent = document.getElementById('app-content');
         if (appContent) {
             appContent.style.padding = '0';
