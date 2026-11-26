@@ -5,3 +5,13 @@ export function normalizeText(text) {
   for (const [word, num] of Object.entries(numbers)) t = t.replace(new RegExp(`\\b${word}\\b`, 'gi'), num);
   return t;
 }
+
+
+// Приводит имя к "Красивому Виду": каждое слово с заглавной
+export function capitalizeName(name) {
+  if (!name) return '';
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/(^|\s|[-(])(\p{L})/gu, (m, p1, p2) => p1 + p2.toUpperCase());
+}

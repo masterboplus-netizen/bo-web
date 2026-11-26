@@ -1,3 +1,5 @@
+import { capitalizeName } from './normalize.js';
+
 // Универсальный реестр обязательных полей (слотов)
 const REQUIRED_SLOTS = {
     'create_object': ['name'],
@@ -41,7 +43,7 @@ export function applyRules(text) {
 
   // 2. ЗАДАЧИ
   if (t.includes('создай задачу') || t.includes('добавь задачу') || t.includes('новая задача')) {
-    const title = original.replace(/(?:создай|добавь|новая)\s*задачу\s*/i, '').trim();
+    const title = capitalizeName(original.replace(/(?:создай|добавь|новая)\s*задачу\s*/i, '').trim());
     const slots = { title };
     if (!checkSlots('add_task', slots)) {
         return [{ intent: 'unknown', confidence: 0.1, slots: { raw: text } }];
@@ -52,7 +54,7 @@ export function applyRules(text) {
 
   // 3. ОБЪЕКТЫ
   if (t.includes('создай объект') || t.includes('добавь объект') || t.includes('новый объект')) {
-    const name = original.replace(/(?:создай|добавь|новый)\s*объект\s*/i, '').trim();
+    const name = capitalizeName(original.replace(/(?:создай|добавь|новый)\s*объект\s*/i, '').trim());
     const slots = { name };
     if (!checkSlots('create_object', slots)) {
         return [{ intent: 'unknown', confidence: 0.1, slots: { raw: text } }];
