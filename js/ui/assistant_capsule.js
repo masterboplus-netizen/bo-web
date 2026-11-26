@@ -212,6 +212,31 @@ async function processBrain(text) {
     }
     // -----------------------------------------
 
+    // Проверка подтверждения удаления
+    if (pendingAction && pendingAction.type === 'delete_object') {
+        const lower = text.toLowerCase().trim();
+        if (lower === 'да' || lower === 'удали' || lower === 'подтверждаю') {
+            document.getElementById('assistant-loading')?.remove();
+            try {
+                const res = await window.MasterBossBrain.execute(
+                    { status: 'ok', actions: [{ tool: 'delete_object', payload: { name: pendingAction.name } }] },
+                    { tenant_id: 1 }
+                );
+                const msg = res.results?.[0]?.message || 'Объект удален.';
+                await sendMessage('bot', msg);
+            } catch (e) {
+                await sendMessage('bot', '❌ Ошибка удаления: ' + e.message);
+            }
+            pendingAction = null;
+            return;
+        } else if (lower === 'нет' || lower === 'отмена') {
+            document.getElementById('assistant-loading')?.remove();
+            await sendMessage('bot', 'Удаление отменено.');
+            pendingAction = null;
+            return;
+        }
+    }
+
     try {
         if (window.MasterBossBrain && window.MasterBossBrain.handle) {
             // Берем последние 10 сообщений прямо из БД
