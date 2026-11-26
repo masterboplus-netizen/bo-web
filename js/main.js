@@ -89,7 +89,7 @@ if (document.readyState === 'loading') {
 window.openCalendar = function() { saveCurrentScreen('calendar'); renderCalendar(); };
 window.openPhotos = function() { saveCurrentScreen('photos'); renderPhotos(); };
 window.openDiary = function() { saveCurrentScreen('diary'); renderDiary(); };
-window.openSocial = function() { saveCurrentScreen('social'); renderSocialScreen(); };
+window.openSocial = function() { saveCurrentScreen('social'); setNavActive(''); renderSocialScreen(); };
 window.openNotepad = function() { saveCurrentScreen('notepad'); renderNotepad(); };
 window.saveCurrentScreen = saveCurrentScreen;
 window.openFinance = function() { saveCurrentScreen('finance'); renderFinance(); };
