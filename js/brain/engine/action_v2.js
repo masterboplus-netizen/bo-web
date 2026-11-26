@@ -167,7 +167,6 @@ export async function executeActions(plan, context) {
           }
         }
 
-        if (checkErr) throw checkErr;
 
         if (existing && existing.length > 0) {
           const dup = existing[0].name;
