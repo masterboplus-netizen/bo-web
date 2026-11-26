@@ -13,7 +13,7 @@ export async function initAssistantCapsule() {
     if (capsuleEl) return;
 
     try {
-        botChatId = await getOrCreateBotChat();
+        botChatId = await getOrCreateBotChat(); console.log('[DIAG-1] botChatId =', botChatId);
     } catch (e) {
         console.error('Ошибка получения чата Бо:', e);
     }
@@ -122,7 +122,7 @@ export async function showAssistant() {
     isOpen = true;
     capsuleEl.style.transform = 'translateX(0)';
     if (!botChatId) {
-        try { botChatId = await getOrCreateBotChat(); } catch (e) { console.error('Ошибка получения чата:', e); }
+        try { botChatId = await getOrCreateBotChat(); console.log('[DIAG-1] botChatId =', botChatId); } catch (e) { console.error('Ошибка получения чата:', e); }
     }
     await loadHistory();
 }
@@ -228,7 +228,7 @@ async function loadHistory() {
             });
         }
     } catch (e) {
-        console.error('Ошибка загрузки истории:', e);
+        console.error('[DIAG-5] Ошибка загрузки истории:', e);
     }
 }
 
