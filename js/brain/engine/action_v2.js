@@ -106,25 +106,27 @@ export async function executeActions(plan, context) {
         } else {
           let existing = [];
           // Ищем точное совпадение
-          const { data: exactMatch } = await db
+          const { data: exactMatch, error: err1 } = await db
             .from('objects')
             .select('id, name')
             .eq('tenant_id', tenant_id)
             .ilike('name', name)
             .limit(1);
           
+          if (err1) throw err1;
           existing = exactMatch || [];
           
           // Если не нашли, ищем визуального двойника
           if (existing.length === 0) {
             const twin = getVisualTwins(name);
             if (twin !== name) {
-              const { data: twinMatch } = await db
+              const { data: twinMatch, error: err2 } = await db
                 .from('objects')
                 .select('id, name')
                 .eq('tenant_id', tenant_id)
                 .ilike('name', twin)
                 .limit(1);
+              if (err2) throw err2;
               existing = twinMatch || [];
             }
           }
@@ -145,24 +147,26 @@ export async function executeActions(plan, context) {
 
         // Проверка дубля (без учёта регистра)
         let existing = [];
-        const { data: exactMatch } = await db
+        const { data: exactMatch, error: err1 } = await db
           .from('objects')
           .select('id, name')
           .eq('tenant_id', tenant_id)
           .ilike('name', name)
           .limit(1);
         
+        if (err1) throw err1;
         existing = exactMatch || [];
         
         if (existing.length === 0) {
           const twin = getVisualTwins(name);
           if (twin !== name) {
-            const { data: twinMatch } = await db
+            const { data: twinMatch, error: err2 } = await db
               .from('objects')
               .select('id, name')
               .eq('tenant_id', tenant_id)
               .ilike('name', twin)
               .limit(1);
+            if (err2) throw err2;
             existing = twinMatch || [];
           }
         }
