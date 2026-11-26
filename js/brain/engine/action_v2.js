@@ -1,5 +1,16 @@
 import { db } from '../../api/supabase.js';
 
+
+// Генерирует варианты написания (кириллица <-> латиница)
+function getVisualTwins(str) {
+  const map = { 'а':'a','е':'e','о':'o','р':'p','с':'c','у':'y','х':'x','А':'A','Е':'E','О':'O','Р':'P','С':'C','У':'Y','Х':'X' };
+  let twin = '';
+  for (let i = 0; i < str.length; i++) {
+    twin += map[str[i]] || str[i];
+  }
+  return twin;
+}
+
 export async function executeActions(plan, context) {
   const results = [];
   const tenant_id = context.tenant_id || 1;
@@ -93,11 +104,12 @@ export async function executeActions(plan, context) {
         if (!name) {
           results.push({ status: 'error', message: 'Не указано название объекта для удаления' });
         } else {
+          const twin = getVisualTwins(name);
           const { data: existing, error: checkErr } = await db
             .from('objects')
             .select('id, name')
             .eq('tenant_id', tenant_id)
-            .ilike('name', name)
+            .or(`name.ilike.${name},name.ilike.${twin}`)
             .limit(1);
 
           if (checkErr) throw checkErr;
@@ -116,11 +128,12 @@ export async function executeActions(plan, context) {
         const name = (action.payload.name || 'Новый объект').trim();
 
         // Проверка дубля (без учёта регистра)
+        const twin = getVisualTwins(name);
         const { data: existing, error: checkErr } = await db
           .from('objects')
           .select('id, name')
           .eq('tenant_id', tenant_id)
-          .ilike('name', name)
+          .or(`name.ilike.${name},name.ilike.${twin}`)
           .limit(1);
 
         if (checkErr) throw checkErr;
