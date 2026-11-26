@@ -14,6 +14,7 @@ function checkSlots(intentName, slots) {
 }
 
 export function applyRules(text) {
+  const original = text.trim();
   const t = text.toLowerCase().trim();
   const intents = [];
 
@@ -40,7 +41,7 @@ export function applyRules(text) {
 
   // 2. ЗАДАЧИ
   if (t.includes('создай задачу') || t.includes('добавь задачу') || t.includes('новая задача')) {
-    const title = t.replace(/(?:создай|добавь|новая)\s*задачу\s*/i, '').trim();
+    const title = original.replace(/(?:создай|добавь|новая)\s*задачу\s*/i, '').trim();
     const slots = { title };
     if (!checkSlots('add_task', slots)) {
         return [{ intent: 'unknown', confidence: 0.1, slots: { raw: text } }];
@@ -51,7 +52,7 @@ export function applyRules(text) {
 
   // 3. ОБЪЕКТЫ
   if (t.includes('создай объект') || t.includes('добавь объект') || t.includes('новый объект')) {
-    const name = t.replace(/(?:создай|добавь|новый)\s*объект\s*/i, '').trim();
+    const name = original.replace(/(?:создай|добавь|новый)\s*объект\s*/i, '').trim();
     const slots = { name };
     if (!checkSlots('create_object', slots)) {
         return [{ intent: 'unknown', confidence: 0.1, slots: { raw: text } }];
@@ -88,7 +89,12 @@ export function applyRules(text) {
   const expenseMatch = t.match(/(?:потратил|купил|оплатил|расход|трата)\s*(\d+)?\s*(?:на\s+)?(.+)?/i);
   if (expenseMatch) {
       const amount = expenseMatch[1] ? parseInt(expenseMatch[1]) : null;
-      const category = expenseMatch[2] ? expenseMatch[2].trim() : 'Прочее';
+      let category = expenseMatch[2] ? expenseMatch[2].trim() : 'Прочее';
+      // Восстанавливаем регистр категории из оригинала
+      if (category && category !== 'Прочее') {
+          const idx = original.toLowerCase().indexOf(category.toLowerCase());
+          if (idx !== -1) { category = original.slice(idx, idx + category.length); }
+      }
       const slots = { amount, category };
       if (!checkSlots('add_expense', slots)) {
           return [{ intent: 'unknown', confidence: 0.1, slots: { raw: text } }];

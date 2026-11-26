@@ -10,7 +10,7 @@ export async function understand(text, context) {
   if (intents.length === 1 && intents[0].intent === 'unknown') {
     try {
       // Идем в Edge Function brain-parse (она обновлена и умеет историю)
-      const groqIntents = await parseWithGroqEdge(cleanText, history);
+      const groqIntents = await parseWithGroqEdge(text, history);
       console.log('[DEBUG] Ответ от Groq:', groqIntents); // ОТЛАДКА
       if (groqIntents && groqIntents.length > 0) {
         intents = groqIntents;
