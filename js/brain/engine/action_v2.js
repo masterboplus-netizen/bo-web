@@ -19,6 +19,9 @@ export async function executeActions(plan, context) {
         const screen = action.payload.screen;
         const navMsg = (msg) => results.push({ status: 'ok', message: msg, is_navigation: true });
 
+        // Закрываем ассистента перед переходом
+        if (window.hideAssistant) window.hideAssistant();
+
         if (screen === 'tasks' && window.openTasks) { window.openTasks(); navMsg('Открываю задачи'); }
         else if (screen === 'objects' && window.openObjects) { window.openObjects(); navMsg('Открываю объекты'); }
         else if (screen === 'finance' && window.openFinance) { window.openFinance(); navMsg('Открываю финансы'); }
