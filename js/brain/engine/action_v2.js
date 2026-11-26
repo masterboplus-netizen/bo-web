@@ -104,13 +104,30 @@ export async function executeActions(plan, context) {
         if (!name) {
           results.push({ status: 'error', message: 'Не указано название объекта для удаления' });
         } else {
-          const twin = getVisualTwins(name);
-          const { data: existing, error: checkErr } = await db
+          let existing = [];
+          // Ищем точное совпадение
+          const { data: exactMatch } = await db
             .from('objects')
             .select('id, name')
             .eq('tenant_id', tenant_id)
-            .or(`name.ilike.${name},name.ilike.${twin}`)
+            .ilike('name', name)
             .limit(1);
+          
+          existing = exactMatch || [];
+          
+          // Если не нашли, ищем визуального двойника
+          if (existing.length === 0) {
+            const twin = getVisualTwins(name);
+            if (twin !== name) {
+              const { data: twinMatch } = await db
+                .from('objects')
+                .select('id, name')
+                .eq('tenant_id', tenant_id)
+                .ilike('name', twin)
+                .limit(1);
+              existing = twinMatch || [];
+            }
+          }
 
           if (checkErr) throw checkErr;
 
@@ -128,13 +145,28 @@ export async function executeActions(plan, context) {
         const name = (action.payload.name || 'Новый объект').trim();
 
         // Проверка дубля (без учёта регистра)
-        const twin = getVisualTwins(name);
-        const { data: existing, error: checkErr } = await db
+        let existing = [];
+        const { data: exactMatch } = await db
           .from('objects')
           .select('id, name')
           .eq('tenant_id', tenant_id)
-          .or(`name.ilike.${name},name.ilike.${twin}`)
+          .ilike('name', name)
           .limit(1);
+        
+        existing = exactMatch || [];
+        
+        if (existing.length === 0) {
+          const twin = getVisualTwins(name);
+          if (twin !== name) {
+            const { data: twinMatch } = await db
+              .from('objects')
+              .select('id, name')
+              .eq('tenant_id', tenant_id)
+              .ilike('name', twin)
+              .limit(1);
+            existing = twinMatch || [];
+          }
+        }
 
         if (checkErr) throw checkErr;
 
