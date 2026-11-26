@@ -89,9 +89,31 @@ export async function executeActions(plan, context) {
         results.push({ status: 'ok', message: `Расход добавлен: ${action.payload.amount}` });
       }
       else if (tool === 'create_object') {
-        const name = action.payload.name || 'Новый объект';
-        await db.from('objects').insert([{ name: name, tenant_id }]);
-        results.push({ status: 'ok', message: `Объект создан: ${name}` });
+        const name = (action.payload.name || 'Новый объект').trim();
+
+        // Проверка дубля (без учёта регистра)
+        const { data: existing, error: checkErr } = await db
+          .from('objects')
+          .select('id, name')
+          .eq('tenant_id', tenant_id)
+          .ilike('name', name)
+          .limit(1);
+
+        if (checkErr) throw checkErr;
+
+        if (existing && existing.length > 0) {
+          const dup = existing[0].name;
+          results.push({
+            status: 'ok',
+            message: `Объект "${dup}" уже есть. Выбери вариант ниже или напиши другое название.`,
+            duplicate: true,
+            original_name: dup
+          });
+        } else {
+          const { error: insErr } = await db.from('objects').insert([{ name: name, tenant_id }]);
+          if (insErr) throw insErr;
+          results.push({ status: 'ok', message: `Объект создан: ${name}` });
+        }
       }
       else {
         results.push({ status: 'error', message: `Инструмент ${tool} пока не подключен` });
