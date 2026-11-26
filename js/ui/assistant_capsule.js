@@ -12,6 +12,19 @@ let isOpen = false;
 export async function initAssistantCapsule() {
     if (capsuleEl) return;
 
+    // Перехват логов для вывода на экран
+    const origLog = console.log;
+    console.log = function(...args) {
+        origLog.apply(console, args);
+        if (args[0] && typeof args[0] === 'string' && args[0].includes('[DIAG-')) {
+            const d = document.createElement('div');
+            d.style.cssText = 'position:fixed; top:50px; left:10px; right:10px; z-index:999999; background:#f00; color:#fff; font-size:12px; padding:10px; word-wrap:break-word;';
+            d.textContent = args.join(' ');
+            document.body.appendChild(d);
+            setTimeout(() => d.remove(), 10000);
+        }
+    };
+
     try {
         botChatId = await getOrCreateBotChat(); console.log('[DIAG-1] botChatId =', botChatId);
     } catch (e) {
@@ -229,6 +242,7 @@ async function loadHistory() {
         }
     } catch (e) {
         console.error('[DIAG-5] Ошибка загрузки истории:', e);
+        addMessage('bot', 'ОШИБКА ИСТОРИИ: ' + e.message);
     }
 }
 
