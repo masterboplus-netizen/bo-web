@@ -17,10 +17,10 @@ export async function executeActions(plan, context) {
       } 
       else if (tool === 'navigate') {
         const screen = action.payload.screen;
-        if (screen === 'tasks' && window.openTasks) { window.openTasks(); results.push({ status: 'ok', message: 'Открываю задачи' }); }
-        else if (screen === 'objects' && window.openObjects) { window.openObjects(); results.push({ status: 'ok', message: 'Открываю объекты' }); }
+        if (screen === 'tasks' && window.openTasks) { window.openTasks(); results.push({ status: 'ok', message: 'Открываю задачи', is_navigation: true }); }
+        else if (screen === 'objects' && window.openObjects) { window.openObjects(); results.push({ status: 'ok', message: 'Открываю объекты', is_navigation: true }); }
         else if (screen === 'finance' && window.openFinance) { window.openFinance(); results.push({ status: 'ok', message: 'Открываю финансы' }); }
-        else if (screen === 'diary' && window.openDiary) { window.openDiary(); results.push({ status: 'ok', message: 'Открываю дневник' }); }
+        else if (screen === 'diary' && window.openDiary) { window.openDiary(); results.push({ status: 'ok', message: 'Открываю дневник', is_navigation: true }); }
         else if (screen === 'calendar' && window.openCalendar) { window.openCalendar(); results.push({ status: 'ok', message: 'Открываю календарь' }); }
         else if (screen === 'photos' && window.openPhotos) { window.openPhotos(); results.push({ status: 'ok', message: 'Открываю галерею' }); }
         else if (screen === 'menu' && window.openMenu) { window.openMenu(); results.push({ status: 'ok', message: 'Открываю меню' }); }
