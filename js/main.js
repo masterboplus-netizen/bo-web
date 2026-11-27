@@ -2,6 +2,8 @@ import { renderDiary } from './screens/diary.js';
 import './modals/diary_edit.js';
 import { renderNotepad } from './screens/notepad.js';
 import { renderSocialScreen } from './social/index.js';
+import { getCurrentUser, onAuthStateChange } from './api/auth.js';
+import { renderLogin } from './screens/login.js';
 import { renderFinance } from './screens/finance.js';
 import { renderCashFlow } from './screens/cashflow.js';
 import './modals/finance_operation.js';
@@ -73,11 +75,32 @@ export function setNavActive(tabId) {
     if (el) el.classList.add('active');
 }
 
-function startApp() {
+async function startApp() {
+    const user = await getCurrentUser();
+    
+        // Не авторизован — показываем экран входа
+        renderLogin(document.getElementById('app-content'));
+        document.querySelector('nav').style.display = 'none';
+        const capsule = document.getElementById('floating-capsule-wrapper');
+        if (capsule) capsule.style.display = 'none';
+        return;
+    }
+
+    // Авторизован — запускаем приложение
     window.renderMainMenu();
     initAudioButton();
     setTimeout(() => initFloatingMenu(), 100);
-    initAssistantCapsule();
+    if (typeof initAssistantCapsule === 'function') {
+        initAssistantCapsule();
+    }
+    
+    document.querySelector('nav').style.display = 'flex';
+    const capsule = document.getElementById('floating-capsule-wrapper');
+    if (capsule) capsule.style.display = 'flex';
+
+    onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_OUT') window.location.reload();
+    });
 }
 
 if (document.readyState === 'loading') {
