@@ -78,13 +78,12 @@ export function setNavActive(tabId) {
 async function startApp() {
     const user = await getCurrentUser();
     
-        if (!user) {
+    if (!user) {
         // Не авторизован — показываем экран входа
         renderLogin(document.getElementById('app-content'));
         document.querySelector('nav').style.display = 'none';
-        
-        
         return;
+    }
 
     // Авторизован — запускаем приложение
     window.renderMainMenu();
@@ -95,8 +94,6 @@ async function startApp() {
     }
     
     document.querySelector('nav').style.display = 'flex';
-    
-    
 
     onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT') window.location.reload();
