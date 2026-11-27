@@ -95,7 +95,7 @@ async function startApp() {
     }
     
     document.querySelector('nav').style.display = 'flex';
-    const capsule = document.getElementById('floating-capsule-wrapper');
+    capsule = document.getElementById('floating-capsule-wrapper');
     if (capsule) capsule.style.display = 'flex';
 
     onAuthStateChange((event, session) => {
