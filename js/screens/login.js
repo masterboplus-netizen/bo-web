@@ -1,5 +1,5 @@
 import { signIn, signUp } from '../api/auth.js';
-import { db } from '../api/supabase.js'; // Импортируем db для повторной отправки
+import { db } from '../api/supabase.js';
 
 export function renderLogin(container) {
     container.innerHTML = `
@@ -70,7 +70,7 @@ export function renderLogin(container) {
                 errorDiv.style.color = '#32d74b';
                 errorDiv.innerHTML = '✅ Успешно! Проверьте почту и нажмите «Подтвердить».';
                 errorDiv.style.display = 'block';
-                setTimeout(() => toggleLink.click(), 2500); // Переключаем на вход
+                setTimeout(() => toggleLink.click(), 2500);
                 submitBtn.disabled = false;
                 submitBtn.style.opacity = '1';
                 return;
@@ -79,7 +79,6 @@ export function renderLogin(container) {
         } catch (err) {
             errorDiv.style.color = '#ff453a';
             
-            // Обработка ошибок на русском
             if (err.message === 'Email not confirmed') {
                 errorDiv.innerHTML = `📧 Подтвердите почту. Проверьте письмо. <br><a href="#" id="resend-email" style="color: var(--accent); text-decoration: underline; margin-top: 5px; display: inline-block;">Отправить письмо ещё раз</a>`;
                 errorDiv.style.display = 'block';
