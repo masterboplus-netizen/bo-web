@@ -81,12 +81,20 @@ async function startApp() {
     if (!user) {
         // Не авторизован — показываем экран входа
         document.querySelector('nav').style.display = 'none';
+        const capsule = document.getElementById('floating-capsule-wrapper');
+        if (capsule) capsule.style.display = 'none';
+        const assistant = document.getElementById('assistant-capsule');
+        if (assistant) assistant.style.display = 'none';
         renderLogin(document.getElementById('app-content'));
         return;
     }
 
     // Авторизован — запускаем приложение
     document.querySelector('nav').style.display = 'flex';
+    const capsule = document.getElementById('floating-capsule-wrapper');
+    if (capsule) capsule.style.display = 'flex';
+    const assistant = document.getElementById('assistant-capsule');
+    if (assistant) assistant.style.display = 'block';
     window.renderMainMenu();
     initAudioButton();
     setTimeout(() => initFloatingMenu(), 100);
