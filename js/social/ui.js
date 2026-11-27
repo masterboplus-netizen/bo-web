@@ -1,4 +1,4 @@
-import { fetchUserChats, fetchMessages, sendMessageToDB, BOT_ID, CURRENT_USER_ID } from './api.js';
+import { fetchUserChats, fetchMessages, sendMessageToDB, BOT_ID, getCurrentUserId } from './api.js';
 import { db } from '../api/supabase.js';
 import { MasterBossBrain } from '../brain/index.js';
 
@@ -73,7 +73,7 @@ async function renderChatScreen(container, chatId) {
             html += '<div style="text-align: center; color: var(--fg-dim); font-size: 13px; margin-top: 20px;">Нет сообщений</div>';
         } else {
             messages.forEach(msg => {
-                const isUser = msg.sender_id === CURRENT_USER_ID;
+                const isUser = msg.sender_id === await getCurrentUserId();
                 const style = isUser
                     ? 'align-self: flex-end; background: var(--accent); color: white; padding: 10px 14px; border-radius: 16px 16px 0 16px; max-width: 80%; word-wrap: break-word;'
                     : 'align-self: flex-start; background: var(--bg3); color: var(--fg); padding: 10px 14px; border-radius: 16px 16px 16px 0; max-width: 80%; word-wrap: break-word;';
@@ -123,7 +123,7 @@ async function renderChatScreen(container, chatId) {
             msgDiv.textContent = text;
             history.appendChild(msgDiv);
             history.scrollTop = history.scrollHeight;
-            await sendMessageToDB(chatId, CURRENT_USER_ID, text);
+            await sendMessageToDB(chatId, await getCurrentUserId(), text);
 
             const loadingDiv = document.createElement('div');
             loadingDiv.id = 'chat-loading';
