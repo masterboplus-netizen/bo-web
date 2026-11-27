@@ -1,40 +1,38 @@
 import { db } from '../api/supabase.js';
+import { getCurrentUser } from '../api/auth.js';
 
 export const BOT_ID = '1d4c5ee8-abff-4eb3-9ad2-e90f80434e54';
-export const CURRENT_USER_ID = '52454226-b4c5-4d97-94ef-df3fa5ad71a2';
 
-// Загружаем все чаты, в которых состоит пользователь
+// Получаем текущего пользователя (асинхронно)
+export async function getCurrentUserId() {
+    const user = await getCurrentUser();
+    if (!user) throw new Error('Пользователь не авторизован');
+    return user.id;
+}
+
 export async function fetchUserChats() {
+    const userId = await getCurrentUserId();
     const { data, error } = await db
         .from('chat_members')
-        .select(`
-            chat_id,
-            chats (
-                id,
-                title,
-                type
-            )
-        `)
-        .eq('profile_id', CURRENT_USER_ID);
+        .select(`chat_id, chats (id, title, type)`)
+        .eq('profile_id', userId);
 
     if (error) throw error;
 
-    // Если нет личного чата с Ботом — создаем его
     const hasBotChat = data.find(c => c.chats && c.chats.type === 'bot');
     if (!hasBotChat) {
-        await getOrCreateBotChat();
-        return fetchUserChats(); // Перезапрашиваем, чтобы он появился в списке
+        await getOrCreateBotChat(userId);
+        return fetchUserChats();
     }
 
     return data.map(item => item.chats).filter(Boolean);
 }
 
-// Поиск или создание личного чата с Бо
-export async function getOrCreateBotChat() {
+export async function getOrCreateBotChat(userId) {
     const { data: existingChats } = await db
         .from('chat_members')
         .select('chat_id, chats!inner(type)')
-        .eq('profile_id', CURRENT_USER_ID)
+        .eq('profile_id', userId)
         .eq('chats.type', 'bot');
 
     if (existingChats && existingChats.length > 0) {
@@ -50,14 +48,13 @@ export async function getOrCreateBotChat() {
     if (chatError) throw chatError;
 
     await db.from('chat_members').insert([
-        { chat_id: newChat.id, profile_id: CURRENT_USER_ID },
+        { chat_id: newChat.id, profile_id: userId },
         { chat_id: newChat.id, profile_id: BOT_ID }
     ]);
 
     return newChat.id;
 }
 
-// Загрузка истории
 export async function fetchMessages(chatId) {
     const { data, error } = await db
         .from('messages')
@@ -70,11 +67,10 @@ export async function fetchMessages(chatId) {
     return data.reverse();
 }
 
-// Сохранение
 export async function sendMessageToDB(chatId, senderId, text) {
     const { error } = await db
         .from('messages')
         .insert([{ chat_id: chatId, sender_id: senderId, text: text }]);
-    
+
     if (error) throw error;
 }
