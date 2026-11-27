@@ -77,23 +77,22 @@ export function setNavActive(tabId) {
 
 async function startApp() {
     const user = await getCurrentUser();
-    
+
     if (!user) {
         // Не авторизован — показываем экран входа
-        renderLogin(document.getElementById('app-content'));
         document.querySelector('nav').style.display = 'none';
+        renderLogin(document.getElementById('app-content'));
         return;
     }
 
     // Авторизован — запускаем приложение
+    document.querySelector('nav').style.display = 'flex';
     window.renderMainMenu();
     initAudioButton();
     setTimeout(() => initFloatingMenu(), 100);
     if (typeof initAssistantCapsule === 'function') {
         initAssistantCapsule();
     }
-    
-    document.querySelector('nav').style.display = 'flex';
 
     onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT') window.location.reload();

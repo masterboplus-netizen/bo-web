@@ -2,84 +2,92 @@ import { signIn, signUp } from '../api/auth.js';
 
 export function renderLogin(container) {
     container.innerHTML = `
-        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: var(--bg); padding: 20px;">
-            <div style="background: var(--bg2); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-                <h2 style="margin: 0 0 20px 0; text-align: center; font-size: 24px; color: var(--fg);">MasterBoss</h2>
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; padding: 20px; background: var(--bg); box-sizing: border-box;">
+            <h2 style="color: var(--fg); margin-bottom: 30px; font-size: 28px; letter-spacing: 1px;">MasterBoss</h2>
+            
+            <div style="width: 100%; max-width: 400px; background: var(--bg2); padding: 25px; border-radius: 16px; border: 1px solid var(--bg3); box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                <h3 id="login-title" style="color: var(--fg); margin-top: 0; text-align: center; font-weight: 500;">Вход в систему</h3>
                 
-                <div id="login-error" style="color: #ff4d4f; text-align: center; margin-bottom: 10px; font-size: 14px; display: none;"></div>
+                <input id="login-email" type="email" placeholder="Email" style="width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: var(--bg3); color: var(--fg); box-sizing: border-box; font-size: 16px; outline: none;">
+                <input id="login-password" type="password" placeholder="Пароль" style="width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: var(--bg3); color: var(--fg); box-sizing: border-box; font-size: 16px; outline: none;">
                 
-                <input type="email" id="login-email" placeholder="Email" style="width: 100%; padding: 12px 16px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3); color: var(--fg); font-size: 15px; box-sizing: border-box; outline: none;">
-                <input type="password" id="login-password" placeholder="Пароль" style="width: 100%; padding: 12px 16px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3); color: var(--fg); font-size: 15px; box-sizing: border-box; outline: none;">
-                <input type="text" id="login-name" placeholder="Ваше имя (при регистрации)" style="width: 100%; padding: 12px 16px; margin-bottom: 20px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3); color: var(--fg); font-size: 15px; box-sizing: border-box; outline: none; display: none;">
-                
-                <button id="btn-login" style="width: 100%; padding: 14px; border-radius: 10px; border: none; background: var(--accent); color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">Войти</button>
-                <button id="btn-register" style="width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--fg); font-size: 16px; cursor: pointer;">Зарегистрироваться</button>
-                
-                <div style="text-align: center; margin-top: 15px;">
-                    <a href="#" id="link-toggle" style="color: var(--accent); text-decoration: none; font-size: 14px;">Нет аккаунта? Зарегистрируйтесь</a>
+                <div id="login-name-wrapper" style="display: none;">
+                    <input id="login-name" type="text" placeholder="Ваше имя" style="width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid var(--bg3); background: var(--bg3); color: var(--fg); box-sizing: border-box; font-size: 16px; outline: none;">
                 </div>
+
+                <div id="login-error" style="color: #ff453a; font-size: 14px; margin-bottom: 15px; text-align: center; display: none;"></div>
+
+                <button id="login-submit" style="width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 15px; transition: opacity 0.2s;">Войти</button>
+                
+                <p style="text-align: center; color: var(--fg-dim); font-size: 14px; margin: 0;">
+                    <span id="login-toggle-text">Нет аккаунта?</span> 
+                    <a href="#" id="login-toggle-link" style="color: var(--accent); text-decoration: none; font-weight: 500;">Зарегистрироваться</a>
+                </p>
             </div>
         </div>
     `;
 
-    const emailInput = document.getElementById('login-email');
-    const passInput = document.getElementById('login-password');
-    const nameInput = document.getElementById('login-name');
-    const btnLogin = document.getElementById('btn-login');
-    const btnRegister = document.getElementById('btn-register');
-    const toggleLink = document.getElementById('link-toggle');
+    let isLoginMode = true;
+    const title = document.getElementById('login-title');
+    const nameWrapper = document.getElementById('login-name-wrapper');
+    const toggleText = document.getElementById('login-toggle-text');
+    const toggleLink = document.getElementById('login-toggle-link');
+    const submitBtn = document.getElementById('login-submit');
     const errorDiv = document.getElementById('login-error');
 
-    let isRegisterMode = false;
-
-    function showError(msg) {
-        errorDiv.textContent = msg;
-        errorDiv.style.display = 'block';
-        setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
-    }
-
-    toggleLink.onclick = (e) => {
+    toggleLink.addEventListener('click', (e) => {
         e.preventDefault();
-        isRegisterMode = !isRegisterMode;
-        if (isRegisterMode) {
-            nameInput.style.display = 'block';
-            btnLogin.style.display = 'none';
-            btnRegister.textContent = 'Зарегистрироваться';
-            toggleLink.textContent = 'Уже есть аккаунт? Войти';
-        } else {
-            nameInput.style.display = 'none';
-            btnLogin.style.display = 'block';
-            toggleLink.textContent = 'Нет аккаунта? Зарегистрируйтесь';
-        }
-    };
+        isLoginMode = !isLoginMode;
+        title.textContent = isLoginMode ? 'Вход в систему' : 'Регистрация';
+        nameWrapper.style.display = isLoginMode ? 'none' : 'block';
+        toggleText.textContent = isLoginMode ? 'Нет аккаунта?' : 'Уже есть аккаунт?';
+        toggleLink.textContent = isLoginMode ? 'Зарегистрироваться' : 'Войти';
+        submitBtn.textContent = isLoginMode ? 'Войти' : 'Зарегистрироваться';
+        errorDiv.style.display = 'none';
+    });
 
-    btnLogin.onclick = async () => {
+    submitBtn.addEventListener('click', async () => {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const name = document.getElementById('login-name')?.value.trim();
+
+        if (!email || !password) {
+            errorDiv.textContent = 'Заполните email и пароль';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+        errorDiv.style.display = 'none';
+
         try {
-            const email = emailInput.value.trim();
-            const pass = passInput.value.trim();
-            if (!email || !pass) return showError('Заполните все поля');
-            await signIn(email, pass);
+            if (isLoginMode) {
+                await signIn(email, password);
+            } else {
+                await signUp(email, password, name || email.split('@')[0]);
+                errorDiv.style.color = '#32d74b';
+                errorDiv.textContent = 'Успешно! Проверьте почту или войдите.';
+                errorDiv.style.display = 'block';
+                // Автоматически переключаем на вход
+                setTimeout(() => {
+                    toggleLink.click();
+                }, 1500);
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                return;
+            }
+            // При успехе main.js перезагрузится через onAuthStateChange
             window.location.reload();
-        } catch (e) {
-            showError(e.message);
+        } catch (err) {
+            errorDiv.style.color = '#ff453a';
+            errorDiv.textContent = err.message || 'Ошибка авторизации';
+            errorDiv.style.display = 'block';
+        } finally {
+            if (isLoginMode) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+            }
         }
-    };
-
-    btnRegister.onclick = async () => {
-        try {
-            const email = emailInput.value.trim();
-            const pass = passInput.value.trim();
-            const name = nameInput.value.trim();
-            if (!email || !pass) return showError('Заполните все поля');
-            await signUp(email, pass, name || 'Пользователь');
-            alert('Регистрация успешна! Теперь войдите.');
-            isRegisterMode = false;
-            nameInput.style.display = 'none';
-            btnLogin.style.display = 'block';
-            btnRegister.textContent = 'Зарегистрироваться';
-            toggleLink.textContent = 'Нет аккаунта? Зарегистрируйтесь';
-        } catch (e) {
-            showError(e.message);
-        }
-    };
+    });
 }
