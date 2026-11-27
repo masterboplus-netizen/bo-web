@@ -78,6 +78,7 @@ export function setNavActive(tabId) {
 async function startApp() {
     const user = await getCurrentUser();
     
+        if (!user) {
         // Не авторизован — показываем экран входа
         renderLogin(document.getElementById('app-content'));
         document.querySelector('nav').style.display = 'none';
