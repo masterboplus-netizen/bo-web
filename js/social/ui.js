@@ -47,6 +47,8 @@ async function renderChatList(container) {
 async function renderChatScreen(container, chatId) {
     container.innerHTML = '<div style="padding: 20px; color: var(--fg-dim); text-align: center;">Загрузка...</div>';
 
+    const currentUserId = await getCurrentUserId();
+
     if (currentChannel) {
         currentChannel.unsubscribe();
         currentChannel = null;
@@ -73,7 +75,7 @@ async function renderChatScreen(container, chatId) {
             html += '<div style="text-align: center; color: var(--fg-dim); font-size: 13px; margin-top: 20px;">Нет сообщений</div>';
         } else {
             messages.forEach(msg => {
-                const isUser = msg.sender_id === await getCurrentUserId();
+                const isUser = msg.sender_id === currentUserId;
                 const style = isUser
                     ? 'align-self: flex-end; background: var(--accent); color: white; padding: 10px 14px; border-radius: 16px 16px 0 16px; max-width: 80%; word-wrap: break-word;'
                     : 'align-self: flex-start; background: var(--bg3); color: var(--fg); padding: 10px 14px; border-radius: 16px 16px 16px 0; max-width: 80%; word-wrap: break-word;';
@@ -103,7 +105,7 @@ async function renderChatScreen(container, chatId) {
                 filter: `chat_id=eq.${chatId}` 
             }, (payload) => {
                 const newMsg = payload.new;
-                const isUser = newMsg.sender_id === CURRENT_USER_ID;
+                const isUser = newMsg.sender_id === currentUserId;
                 const msgDiv = document.createElement('div');
                 msgDiv.style.cssText = isUser 
                     ? 'align-self: flex-end; background: var(--accent); color: white; padding: 10px 14px; border-radius: 16px 16px 0 16px; max-width: 80%; word-wrap: break-word;'
@@ -123,7 +125,7 @@ async function renderChatScreen(container, chatId) {
             msgDiv.textContent = text;
             history.appendChild(msgDiv);
             history.scrollTop = history.scrollHeight;
-            await sendMessageToDB(chatId, await getCurrentUserId(), text);
+            await sendMessageToDB(chatId, currentUserId, text);
 
             const loadingDiv = document.createElement('div');
             loadingDiv.id = 'chat-loading';
@@ -141,7 +143,7 @@ async function renderChatScreen(container, chatId) {
                     .limit(10);
 
                 const historyForBrain = historyData.data.reverse().map(m => ({
-                    role: m.sender_id === CURRENT_USER_ID ? 'user' : 'assistant',
+                    role: m.sender_id === currentUserId ? 'user' : 'assistant',
                     text: m.text
                 }));
 
@@ -171,9 +173,6 @@ async function renderChatScreen(container, chatId) {
             history.appendChild(botDiv);
             history.scrollTop = history.scrollHeight;
             
-            
-            
-            // Если это была навигация, закрываем чат (архитектурно правильно)
             if (result.results && result.results.some(r => r.is_navigation)) {
                 setTimeout(() => {
                     if (window.closeChat) window.closeChat();
@@ -181,8 +180,6 @@ async function renderChatScreen(container, chatId) {
             }
 
             await sendMessageToDB(chatId, BOT_ID, botResponse);
-
-            
         };
 
         window.closeChat = () => { 
