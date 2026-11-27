@@ -1,5 +1,5 @@
 import { db } from '../api/supabase.js';
-import { sendMessageToDB, fetchMessages, getOrCreateBotChat, BOT_ID, CURRENT_USER_ID } from '../social/api.js';
+import { sendMessageToDB, fetchMessages, getOrCreateBotChat, BOT_ID, getCurrentUserId } from '../social/api.js';
 
 const MAX_HISTORY_MSGS = 5;
 const MAX_HISTORY_CHARS = 3000;
@@ -162,7 +162,7 @@ export function addMessage(role, text) {
 async function sendMessage(role, text) {
     addMessage(role, text);
     if (botChatId) {
-        const senderId = role === 'user' ? CURRENT_USER_ID : BOT_ID;
+        const senderId = role === 'user' ? getCurrentUserId : BOT_ID;
         await sendMessageToDB(botChatId, senderId, text);
     }
     if (role === 'user') {
@@ -243,7 +243,7 @@ async function processBrain(text) {
             let historyData = [];
             if (botChatId) {
                 const { data } = await db.from('messages').select('sender_id, text').eq('chat_id', botChatId).order('created_at', { ascending: false }).limit(10);
-                if (data) historyData = data.reverse().map(m => ({ role: m.sender_id === CURRENT_USER_ID ? 'user' : 'assistant', text: m.text }));
+                if (data) historyData = data.reverse().map(m => ({ role: m.sender_id === getCurrentUserId ? 'user' : 'assistant', text: m.text }));
             }
             
             const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: historyData });
@@ -296,7 +296,7 @@ async function loadHistory() {
             addMessage('bot', 'Привет! Я Бо. Чем могу помочь?');
         } else {
             messages.forEach(msg => {
-                const isUser = msg.sender_id === CURRENT_USER_ID;
+                const isUser = msg.sender_id === getCurrentUserId;
                 addMessage(isUser ? 'user' : 'bot', msg.text);
             });
         }
