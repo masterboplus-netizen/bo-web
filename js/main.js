@@ -84,7 +84,6 @@ async function startApp() {
         const capsule = document.getElementById('floating-capsule-wrapper');
         if (capsule) capsule.style.display = 'none';
         return;
-    }
 
     // Авторизован — запускаем приложение
     window.renderMainMenu();
