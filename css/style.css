@@ -74,3 +74,12 @@
     -ms-user-select: none;
     user-select: none;
 }
+
+/* Режим логина: скрываем шапку и виджеты */
+body.login-mode #app-header,
+body.login-mode #bottom-nav,
+body.login-mode .nav-add-btn,
+body.login-mode #floating-capsule-wrapper,
+body.login-mode #assistant-capsule {
+    display: none !important;
+}

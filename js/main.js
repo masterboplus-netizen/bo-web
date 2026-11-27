@@ -81,6 +81,9 @@ async function startApp() {
     if (!user) {
         // Не авторизован — показываем экран входа
         document.querySelector('nav').style.display = 'none';
+        const header = document.querySelector('.header') || document.querySelector('header') || document.getElementById('app-header');
+        if (header) header.style.display = 'none';
+        document.body.classList.add('login-mode');
         const capsule = document.getElementById('floating-capsule-wrapper');
         if (capsule) capsule.style.display = 'none';
         const assistant = document.getElementById('assistant-capsule');
@@ -91,6 +94,9 @@ async function startApp() {
 
     // Авторизован — запускаем приложение
     document.querySelector('nav').style.display = 'flex';
+    const header = document.querySelector('.header') || document.querySelector('header') || document.getElementById('app-header');
+    if (header) header.style.display = 'flex';
+    document.body.classList.remove('login-mode');
     const capsule = document.getElementById('floating-capsule-wrapper');
     if (capsule) capsule.style.display = 'flex';
     const assistant = document.getElementById('assistant-capsule');
