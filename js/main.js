@@ -82,8 +82,8 @@ async function startApp() {
         // Не авторизован — показываем экран входа
         renderLogin(document.getElementById('app-content'));
         document.querySelector('nav').style.display = 'none';
-        const capsule = document.getElementById('floating-capsule-wrapper');
-        if (capsule) capsule.style.display = 'none';
+        
+        
         return;
 
     // Авторизован — запускаем приложение
@@ -95,8 +95,8 @@ async function startApp() {
     }
     
     document.querySelector('nav').style.display = 'flex';
-    capsule = document.getElementById('floating-capsule-wrapper');
-    if (capsule) capsule.style.display = 'flex';
+    
+    
 
     onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT') window.location.reload();
