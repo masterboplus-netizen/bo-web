@@ -14,36 +14,27 @@ export async function fetchObjects() {
     return data;
 }
 
-// 3. Универсальное обновление объекта (поддерживает и старый, и новый формат)
+// 3. Универсальное обновление
 export async function updateObject(id, arg2, arg3, arg4) {
     let updates = {};
-    
-    // Если передали 4 аргумента (id, name, address, budget) - как в object_edit.js
     if (arg3 !== undefined || arg4 !== undefined) {
-        updates = { 
-            name: arg2, 
-            address: arg3, 
-            budget: (arg4 === '' || isNaN(Number(arg4))) ? 0 : Number(arg4) 
-        };
-    } 
-    // Если передали 2 аргумента (id, {name, address, budget}) - как в старом коде
-    else {
+        updates = { name: arg2, address: arg3, budget: (arg4 === '' || isNaN(Number(arg4))) ? 0 : Number(arg4) };
+    } else {
         updates = arg2;
     }
-
     const { data, error } = await db.from('objects').update(updates).eq('id', id).select().single();
     if (error) throw error;
     return data;
 }
 
-// 4. Удаление объекта
+// 4. Удаление
 export async function deleteObject(id) {
     const { error } = await db.from('objects').delete().eq('id', id);
     if (error) throw error;
     return true;
 }
 
-// 5. Создание объекта с автоматическим назначением владельца
+// 5. НОВАЯ функция (с владельцем)
 export async function createObjectWithOwner(name, address = '', budget = 0) {
     const { data: { user } } = await db.auth.getUser();
     if (!user) throw new Error('Не авторизован');
@@ -52,11 +43,7 @@ export async function createObjectWithOwner(name, address = '', budget = 0) {
 
     const { data: newObj, error: objError } = await db
         .from('objects')
-        .insert({ 
-            name: name, 
-            budget: safeBudget,
-            city: address 
-        })
+        .insert({ name: name, budget: safeBudget, city: address })
         .select()
         .single();
     
@@ -77,4 +64,9 @@ export async function createObjectWithOwner(name, address = '', budget = 0) {
 
     if (memError) throw memError;
     return newObj;
+}
+
+// 6. СТАРАЯ функция-обертка (чтобы старые файлы не ругались на createObject)
+export async function createObject(name, address, budget) {
+    return createObjectWithOwner(name, address, budget);
 }

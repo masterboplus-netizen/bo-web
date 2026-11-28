@@ -1,4 +1,4 @@
-import { createObject } from '../api/objects.js';
+import { createObjectWithOwner } from '../api/objects.js';
 
 export function openNewObject() {
     const container = document.getElementById('app-content');
