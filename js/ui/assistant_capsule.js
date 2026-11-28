@@ -182,7 +182,7 @@ async function processBrain(text) {
             try {
                 const result = await window.MasterBossBrain.execute(
                     { status: 'ok', actions: [{ tool: 'delete_object', payload: { name: pendingAction.name, confirm: true } }] },
-                    { tenant_id: 1 }
+                    { tenant_id: 1, user_id: await getCurrentUserId() }
                 );
                 const msg = result.results?.[0]?.message || 'Готово';
                 await sendMessage('bot', msg);
@@ -210,7 +210,8 @@ async function processBrain(text) {
                 }
             }
             
-            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: historyData });
+            const currentUserId = await getCurrentUserId();
+            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, user_id: currentUserId, history: historyData });
             document.getElementById('assistant-loading')?.remove();
 
             let botReply = '';

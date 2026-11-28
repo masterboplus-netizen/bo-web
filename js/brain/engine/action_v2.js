@@ -10,6 +10,7 @@ function getVisualTwins(str) {
 export async function executeActions(plan, context) {
   const results = [];
   const tenant_id = context.tenant_id || 1;
+  const user_id = context.user_id || null;
 
   for (const action of plan.actions) {
     try {
@@ -67,14 +68,14 @@ export async function executeActions(plan, context) {
           results.push({ status: 'error', message: 'Не указано название объекта для удаления' });
         } else {
           let existing = [];
-          const { data: exactMatch, error: err1 } = await db.from('objects').select('id, name').eq('tenant_id', tenant_id).ilike('name', name).limit(1);
+          const { data: exactMatch, error: err1 } = await db.from('objects').select('id, name').eq('tenant_id', tenant_id).eq('user_id', user_id).ilike('name', name).limit(1);
           if (err1) throw err1;
           existing = exactMatch || [];
           
           if (existing.length === 0) {
             const twin = getVisualTwins(name);
             if (twin !== name) {
-              const { data: twinMatch, error: err2 } = await db.from('objects').select('id, name').eq('tenant_id', tenant_id).ilike('name', twin).limit(1);
+              const { data: twinMatch, error: err2 } = await db.from('objects').select('id, name').eq('tenant_id', tenant_id).eq('user_id', user_id).ilike('name', twin).limit(1);
               if (err2) throw err2;
               existing = twinMatch || [];
             }
@@ -97,14 +98,14 @@ export async function executeActions(plan, context) {
       else if (tool === 'create_object') {
         const name = (action.payload.name || 'Новый объект').trim();
         let existing = [];
-        const { data: exactMatch, error: err1 } = await db.from('objects').select('id, name').eq('tenant_id', tenant_id).ilike('name', name).limit(1);
+        const { data: exactMatch, error: err1 } = await db.from('objects').select('id, name').eq('tenant_id', tenant_id).eq('user_id', user_id).ilike('name', name).limit(1);
         if (err1) throw err1;
         existing = exactMatch || [];
         
         if (existing.length === 0) {
           const twin = getVisualTwins(name);
           if (twin !== name) {
-            const { data: twinMatch, error: err2 } = await db.from('objects').select('id, name').eq('tenant_id', tenant_id).ilike('name', twin).limit(1);
+            const { data: twinMatch, error: err2 } = await db.from('objects').select('id, name').eq('tenant_id', tenant_id).eq('user_id', user_id).ilike('name', twin).limit(1);
             if (err2) throw err2;
             existing = twinMatch || [];
           }
@@ -113,7 +114,7 @@ export async function executeActions(plan, context) {
         if (existing && existing.length > 0) {
           results.push({ status: 'ok', message: `Объект "${existing[0].name}" уже есть. Выбери вариант ниже или напиши другое название.`, duplicate: true, original_name: existing[0].name });
         } else {
-          const { error: insErr } = await db.from('objects').insert([{ name: name, tenant_id }]);
+          const { error: insErr } = await db.from('objects').insert([{ name: name, tenant_id, user_id }]);
           if (insErr) throw insErr;
           results.push({ status: 'ok', message: `Объект создан: ${name}` });
         }
