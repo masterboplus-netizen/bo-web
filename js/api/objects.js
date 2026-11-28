@@ -1,20 +1,47 @@
 import { db } from './supabase.js';
 
-export async function createObjectWithOwner(name) {
-    // 1. Получаем текущего юзера
+// 1. Получение одного объекта
+export async function fetchObject(id) {
+    const { data, error } = await db.from('objects').select('*').eq('id', id).single();
+    if (error) throw error;
+    return data;
+}
+
+// 2. Обновление объекта
+export async function updateObject(id, updates) {
+    const { data, error } = await db.from('objects').update(updates).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+}
+
+// 3. Удаление объекта
+export async function deleteObject(id) {
+    const { error } = await db.from('objects').delete().eq('id', id);
+    if (error) throw error;
+    return true;
+}
+
+// 4. Создание объекта с автоматическим назначением владельца
+export async function createObjectWithOwner(name, address = '', budget = 0) {
     const { data: { user } } = await db.auth.getUser();
     if (!user) throw new Error('Не авторизован');
 
-    // 2. Создаем объект
+    // Защита: если budget пустой или не число, ставим 0
+    const safeBudget = (budget === '' || isNaN(Number(budget))) ? 0 : Number(budget);
+
     const { data: newObj, error: objError } = await db
         .from('objects')
-        .insert({ name: name })
+        .insert({ 
+            name: name, 
+            budget: safeBudget,
+            city: address // Сохраняем адрес в поле city (или как у вас было)
+        })
         .select()
         .single();
     
     if (objError) throw objError;
 
-    // 3. Сразу делаем юзера владельцем
+    // Делаем создателя владельцем
     const { error: memError } = await db
         .from('object_members')
         .insert({
