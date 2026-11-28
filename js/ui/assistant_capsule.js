@@ -1,10 +1,6 @@
 import { db } from '../api/supabase.js';
 import { sendMessageToDB, fetchMessages, getOrCreateBotChat, BOT_ID, getCurrentUserId } from '../social/api.js';
 
-const MAX_HISTORY_MSGS = 5;
-const MAX_HISTORY_CHARS = 3000;
-const CONTEXT_TIMEOUT_MIN = 15;
-
 let capsuleEl = null;
 let botChatId = null;
 let isExpanded = false;
@@ -15,39 +11,9 @@ export async function initAssistantCapsule() {
     if (capsuleEl) return;
 
     try {
-        if (window.MasterBossBrain && window.MasterBossBrain.handle) {
-            let historyData = [];
-            if (botChatId) {
-                const { data } = await db.from('messages').select('sender_id, text').eq('chat_id', botChatId).order('created_at', { ascending: false }).limit(10);
-                if (data) historyData = data.reverse().map(m => ({ role: m.sender_id === getCurrentUserId ? 'user' : 'assistant', text: m.text }));
-            }
-            
-            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: historyData });
-            document.getElementById('assistant-loading')?.remove();
-
-            let botReply = '';
-            
-            // Проверяем, запросил ли Мозг подтверждение
-            if (result.results && result.results.some(r => r.status === 'pending' && r.type === 'delete_object')) {
-                const pending = result.results.find(r => r.status === 'pending');
-                pendingAction = { type: 'delete_object', name: pending.name };
-                botReply = ;
-            } else if (result.status === 'error') {
-                botReply = '❌ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка');
-            } else if (result.results && result.results.length > 0) {
-                botReply = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('
-');
-            } else {
-                botReply = '🤖 Мозг не вернул действий';
-            }
-            await sendMessage('bot', botReply);
-        } else {
-            document.getElementById('assistant-loading')?.remove();
-            await sendMessage('bot', '❌ Мозг не загружен');
-        }
+        botChatId = await getOrCreateBotChat();
     } catch (e) {
-        document.getElementById('assistant-loading')?.remove();
-        await sendMessage('bot', '❌ Ошибка связи: ' + e.message);
+        console.error('Ошибка получения чата Бо:', e);
     }
 
     capsuleEl = document.createElement('div');
@@ -89,7 +55,6 @@ export async function initAssistantCapsule() {
 
     document.body.appendChild(capsuleEl);
 
-    document.getElementById('close-assistant').onclick = () => hideAssistant();
     const input = document.getElementById('assistant-input');
     const sendBtn = document.getElementById('assistant-send');
 
@@ -154,41 +119,7 @@ export async function showAssistant() {
     isOpen = true;
     capsuleEl.style.transform = 'translateX(0)';
     if (!botChatId) {
-        try {
-        if (window.MasterBossBrain && window.MasterBossBrain.handle) {
-            let historyData = [];
-            if (botChatId) {
-                const { data } = await db.from('messages').select('sender_id, text').eq('chat_id', botChatId).order('created_at', { ascending: false }).limit(10);
-                if (data) historyData = data.reverse().map(m => ({ role: m.sender_id === getCurrentUserId ? 'user' : 'assistant', text: m.text }));
-            }
-            
-            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: historyData });
-            document.getElementById('assistant-loading')?.remove();
-
-            let botReply = '';
-            
-            // Проверяем, запросил ли Мозг подтверждение
-            if (result.results && result.results.some(r => r.status === 'pending' && r.type === 'delete_object')) {
-                const pending = result.results.find(r => r.status === 'pending');
-                pendingAction = { type: 'delete_object', name: pending.name };
-                botReply = ;
-            } else if (result.status === 'error') {
-                botReply = '❌ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка');
-            } else if (result.results && result.results.length > 0) {
-                botReply = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('
-');
-            } else {
-                botReply = '🤖 Мозг не вернул действий';
-            }
-            await sendMessage('bot', botReply);
-        } else {
-            document.getElementById('assistant-loading')?.remove();
-            await sendMessage('bot', '❌ Мозг не загружен');
-        }
-    } catch (e) {
-        document.getElementById('assistant-loading')?.remove();
-        await sendMessage('bot', '❌ Ошибка связи: ' + e.message);
-    }
+        try { botChatId = await getOrCreateBotChat(); } catch (e) { console.error('Ошибка получения чата:', e); }
     }
     await loadHistory();
 }
@@ -226,19 +157,12 @@ export function addMessage(role, text) {
 async function sendMessage(role, text) {
     addMessage(role, text);
     if (botChatId) {
-        const senderId = role === 'user' ? getCurrentUserId : BOT_ID;
+        const senderId = role === 'user' ? await getCurrentUserId() : BOT_ID;
         await sendMessageToDB(botChatId, senderId, text);
     }
     if (role === 'user') {
         await processBrain(text);
     }
-}
-
-async function getSmartContext() {
-    return {
-        tenant_id: 1,
-        screen: localStorage.getItem("currentScreen") || "main"
-    };
 }
 
 async function processBrain(text) {
@@ -250,46 +174,21 @@ async function processBrain(text) {
     container.appendChild(loadingDiv);
     container.scrollTop = container.scrollHeight;
 
-    // --- ОБРАБОТКА ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ ---
+    // Обработка подтверждения удаления (Да/Нет)
     if (pendingAction && pendingAction.type === 'delete_object') {
         const lower = text.toLowerCase().trim();
         if (lower === 'да' || lower === 'удали' || lower === 'подтверждаю' || lower === 'yes') {
             document.getElementById('assistant-loading')?.remove();
             try {
-        if (window.MasterBossBrain && window.MasterBossBrain.handle) {
-            let historyData = [];
-            if (botChatId) {
-                const { data } = await db.from('messages').select('sender_id, text').eq('chat_id', botChatId).order('created_at', { ascending: false }).limit(10);
-                if (data) historyData = data.reverse().map(m => ({ role: m.sender_id === getCurrentUserId ? 'user' : 'assistant', text: m.text }));
+                const result = await window.MasterBossBrain.execute(
+                    { status: 'ok', actions: [{ tool: 'delete_object', payload: { name: pendingAction.name, confirm: true } }] },
+                    { tenant_id: 1 }
+                );
+                const msg = result.results?.[0]?.message || 'Готово';
+                await sendMessage('bot', msg);
+            } catch (e) {
+                await sendMessage('bot', '❌ Ошибка удаления: ' + e.message);
             }
-            
-            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: historyData });
-            document.getElementById('assistant-loading')?.remove();
-
-            let botReply = '';
-            
-            // Проверяем, запросил ли Мозг подтверждение
-            if (result.results && result.results.some(r => r.status === 'pending' && r.type === 'delete_object')) {
-                const pending = result.results.find(r => r.status === 'pending');
-                pendingAction = { type: 'delete_object', name: pending.name };
-                botReply = ;
-            } else if (result.status === 'error') {
-                botReply = '❌ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка');
-            } else if (result.results && result.results.length > 0) {
-                botReply = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('
-');
-            } else {
-                botReply = '🤖 Мозг не вернул действий';
-            }
-            await sendMessage('bot', botReply);
-        } else {
-            document.getElementById('assistant-loading')?.remove();
-            await sendMessage('bot', '❌ Мозг не загружен');
-        }
-    } catch (e) {
-        document.getElementById('assistant-loading')?.remove();
-        await sendMessage('bot', '❌ Ошибка связи: ' + e.message);
-    }
             pendingAction = null;
             return;
         } else if (lower === 'нет' || lower === 'отмена' || lower === 'no') {
@@ -299,15 +198,16 @@ async function processBrain(text) {
             return;
         }
     }
-    // -----------------------------------------
-
 
     try {
         if (window.MasterBossBrain && window.MasterBossBrain.handle) {
             let historyData = [];
             if (botChatId) {
                 const { data } = await db.from('messages').select('sender_id, text').eq('chat_id', botChatId).order('created_at', { ascending: false }).limit(10);
-                if (data) historyData = data.reverse().map(m => ({ role: m.sender_id === getCurrentUserId ? 'user' : 'assistant', text: m.text }));
+                if (data) {
+                    const currentUserId = await getCurrentUserId();
+                    historyData = data.reverse().map(m => ({ role: m.sender_id === currentUserId ? 'user' : 'assistant', text: m.text }));
+                }
             }
             
             const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: historyData });
@@ -315,19 +215,20 @@ async function processBrain(text) {
 
             let botReply = '';
             
-            // Проверяем, запросил ли Мозг подтверждение
-            if (result.results && result.results.some(r => r.status === 'pending' && r.type === 'delete_object')) {
-                const pending = result.results.find(r => r.status === 'pending');
-                pendingAction = { type: 'delete_object', name: pending.name };
-                botReply = ;
-            } else if (result.status === 'error') {
+            if (result.status === 'error') {
                 botReply = '❌ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка');
             } else if (result.results && result.results.length > 0) {
-                botReply = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('
-');
+                const pendingDel = result.results.find(r => r.status === 'pending' && r.type === 'delete_object');
+                if (pendingDel) {
+                    pendingAction = { type: 'delete_object', name: pendingDel.name };
+                    botReply = `Вы уверены, что хотите удалить объект "${pendingDel.name}"? Напишите "Да" или "Нет".`;
+                } else {
+                    botReply = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('\n');
+                }
             } else {
                 botReply = '🤖 Мозг не вернул действий';
             }
+
             await sendMessage('bot', botReply);
         } else {
             document.getElementById('assistant-loading')?.remove();
@@ -342,39 +243,22 @@ async function processBrain(text) {
 async function loadHistory() {
     if (!botChatId) return;
     try {
-        if (window.MasterBossBrain && window.MasterBossBrain.handle) {
-            let historyData = [];
-            if (botChatId) {
-                const { data } = await db.from('messages').select('sender_id, text').eq('chat_id', botChatId).order('created_at', { ascending: false }).limit(10);
-                if (data) historyData = data.reverse().map(m => ({ role: m.sender_id === getCurrentUserId ? 'user' : 'assistant', text: m.text }));
-            }
-            
-            const result = await window.MasterBossBrain.handle(text, { tenant_id: 1, history: historyData });
-            document.getElementById('assistant-loading')?.remove();
+        const messages = await fetchMessages(botChatId);
+        const container = document.getElementById('assistant-messages');
+        if (!container) return;
+        container.innerHTML = '';
+        const currentUserId = await getCurrentUserId();
 
-            let botReply = '';
-            
-            // Проверяем, запросил ли Мозг подтверждение
-            if (result.results && result.results.some(r => r.status === 'pending' && r.type === 'delete_object')) {
-                const pending = result.results.find(r => r.status === 'pending');
-                pendingAction = { type: 'delete_object', name: pending.name };
-                botReply = ;
-            } else if (result.status === 'error') {
-                botReply = '❌ Ошибка: ' + (result.errors ? result.errors.join(', ') : 'Неизвестная ошибка');
-            } else if (result.results && result.results.length > 0) {
-                botReply = result.results.map(r => r.status === 'ok' ? '✅ ' + r.message : '⚠️ ' + r.message).join('
-');
-            } else {
-                botReply = '🤖 Мозг не вернул действий';
-            }
-            await sendMessage('bot', botReply);
+        if (!messages || messages.length === 0) {
+            addMessage('bot', 'Привет! Я Бо. Чем могу помочь?');
         } else {
-            document.getElementById('assistant-loading')?.remove();
-            await sendMessage('bot', '❌ Мозг не загружен');
+            messages.forEach(msg => {
+                const isUser = msg.sender_id === currentUserId;
+                addMessage(isUser ? 'user' : 'bot', msg.text);
+            });
         }
     } catch (e) {
-        document.getElementById('assistant-loading')?.remove();
-        await sendMessage('bot', '❌ Ошибка связи: ' + e.message);
+        console.error('Ошибка загрузки истории:', e);
     }
 }
 
