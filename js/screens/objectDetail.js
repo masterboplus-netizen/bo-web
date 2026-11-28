@@ -8,7 +8,6 @@ function escapeHtml(text) {
     });
 }
 
-// === ПРОСМОТР ОБЪЕКТА ===
 export async function openObject(objectId) {
     try {
         const obj = await fetchObject(objectId);
@@ -17,27 +16,23 @@ export async function openObject(objectId) {
         let statusColor = obj.status === 'active' ? 'var(--accent)' : 'var(--fg-dim)';
         let statusText = obj.status === 'active' ? 'В работе' : 'Завершен';
         let address = 'Адрес не указан';
-        if (obj.locations && obj.locations.addresses) {
-            const a = obj.locations.addresses;
-            const l = obj.locations;
-            address = `${a.city || ''}, ул. ${a.street || ''}, д. ${a.house || ''}${a.building ? ' к. ' + a.building : ''}${l.entrance ? ', подъезд ' + l.entrance : ''}${l.floor ? ', этаж ' + l.floor : ''}${l.apartment ? ', кв. ' + l.apartment : ''}`.replace(/^, /, '');
-        }
+        
+        // Безопасное извлечение адреса
+        if (obj.city) address = obj.city;
+
         let yandexLink = 'https://yandex.ru/maps/?text=' + encodeURIComponent(address);
         let gisLink = 'https://2gis.ru/search/' + encodeURIComponent(address);
         
         if (address.includes('http')) {
             const parts = address.split('|');
             const possibleLink = parts.find(p => p.trim().startsWith('http'));
-            if (possibleLink) {
-                yandexLink = possibleLink.trim();
-            }
+            if (possibleLink) yandexLink = possibleLink.trim();
         }
 
         const container = document.getElementById('app-content');
         container.style.paddingTop = '0';
 
         let html = `
-            <!-- ФИКСИРОВАННАЯ ШАПКА -->
             <div style="position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); margin-bottom: 15px;">
                 <button onclick="window.openObjects()" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 15px; display: flex; align-items: center;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -45,7 +40,7 @@ export async function openObject(objectId) {
                         <polyline points="12 19 5 12 12 5"></polyline>
                     </svg>
                 </button>
-                <button onclick="window.openObjectActions(${obj.id}, '${escapeHtml(obj.name)}')" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 15px; display: flex; align-items: center;">
+                <button onclick="window.openObjectActions('${obj.id}', '${escapeHtml(obj.name)}')" style="background: transparent; border: none; color: var(--fg-dim); cursor: pointer; padding: 10px 15px; display: flex; align-items: center;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="1"></circle>
                         <circle cx="12" cy="5" r="1"></circle>
@@ -61,7 +56,7 @@ export async function openObject(objectId) {
                         <span class="badge" style="background: ${statusColor}; margin-top: 8px; display: inline-block;">${statusText}</span>
                     </div>
 
-                    <div onclick="window.openObjectEdit(${obj.id})" style="color: var(--fg-dim); font-size: 14px; margin-bottom: 15px; cursor: pointer; text-decoration: underline;">${escapeHtml(address)}</div>
+                    <div onclick="window.openObjectEdit('${obj.id}')" style="color: var(--fg-dim); font-size: 14px; margin-bottom: 15px; cursor: pointer; text-decoration: underline;">${escapeHtml(address)}</div>
 
                     <div style="display: flex; gap: 8px; margin-bottom: 20px;">
                         <a href="${yandexLink}" target="_blank" style="flex: 1; text-align: center; padding: 10px; background: var(--bg3); border-radius: 10px; color: var(--fg); text-decoration: none; font-size: 13px;">Яндекс</a>
@@ -73,7 +68,6 @@ export async function openObject(objectId) {
                         <span style="font-size: 18px; font-weight: bold; color: var(--fg);">${obj.budget || 0} ₽</span>
                     </div>
                     
-                    <!-- КНОПКА ПРИГЛАШЕНИЯ -->
                     <button onclick="window.openInvite('${obj.id}')" style="width: 100%; margin-top: 20px; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer;">
                         Пригласить участника
                     </button>
@@ -86,6 +80,7 @@ export async function openObject(objectId) {
     }
 }
 
+// ИСПРАВЛЕННОЕ МЕНЮ (три точки)
 window.openObjectActions = function(id, name) {
     const oldMenu = document.getElementById('obj-action-menu');
     if (oldMenu) oldMenu.remove();
@@ -95,8 +90,8 @@ window.openObjectActions = function(id, name) {
     menu.style.cssText = 'position: fixed; top: 100px; right: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); z-index: 10005; overflow: hidden; min-width: 160px; display: flex; flex-direction: column;';
 
     menu.innerHTML = `
-        <div onclick="this.parentElement.remove(); window.openEditObject(${id})" style="padding: 14px 16px; color: var(--fg); font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--bg3);">Редактировать</div>
-        <div onclick="window.deleteObjectById(${id})" style="padding: 14px 16px; color: #ff3b30; font-size: 15px; cursor: pointer;">Удалить</div>
+        <div onclick="this.parentElement.remove(); window.openObjectEdit('${id}')" style="padding: 14px 16px; color: var(--fg); font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--bg3);">Редактировать</div>
+        <div onclick="this.parentElement.remove(); window.deleteObjectById('${id}')" style="padding: 14px 16px; color: #ff3b30; font-size: 15px; cursor: pointer;">Удалить</div>
     `;
 
     document.body.appendChild(menu);
