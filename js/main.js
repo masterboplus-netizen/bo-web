@@ -154,3 +154,13 @@ window.checkInviteToken = async () => {
 };
 
 setTimeout(checkInviteToken, 1000);
+
+
+// Глобальный перехватчик ошибок для отладки
+window.addEventListener('unhandledrejection', event => {
+    console.error('PROMISE ERROR DETAILS:', event.reason);
+    alert('Ошибка: ' + (event.reason?.message || JSON.stringify(event.reason)));
+});
+window.addEventListener('error', event => {
+    console.error('GLOBAL ERROR DETAILS:', event.error);
+});
