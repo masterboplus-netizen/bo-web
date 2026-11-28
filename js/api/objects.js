@@ -1,49 +1,33 @@
 import { db } from './supabase.js';
 
-export async function fetchObjects() {
-    const { data, error } = await db.from('objects').select(`
-        *,
-        locations (
-            *,
-            addresses (*)
-        )
-    `);
-    if (error) throw error;
-    return data;
-}
+export async function createObjectWithOwner(name) {
+    // 1. Получаем текущего юзера
+    const { data: { user } } = await db.auth.getUser();
+    if (!user) throw new Error('Не авторизован');
 
-export async function createObject(name, locationId) {
-    const { data, error } = await db.from('objects').insert([{
-        name: name,
-        location_id: locationId,
-        budget: 0,
-        status: 'active'
-    }]).select();
-    if (error) throw error;
-    return data;
-}
+    // 2. Создаем объект
+    const { data: newObj, error: objError } = await db
+        .from('objects')
+        .insert({ name: name })
+        .select()
+        .single();
+    
+    if (objError) throw objError;
 
-export async function updateObject(id, name, locationId) {
-    const { error } = await db.from('objects').update({
-        name: name,
-        location_id: locationId
-    }).eq('id', id);
-    if (error) throw error;
-}
+    // 3. Сразу делаем юзера владельцем
+    const { error: memError } = await db
+        .from('object_members')
+        .insert({
+            object_id: newObj.id,
+            user_id: user.id,
+            role_name: 'owner',
+            can_view_tasks: true,
+            can_create_tasks: true,
+            can_view_finance: true,
+            can_view_diary: true,
+            can_view_photos: true
+        });
 
-export async function deleteObject(id) {
-    const { error } = await db.from('objects').delete().eq('id', id);
-    if (error) throw error;
-}
-
-export async function fetchObject(id) {
-    const { data, error } = await db.from('objects').select(`
-        *,
-        locations (
-            *,
-            addresses (*)
-        )
-    `).eq('id', id).single();
-    if (error) throw error;
-    return data;
+    if (memError) throw memError;
+    return newObj;
 }
