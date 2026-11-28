@@ -58,3 +58,10 @@ export async function createObjectWithOwner(name, address = '', budget = 0) {
     if (memError) throw memError;
     return newObj;
 }
+
+// 5. Получение списка всех доступных объектов
+export async function fetchObjects() {
+    const { data, error } = await db.from('objects').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+}
