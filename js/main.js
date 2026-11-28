@@ -127,3 +127,30 @@ window.openNotepad = function() { saveCurrentScreen('notepad'); renderNotepad();
 window.saveCurrentScreen = saveCurrentScreen;
 window.openFinance = function() { saveCurrentScreen('finance'); renderFinance(); };
 window.setNavActive = setNavActive;
+
+// --- ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ ПРИГЛАШЕНИЙ ---
+import { renderInviteScreen } from './screens/invite.js';
+import { acceptInvitation } from './api/invitations.js';
+
+window.openInvite = (objectId) => {
+    const container = document.getElementById('app-content') || document.body;
+    renderInviteScreen(container, objectId);
+};
+
+// Обработка ссылки
+window.checkInviteToken = async () => {
+    const path = window.location.pathname;
+    if (path.includes('/join/')) {
+        const token = path.split('/join/')[1];
+        try {
+            const objectId = await acceptInvitation(token);
+            alert('Вы успешно добавлены в объект!');
+            window.history.replaceState({}, '', '/?v=' + Date.now());
+            window.location.reload();
+        } catch (err) {
+            alert('Ошибка приглашения: ' + err.message);
+        }
+    }
+};
+
+setTimeout(checkInviteToken, 1000);

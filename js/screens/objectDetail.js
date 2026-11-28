@@ -1,5 +1,6 @@
 import { db } from '../api/supabase.js';
 import { fetchObject, updateObject, deleteObject } from '../api/objects.js';
+import { renderInviteScreen } from './invite.js';
 
 function escapeHtml(text) {
     return String(text).replace(/[&<>"']/g, function(m) {
@@ -24,7 +25,6 @@ export async function openObject(objectId) {
         let yandexLink = 'https://yandex.ru/maps/?text=' + encodeURIComponent(address);
         let gisLink = 'https://2gis.ru/search/' + encodeURIComponent(address);
         
-        // Проверяем, есть ли в адресе сохраненная ссылка на Яндекс
         if (address.includes('http')) {
             const parts = address.split('|');
             const possibleLink = parts.find(p => p.trim().startsWith('http'));
@@ -34,7 +34,7 @@ export async function openObject(objectId) {
         }
 
         const container = document.getElementById('app-content');
-        container.style.paddingTop = '0'; // Убираем отступ для прилипания
+        container.style.paddingTop = '0';
 
         let html = `
             <!-- ФИКСИРОВАННАЯ ШАПКА -->
@@ -72,6 +72,11 @@ export async function openObject(objectId) {
                         <span style="color: var(--fg-dim);">Бюджет</span>
                         <span style="font-size: 18px; font-weight: bold; color: var(--fg);">${obj.budget || 0} ₽</span>
                     </div>
+                    
+                    <!-- КНОПКА ПРИГЛАШЕНИЯ -->
+                    <button onclick="window.openInvite('${obj.id}')" style="width: 100%; margin-top: 20px; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer;">
+                        Пригласить участника
+                    </button>
                 </div>
             </div>
         `;
@@ -81,7 +86,6 @@ export async function openObject(objectId) {
     }
 }
 
-// === МЕНЮ ДЕЙСТВИЙ (ТРИ ТОЧКИ) ===
 window.openObjectActions = function(id, name) {
     const oldMenu = document.getElementById('obj-action-menu');
     if (oldMenu) oldMenu.remove();
