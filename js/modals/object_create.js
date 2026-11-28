@@ -89,7 +89,7 @@ export async function saveNewObject() {
     }
 
     try {
-        await createObject(name, address, budget);
+        await createObjectWithOwner(name, address, budget);
         window.openObjects();
     } catch (err) {
         alert('Ошибка сохранения: ' + err.message);
