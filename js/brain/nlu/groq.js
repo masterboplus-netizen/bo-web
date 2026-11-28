@@ -13,7 +13,14 @@ export async function parseWithGroq(text, history = []) {
     });
     if (!response.ok) throw new Error('Ошибка Edge Function');
     const data = await response.json();
-    return data.intents || [];
+    const intents = data.intents || [];
+    for (let i = 0; i < intents.length; i++) {
+      const intent = intents[i];
+      if (intent.intent === 'delete_object' || (intent.slots && intent.slots.action === 'delete_object')) {
+        if (intent.slots) { delete intent.slots.id; delete intent.slots.object_id; }
+      }
+    }
+    return intents;
   } catch (err) {
     console.error('[Groq] Ошибка:', err);
     return [];
